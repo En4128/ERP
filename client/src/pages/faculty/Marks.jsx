@@ -1,0 +1,366 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Layout from '../../components/Layout';
+import {
+    TrendingUp,
+    AlertCircle,
+    Search,
+    Edit,
+    Save,
+    ArrowLeft,
+    CheckCircle,
+    User,
+    BookOpen,
+    Filter,
+    Activity,
+    ChevronRight,
+    Award,
+    Sparkles,
+    Zap,
+    ArrowRight,
+    Trophy,
+    GraduationCap,
+    CheckCircle2,
+    Users
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '../../lib/utils';
+
+// --- Premium UI Components ---
+
+const GlassCard = ({ children, className, delay = 0 }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay }}
+        className={cn(
+            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            className
+        )}
+    >
+        {children}
+    </motion.div>
+);
+
+const FacultyMarks = () => {
+    const [courses, setCourses] = useState([]);
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [marksMode, setMarksMode] = useState(false);
+    const [examType, setExamType] = useState('CIA-1');
+    const [marksData, setMarksData] = useState({});
+    const [maxMarks, setMaxMarks] = useState(50);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+    const fetchCourses = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('http://localhost:5000/api/faculty/courses', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setCourses(res.data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+            setLoading(false);
+        }
+    };
+
+    const handleSelectCourse = async (course) => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:5000/api/faculty/courses/${course._id}/students`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSelectedCourse(course);
+            setStudents(res.data);
+
+            const initialData = {};
+            res.data.forEach(s => {
+                initialData[s._id] = '';
+            });
+            setMarksData(initialData);
+
+            setMarksMode(true);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching students:", error);
+            setLoading(false);
+        }
+    };
+
+    const handleMarkChange = (studentId, value) => {
+        setMarksData(prev => ({
+            ...prev,
+            [studentId]: value
+        }));
+    };
+
+    const handleSubmitMarks = async () => {
+        setSaving(true);
+        try {
+            const token = localStorage.getItem('token');
+            const promises = Object.entries(marksData).map(([studentId, marks]) => {
+                if (marks === '') return Promise.resolve();
+                return axios.post('http://localhost:5000/api/faculty/marks', {
+                    courseId: selectedCourse._id,
+                    studentId,
+                    examType,
+                    marksObtained: Number(marks),
+                    maxMarks: Number(maxMarks)
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            });
+
+            await Promise.all(promises);
+            alert('Academic performance synchronized successfully!');
+            setMarksMode(false);
+        } catch (error) {
+            console.error("Error saving marks:", error);
+            alert('Failed to save academic records.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <Layout role="faculty">
+                <div className="flex justify-center items-center h-screen">
+                    <div className="relative">
+                        <div className="w-20 h-20 border-4 border-indigo-600/20 rounded-full animate-ping" />
+                        <div className="absolute inset-0 w-20 h-20 border-t-4 border-indigo-600 rounded-full animate-spin" />
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
+
+    return (
+        <Layout role="faculty">
+            <div className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-8 animate-fade-in-up">
+
+                {!marksMode ? (
+                    <>
+                        {/* Course Selection Header */}
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div className="space-y-4">
+                                <motion.div
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
+                                >
+                                    <Sparkles size={14} className="text-indigo-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Academic Records</span>
+                                </motion.div>
+                                <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
+                                    Performance <br />
+                                    <span className="text-indigo-600 dark:text-indigo-400">Management</span>
+                                </h1>
+                            </div>
+                        </div>
+
+                        {/* Course Selection Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {courses.map((course, idx) => (
+                                <GlassCard
+                                    key={course._id}
+                                    className="p-1 group cursor-pointer"
+                                    delay={idx * 0.1}
+                                >
+                                    <div
+                                        onClick={() => handleSelectCourse(course)}
+                                        className="p-8 rounded-[2rem] bg-white dark:bg-slate-900 border border-transparent hover:border-indigo-500/20 transition-all h-full flex flex-col justify-between"
+                                    >
+                                        <div>
+                                            <div className="flex justify-between items-start mb-8">
+                                                <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 border border-indigo-100 dark:border-indigo-800 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
+                                                    <Trophy size={28} />
+                                                </div>
+                                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-colors">
+                                                    <ArrowRight size={18} />
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{course.code}</p>
+                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-4">{course.name}</h3>
+                                        </div>
+                                        <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Users size={14} className="text-slate-400" />
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Roster</span>
+                                            </div>
+                                            <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Enter Records</span>
+                                        </div>
+                                    </div>
+                                </GlassCard>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="space-y-8"
+                    >
+                        {/* Entry Mode Header */}
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div className="flex items-start gap-6">
+                                <button
+                                    onClick={() => setMarksMode(false)}
+                                    className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-500 hover:border-indigo-500 transition-all shadow-sm"
+                                >
+                                    <ArrowLeft size={24} />
+                                </button>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <GraduationCap size={16} className="text-indigo-500" />
+                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{selectedCourse.code} UNIT</span>
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedCourse.name}</h2>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Biometric Grade Assessment</p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-[2.5rem] border border-slate-200/50 dark:border-slate-800/50 shadow-sm">
+                                <div className="relative group min-w-[180px]">
+                                    <p className="absolute -top-10 left-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">Assessment Type</p>
+                                    <select
+                                        value={examType}
+                                        onChange={(e) => setExamType(e.target.value)}
+                                        className="w-full pl-6 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500"
+                                    >
+                                        <option value="CIA-1">CIA-I Midterm</option>
+                                        <option value="CIA-2">CIA-II Progress</option>
+                                        <option value="Assignment">Task Execution</option>
+                                        <option value="Attendance-Marks">Engagement Metric</option>
+                                        <option value="Semester-Final">Terminal Assessment</option>
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                        <ChevronRight size={14} className="rotate-90" />
+                                    </div>
+                                </div>
+
+                                <div className="relative group w-32">
+                                    <p className="absolute -top-10 left-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">Scale (Max)</p>
+                                    <input
+                                        type="number"
+                                        value={maxMarks}
+                                        onChange={(e) => setMaxMarks(e.target.value)}
+                                        className="w-full px-6 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white text-center focus:ring-2 focus:ring-indigo-500 shadow-inner"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleSubmitMarks}
+                                    disabled={saving}
+                                    className="px-8 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2"
+                                >
+                                    {saving ? 'Syncing...' : <><Save size={14} /> Commit Records</>}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Spreadsheet Grid */}
+                        <GlassCard className="p-0 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left">
+                                    <thead>
+                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] border-b border-slate-100 dark:border-slate-800">
+                                            <th className="px-10 py-6">Identity Parameter</th>
+                                            <th className="px-10 py-6 text-center">Efficiency Score</th>
+                                            <th className="px-10 py-6 text-center">Projected Grade</th>
+                                            <th className="px-10 py-6 text-right">Verification Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                                        {students.map((student, idx) => {
+                                            const score = Number(marksData[student._id]);
+                                            const percent = (score / maxMarks) * 100;
+                                            let grade = 'F';
+                                            let color = 'rose';
+                                            if (percent >= 90) { grade = 'A+'; color = 'indigo'; }
+                                            else if (percent >= 80) { grade = 'A'; color = 'indigo'; }
+                                            else if (percent >= 70) { grade = 'B'; color = 'emerald'; }
+                                            else if (percent >= 60) { grade = 'C'; color = 'amber'; }
+                                            else if (percent >= 50) { grade = 'D'; color = 'amber'; }
+
+                                            return (
+                                                <motion.tr
+                                                    key={student._id}
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ delay: idx * 0.02 }}
+                                                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group"
+                                                >
+                                                    <td className="px-10 py-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-indigo-500 border border-slate-200 dark:border-slate-700">
+                                                                {student.user.name.split(' ').map(n => n[0]).join('')}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-black text-slate-900 dark:text-white text-sm tracking-tight">{student.user.name}</p>
+                                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{student.admissionNumber}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-10 py-6">
+                                                        <div className="flex justify-center items-center gap-3">
+                                                            <input
+                                                                type="number"
+                                                                value={marksData[student._id]}
+                                                                onChange={(e) => handleMarkChange(student._id, e.target.value)}
+                                                                className="w-24 text-center py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs font-black text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 shadow-inner"
+                                                                placeholder="00"
+                                                            />
+                                                            <span className="text-[10px] font-black text-slate-300">/ {maxMarks}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-10 py-6 text-center">
+                                                        <span className={cn(
+                                                            "px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border",
+                                                            {
+                                                                "bg-indigo-500/10 text-indigo-600 border-indigo-500/20": color === 'indigo',
+                                                                "bg-emerald-500/10 text-emerald-600 border-emerald-500/20": color === 'emerald',
+                                                                "bg-amber-500/10 text-amber-600 border-amber-500/20": color === 'amber',
+                                                                "bg-rose-500/10 text-rose-600 border-rose-500/20": color === 'rose',
+                                                                "text-slate-300 border-slate-100": marksData[student._id] === ''
+                                                            }
+                                                        )}>
+                                                            {marksData[student._id] !== '' ? `Grade ${grade}` : 'Unranked'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-10 py-6 text-right">
+                                                        <div className="flex justify-end">
+                                                            {marksData[student._id] !== '' ? (
+                                                                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
+                                                                    <CheckCircle2 size={16} />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-300">
+                                                                    <AlertCircle size={16} />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </motion.tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </GlassCard>
+                    </motion.div>
+                )}
+            </div>
+        </Layout>
+    );
+};
+
+export default FacultyMarks;
