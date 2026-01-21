@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { useChat } from '../context/ChatContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,28 +21,43 @@ const ChatbotWidget = () => {
         scrollToBottom();
     }, [messages, isTyping, isChatOpen]);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return;
 
         const userMsg = { text: input, sender: 'user', timestamp: new Date() };
         setMessages(prev => [...prev, userMsg]);
+        const userQuery = input;
         setInput('');
         setIsTyping(true);
 
-        // Simulate Bot Response
-        setTimeout(() => {
-            let botText = "I'm not sure about that. Try asking about 'Attendance', 'Marks', or 'Timetable'.";
-            const lowerInput = input.toLowerCase();
+        try {
+            const res = await axios.post('http://localhost:5000/api/chatbot', { message: userQuery });
+            setMessages(prev => [...prev, { text: res.data.text, sender: 'bot', timestamp: new Date() }]);
+        } catch (error) {
+            console.error('Chatbot error:', error);
+            let errorMsg = 'Sorry, I am having trouble connecting to the brain right now. Please try again later.';
 
-            if (lowerInput.includes('attendance')) botText = "You can view your subject-wise attendance in the 'Attendance' tab 📊.";
-            if (lowerInput.includes('marks') || lowerInput.includes('result')) botText = "Your internal marks and CGPA are available in the 'Marks & Results' section 🏆.";
-            if (lowerInput.includes('exam')) botText = "The next exam is Mathematics on Monday 📝. Good luck!";
-            if (lowerInput.includes('fee')) botText = "The last date to pay semester fees is 30th November 💳.";
-            if (lowerInput.includes('hello') || lowerInput.includes('hi')) botText = "Hello! 👋 How can I assist you with your campus life today?";
+            if (error.response) {
+                const backendMsg = error.response.data?.message;
+                const backendDetails = error.response.data?.details;
 
-            setMessages(prev => [...prev, { text: botText, sender: 'bot', timestamp: new Date() }]);
+                if (backendMsg) {
+                    errorMsg = `${backendMsg}${backendDetails ? ` (${backendDetails})` : ''}`;
+                } else if (error.response.status === 500) {
+                    errorMsg = 'My AI processor is offline. Please ask the admin to check the Google AI API Key.';
+                } else if (error.response.status === 404) {
+                    errorMsg = 'Connection failed (Error 404). Please ensure the server has been restarted to register new routes.';
+                } else {
+                    errorMsg = `An error occurred (Status ${error.response.status}). Please try again later.`;
+                }
+            } else if (error.request) {
+                errorMsg = 'Cannot reach the server. Please check if the backend is running on port 5000.';
+            }
+
+            setMessages(prev => [...prev, { text: errorMsg, sender: 'bot', timestamp: new Date(), isError: true }]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
     return (
@@ -89,8 +105,8 @@ const ChatbotWidget = () => {
                                 >
                                     <div className={`flex items-end max-w-[80%] space-x-2 ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 ${msg.sender === 'user'
-                                                ? 'bg-purple-100 border-purple-200 dark:bg-purple-900/30 dark:border-purple-800'
-                                                : 'bg-indigo-100 border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-800'
+                                            ? 'bg-purple-100 border-purple-200 dark:bg-purple-900/30 dark:border-purple-800'
+                                            : 'bg-indigo-100 border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-800'
                                             }`}>
                                             {msg.sender === 'user' ? (
                                                 <User size={14} className="text-purple-600 dark:text-purple-400" />
@@ -100,7 +116,9 @@ const ChatbotWidget = () => {
                                         </div>
 
                                         <div className={`px-4 py-2.5 rounded-2xl text-sm shadow-sm leading-relaxed ${msg.sender === 'user'
-                                                ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-none'
+                                            ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-none'
+                                            : msg.isError
+                                                ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 rounded-bl-none'
                                                 : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border border-gray-100 dark:border-slate-700 rounded-bl-none'
                                             }`}>
                                             {msg.text}
@@ -148,8 +166,8 @@ const ChatbotWidget = () => {
                                     onClick={handleSend}
                                     disabled={!input.trim()}
                                     className={`p-2 rounded-full transition-all duration-300 ${input.trim()
-                                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transform hover:scale-105'
-                                            : 'bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed'
+                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transform hover:scale-105'
+                                        : 'bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed'
                                         }`}
                                 >
                                     <Send size={18} className={input.trim() ? "translate-x-0.5" : ""} />
@@ -172,8 +190,8 @@ const ChatbotWidget = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className={`pointer-events-auto p-4 rounded-full shadow-2xl transition-all duration-300 relative group overflow-hidden ${isChatOpen
-                        ? 'bg-gray-100 text-gray-600 rotate-90 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
-                        : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
+                    ? 'bg-gray-100 text-gray-600 rotate-90 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
+                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
                     }`}
             >
                 {/* Button Glow Effect */}
