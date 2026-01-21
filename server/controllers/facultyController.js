@@ -616,3 +616,59 @@ exports.updateLeaveStatus = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Search all courses in the system
+// @route   GET /api/faculty/search-courses
+// @access  Private (Faculty)
+exports.searchAllCourses = async (req, res) => {
+    try {
+        const { query } = req.query;
+        let filter = {};
+        if (query) {
+            filter = {
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { code: { $regex: query, $options: 'i' } },
+                    { department: { $regex: query, $options: 'i' } }
+                ]
+            };
+        }
+
+        const courses = await Course.find(filter).populate('assignedFaculty', 'user').limit(20);
+        res.json(courses);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Join a course (self-assignment)
+// @route   POST /api/faculty/join-course
+// @access  Private (Faculty)
+exports.joinCourse = async (req, res) => {
+    const { courseId } = req.body;
+    try {
+        const faculty = await Faculty.findOne({ user: req.user.id });
+        if (!faculty) return res.status(404).json({ message: 'Faculty profile not found' });
+
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+
+        // Add to faculty's assignedCourses if not already there
+        if (!faculty.assignedCourses) faculty.assignedCourses = [];
+        if (!faculty.assignedCourses.includes(courseId)) {
+            faculty.assignedCourses.push(courseId);
+            await faculty.save();
+        }
+
+        // Also update course's assignedFaculty if it's currently empty
+        if (!course.assignedFaculty) {
+            course.assignedFaculty = faculty._id;
+            await course.save();
+        }
+
+        res.json({ message: 'Successfully joined course', course });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+

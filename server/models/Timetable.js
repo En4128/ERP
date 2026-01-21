@@ -35,8 +35,8 @@ const timetableSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['lecture', 'lab', 'tutorial'],
-        default: 'lecture'
+        enum: ['CLASS', 'LAB'],
+        default: 'CLASS'
     }
 }, { timestamps: true });
 

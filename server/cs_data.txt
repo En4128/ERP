@@ -1,0 +1,14 @@
+COURSES:
+Code: CS202, Name: Data Structures, Sem: 1, ID: 6965355408cc21e47dec1092
+Code: CS330, Name: Devops, Sem: 1, ID: 696a1868f3231f11640d2e63
+Code: CS303, Name: Python, Sem: 1, ID: 696cf9b1e4b02bd23998e5a0
+Code: CS333, Name: DBMS, Sem: 1, ID: 696fa17de56e977831d67fd0
+Code: CS343, Name: Adv java , Sem: 1, ID: 696fa281e56e977831d67fda
+Code: CS887, Name: Docker, Sem: 1, ID: 6970a77a65626791a6ffe38e
+
+FACULTY:
+Name: John Professor, ID: 6965355408cc21e47dec108c, Dept: Computer Science
+Name: Venni, ID: 6965397bbb370ac9be315dd6, Dept: Computer Science
+Name: Lenna Rose, ID: 696f8544d219e19ab271ba6c, Dept: Computer Science
+Name: Sathish, ID: 696fa418e56e977831d67ff5, Dept: Cdc
+Name: Nisha, ID: 696fa4c4e56e977831d6800e, Dept: Computer Science

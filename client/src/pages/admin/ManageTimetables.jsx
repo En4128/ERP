@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Download, Clock, MapPin, Users, TriangleAlert, Trash2, Calendar, BookOpen, Building, X, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -17,8 +20,9 @@ const periods = [
     { time: '3:30 PM', endTime: '4:30 PM', type: 'class' },
 ];
 
-const rooms = ['Room 101', 'Room 102', 'Room 201', 'Room 205', 'Room 301', 'Lab 101', 'Lab 102', 'Lab 201'];
-const departments = ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical'];
+const rooms = ['Room 101', 'Room 102', 'Room 201', 'Room 205', 'Room 301', 'Lab 101', 'Lab 102', 'Lab 201', 'Library Hall A', 'Library Hall B', 'Digital Library', 'Library Study Room'];
+const departments = ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Business', 'CDC'];
+
 
 const ManageTimetables = () => {
     const [schedule, setSchedule] = useState([]);
@@ -90,7 +94,7 @@ const ManageTimetables = () => {
     // Filter schedule safely
     // Filter schedule safely
     const filteredSchedule = Array.isArray(schedule) ? schedule.filter(slot => {
-        const deptMatch = slot?.department?.trim() === selectedDepartment?.trim();
+        const deptMatch = slot?.department?.trim() === selectedDepartment?.trim() || slot?.department?.trim() === 'CDC';
         const semMatch = String(slot?.semester || '').trim() === String(selectedSemester).trim();
 
         // Final debug to see why it fails
@@ -160,7 +164,7 @@ const ManageTimetables = () => {
             const coursesRes = await axios.get('http://localhost:5000/api/courses', { headers: { Authorization: `Bearer ${token}` } });
             setCourses(Array.isArray(coursesRes.data) ? coursesRes.data : []);
 
-            setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: 'Main Block', type: 'lecture', facultyId: '', assignToCourse: false });
+            setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: 'Main Block', type: 'CLASS', facultyId: '', assignToCourse: false });
             setClashWarning(null);
             setIsAddDialogOpen(false);
             setIsEditing(false);
@@ -179,7 +183,7 @@ const ManageTimetables = () => {
             endTime: slot.endTime,
             room: slot.room,
             building: slot.building || 'Main Block',
-            type: slot.type || 'lecture',
+            type: slot.type || 'CLASS',
             facultyId: slot.facultyId || '',
             assignToCourse: false
         });
@@ -204,14 +208,33 @@ const ManageTimetables = () => {
         }
     };
 
+    const handleExportPDF = async () => {
+        const element = document.getElementById('timetable-grid');
+        if (!element) return;
+
+        try {
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const imgWidth = 280;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            pdf.save(`timetable-${selectedDepartment}-sem-${selectedSemester}.pdf`);
+            toast.success('Timetable exported as PDF');
+        } catch (error) {
+            console.error('PDF Export Error:', error);
+            toast.error('Failed to export PDF');
+        }
+    };
+
     const getTypeColor = (type) => {
-        switch (type) {
-            case 'lecture': return 'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400';
-            case 'lab': return 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400';
-            case 'tutorial': return 'bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400';
+        switch (type?.toUpperCase()) {
+            case 'CLASS': return 'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400';
+            case 'LAB': return 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400';
             default: return 'bg-gray-100 border-gray-200 text-gray-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400';
         }
     };
+
 
     if (loading) {
         return <div className="p-10 text-center text-slate-500">Loading timetable data...</div>;
@@ -226,7 +249,10 @@ const ManageTimetables = () => {
                     <p className="text-slate-600 dark:text-slate-400">Create and manage class schedules with clash detection</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
+                    <button
+                        onClick={handleExportPDF}
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm"
+                    >
                         <Download className="h-4 w-4" /> Export PDF
                     </button>
                     <button
@@ -266,9 +292,8 @@ const ManageTimetables = () => {
                         </select>
                     </div>
                     <div className="flex items-center gap-2 ml-auto">
-                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-xs font-semibold">Lecture</span>
-                        <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded text-xs font-semibold">Lab</span>
-                        <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded text-xs font-semibold">Tutorial</span>
+                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-xs font-semibold">CLASS</span>
+                        <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded text-xs font-semibold">LAB</span>
                     </div>
                 </div>
                 {/* Visual Debug info */}
@@ -278,7 +303,7 @@ const ManageTimetables = () => {
             </div>
 
             {/* Timetable Grid */}
-            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800">
+            <div id="timetable-grid" className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800">
                 <div className="p-6 border-b border-gray-100 dark:border-slate-800">
                     <h3 className="text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-slate-50">
                         <Calendar className="h-5 w-5 text-indigo-500" />
@@ -369,7 +394,7 @@ const ManageTimetables = () => {
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{isEditing ? 'Edit Time Slot' : 'Add Time Slot'}</h3>
-                            <button onClick={() => { setIsAddDialogOpen(false); setClashWarning(null); setIsEditing(false); setCurrentSlotId(null); setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: 'Main Block', type: 'lecture', facultyId: '' }); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                            <button onClick={() => { setIsAddDialogOpen(false); setClashWarning(null); setIsEditing(false); setCurrentSlotId(null); setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: 'Main Block', type: 'CLASS', facultyId: '' }); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                                 <X size={24} />
                             </button>
                         </div>
@@ -392,7 +417,8 @@ const ManageTimetables = () => {
                                     <option value="">Select course</option>
                                     {Array.isArray(courses) && courses
                                         .filter(c =>
-                                            c.department?.trim() === selectedDepartment?.trim() &&
+                                            (c.department?.trim() === selectedDepartment?.trim() ||
+                                                c.department?.trim() === 'CDC') &&
                                             String(c.semester || '').trim() === String(selectedSemester).trim()
                                         )
                                         .map(c => (
@@ -517,9 +543,8 @@ const ManageTimetables = () => {
                                     value={newSlot.type}
                                     onChange={(e) => setNewSlot(prev => ({ ...prev, type: e.target.value }))}
                                 >
-                                    <option value="lecture">Lecture</option>
-                                    <option value="lab">Lab</option>
-                                    <option value="tutorial">Tutorial</option>
+                                    <option value="CLASS">Class</option>
+                                    <option value="LAB">Lab</option>
                                 </select>
                             </div>
                         </div>

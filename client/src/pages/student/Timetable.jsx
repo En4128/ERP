@@ -16,9 +16,8 @@ const Timetable = () => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     const colors = {
-        lecture: 'from-blue-500/10 to-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-200/50 dark:border-indigo-800/50 ring-indigo-500',
-        lab: 'from-purple-500/10 to-fuchsia-500/10 text-purple-700 dark:text-purple-300 border-purple-200/50 dark:border-purple-800/50 ring-purple-500',
-        tutorial: 'from-amber-500/10 to-orange-500/10 text-amber-700 dark:text-amber-300 border-amber-200/50 dark:border-amber-800/50 ring-amber-500',
+        CLASS: 'from-blue-500/10 to-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-200/50 dark:border-indigo-800/50 ring-indigo-500',
+        LAB: 'from-purple-500/10 to-fuchsia-500/10 text-purple-700 dark:text-purple-300 border-purple-200/50 dark:border-purple-800/50 ring-purple-500',
         default: 'from-slate-500/10 to-slate-600/10 text-slate-700 dark:text-slate-300 border-slate-200/50 dark:border-slate-800/50 ring-slate-500'
     };
 
@@ -46,7 +45,7 @@ const Timetable = () => {
                 const scheduleRes = await axios.get('http://localhost:5000/api/timetable', config);
 
                 const filtered = scheduleRes.data.filter(slot => {
-                    const deptMatch = slot.department?.trim() === profileRes.data.department?.trim();
+                    const deptMatch = slot.department?.trim() === profileRes.data.department?.trim() || slot.department?.trim() === 'CDC';
                     const semMatch = String(slot.semester || '').trim() === String(profileRes.data.sem || '').trim();
                     return deptMatch && semMatch;
                 });
@@ -166,7 +165,7 @@ const Timetable = () => {
                         >
                             {dailySchedule.length > 0 ? (
                                 dailySchedule.map((session, idx) => {
-                                    const typeColor = colors[session.type?.toLowerCase()] || colors.default;
+                                    const typeColor = colors[session.type?.toUpperCase()] || colors.default;
                                     return (
                                         <motion.div
                                             key={session._id || idx}
@@ -185,7 +184,7 @@ const Timetable = () => {
                                                         <Clock size={14} className="opacity-70" />
                                                         <span className="text-sm font-black tracking-tight">{session.startTime}</span>
                                                     </div>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50 px-1">{session.type || 'Lecture'}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50 px-1">{session.type || 'CLASS'}</span>
                                                 </div>
 
                                                 {/* Course Details */}
@@ -292,7 +291,7 @@ const Timetable = () => {
                                 className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800"
                             >
                                 {/* Modal Header Decoration */}
-                                <div className={`h-24 bg-gradient-to-r ${colors[selectedSession.type?.toLowerCase()] || colors.default} relative flex items-center justify-center`}>
+                                <div className={`h-24 bg-gradient-to-r ${colors[selectedSession.type?.toUpperCase()] || colors.default} relative flex items-center justify-center`}>
                                     <div className="absolute inset-0 bg-white/20 dark:bg-black/20"></div>
                                     <h4 className="relative text-white font-black tracking-widest uppercase text-xs">Session Details</h4>
                                     <button

@@ -187,6 +187,38 @@ const FacultyDashboard = () => {
 
                     <MeshGradientHero name={data.facultyName} stats={data.stats} />
 
+                    {/* Quick Start / Onboarding (Visible if no courses) */}
+                    {(data.stats.totalCourses?.value === 0 || data.stats.totalCourses === 0) && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-indigo-600 dark:bg-indigo-500 overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-indigo-500/20 relative group cursor-pointer"
+                            onClick={() => navigate('/faculty/courses')}
+                        >
+                            <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
+                                <Sparkles size={80} className="text-white" />
+                            </div>
+                            <div className="relative z-10">
+                                <p className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-2">New Faculty Checklist</p>
+                                <h3 className="text-2xl font-black text-white tracking-tight leading-tight mb-4">You have no courses <br />assigned yet.</h3>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-white/80 text-[10px] font-bold">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" /> Discover & Join Courses
+                                    </div>
+                                    <div className="flex items-center gap-2 text-white/50 text-[10px] font-bold">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-white/20" /> Mark Daily Attendance
+                                    </div>
+                                    <div className="flex items-center gap-2 text-white/50 text-[10px] font-bold">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-white/20" /> Manage Your Students
+                                    </div>
+                                </div>
+                            </div>
+                            <button className="relative z-10 w-full mt-6 py-4 bg-white text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
+                                Start Onboarding
+                            </button>
+                        </motion.div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-4 lg:col-span-1">
                         <ActivityWidget
                             title="Pending Evals"

@@ -19,7 +19,9 @@ const {
     getNotifications,
     markAsRead,
     getLeaveRequests,
-    updateLeaveStatus
+    updateLeaveStatus,
+    searchAllCourses,
+    joinCourse
 } = require('../controllers/facultyController');
 const { getFacultyExams } = require('../controllers/examController');
 const { protect, authorize } = require('../middleware/authMiddleware');
@@ -49,5 +51,7 @@ router.post('/notifications/:id/read', markAsRead);
 router.get('/leave-requests', getLeaveRequests);
 router.put('/leave-requests/:id', updateLeaveStatus);
 router.get('/exams', getFacultyExams);
+router.get('/search-courses', searchAllCourses);
+router.post('/join-course', joinCourse);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import {
@@ -43,6 +44,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
 );
 
 const FacultyMarks = () => {
+    const navigate = useNavigate();
     const [courses, setCourses] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [students, setStudents] = useState([]);
@@ -147,7 +149,23 @@ const FacultyMarks = () => {
         <Layout role="faculty">
             <div className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-8 animate-fade-in-up">
 
-                {!marksMode ? (
+                {courses.length === 0 ? (
+                    <GlassCard className="p-20 flex flex-col items-center justify-center text-center min-h-[600px] border-dashed">
+                        <div className="w-24 h-24 rounded-[3rem] bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
+                            <Sparkles size={40} />
+                        </div>
+                        <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">Foundation Required</h2>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-10 font-bold leading-relaxed">
+                            To manage student grades and academic performance, you first need to join the course units you are instructing.
+                        </p>
+                        <button
+                            onClick={() => navigate('/faculty/courses')}
+                            className="px-10 py-5 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-3"
+                        >
+                            <Trophy size={16} /> Discover Courses
+                        </button>
+                    </GlassCard>
+                ) : !marksMode ? (
                     <>
                         {/* Course Selection Header */}
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -203,7 +221,7 @@ const FacultyMarks = () => {
                             ))}
                         </div>
                     </>
-                ) : (
+                ) : selectedCourse ? (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -221,9 +239,9 @@ const FacultyMarks = () => {
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
                                         <GraduationCap size={16} className="text-indigo-500" />
-                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{selectedCourse.code} UNIT</span>
+                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{selectedCourse?.code} UNIT</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedCourse.name}</h2>
+                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedCourse?.name}</h2>
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Biometric Grade Assessment</p>
                                 </div>
                             </div>
@@ -357,7 +375,7 @@ const FacultyMarks = () => {
                             </div>
                         </GlassCard>
                     </motion.div>
-                )}
+                ) : null}
             </div>
         </Layout>
     );
