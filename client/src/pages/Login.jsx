@@ -20,18 +20,22 @@ const Login = () => {
             const payload = isLogin ? { email, password } : { name, email, password, role, department };
 
             const res = await axios.post(`http://localhost:5000${endpoint}`, payload);
-            const { token, role: userRole } = res.data;
+            const { _id, name: fetchedName, email: fetchedEmail, role: fetchedRole, token } = res.data;
+            const userData = { _id, name: fetchedName, email: fetchedEmail, role: fetchedRole };
 
+            localStorage.setItem('user', JSON.stringify(userData));
             localStorage.setItem('token', token);
-            localStorage.setItem('userRole', userRole);
-            localStorage.setItem('userName', res.data.name);
+            localStorage.setItem('userRole', fetchedRole);
+            localStorage.setItem('userName', fetchedName);
 
-            if (userRole === 'admin') navigate('/admin');
-            else if (userRole === 'student') navigate('/student');
-            else if (userRole === 'faculty') navigate('/faculty');
+            if (fetchedRole === 'admin') navigate('/admin');
+            else if (fetchedRole === 'student') navigate('/student');
+            else if (fetchedRole === 'faculty') navigate('/faculty');
 
         } catch (err) {
-            setError(err.response?.data?.message || (isLogin ? 'Login failed' : 'Registration failed'));
+            console.error('Login/Register error:', err);
+            const message = err.response?.data?.message || err.message || (isLogin ? 'Login failed' : 'Registration failed');
+            setError(message);
         }
     };
 

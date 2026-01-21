@@ -1,4 +1,7 @@
 const express = require('express');
+const http = require('http');
+const initSocket = require('./socket');
+
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -6,7 +9,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+const io = initSocket(server);
 const PORT = process.env.PORT || 5000;
+
 
 // Middleware
 app.use(express.json());
@@ -36,12 +42,14 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/placement', require('./routes/placementRoutes'));
 app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/timetable', require('./routes/timetableRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
+
 
 app.get('/', (req, res) => {
     res.send('Smart Campus ERP API is running...');
 });
 
 // Start Server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

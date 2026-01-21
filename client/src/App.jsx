@@ -30,6 +30,8 @@ import FacultyManageStudents from './pages/faculty/ManageStudents';
 import FacultyLeaveRequests from './pages/faculty/LeaveRequests';
 import AdminManageExams from './pages/admin/ManageExams';
 import ExamSchedule from './pages/admin/ExamSchedule';
+import Chat from './pages/shared/Chat';
+
 
 import { ChatProvider } from './context/ChatContext';
 import { Toaster } from 'sonner';
@@ -73,6 +75,8 @@ function App() {
             <Route path="/student/support" element={<StudentSupport />} />
             <Route path="/student/notifications" element={<StudentNotifications />} />
             <Route path="/student/profile" element={<StudentProfile />} />
+            <Route path="/student/chat" element={<Chat />} />
+
 
             <Route path="/faculty" element={<FacultyDashboard />} />
             <Route path="/faculty/attendance" element={<FacultyAttendance />} />
@@ -84,6 +88,8 @@ function App() {
             <Route path="/faculty/notifications" element={<FacultyNotifications />} />
             <Route path="/faculty/profile" element={<FacultyProfile />} />
             <Route path="/faculty/leave-requests" element={<FacultyLeaveRequests />} />
+            <Route path="/faculty/chat" element={<Chat />} />
+
             <Route path="/faculty/exams" element={<ExamSchedule role="faculty" />} />
 
             <Route path="/admin" element={<AdminDashboard />} />
