@@ -672,3 +672,60 @@ exports.joinCourse = async (req, res) => {
     }
 };
 
+// @desc    Upload course material
+// @route   POST /api/faculty/courses/:courseId/materials
+// @access  Private (Faculty)
+exports.uploadMaterial = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const { title } = req.body;
+        const { courseId } = req.params;
+
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+
+        const material = {
+            title: title || req.file.originalname,
+            fileUrl: `/uploads/materials/${req.file.filename}`
+        };
+
+        course.materials.push(material);
+        await course.save();
+
+        res.status(201).json(course.materials[course.materials.length - 1]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete course material
+// @route   DELETE /api/faculty/courses/:courseId/materials/:materialId
+// @access  Private (Faculty)
+exports.deleteMaterial = async (req, res) => {
+    try {
+        const { courseId, materialId } = req.params;
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+
+        const material = course.materials.id(materialId);
+        if (!material) return res.status(404).json({ message: 'Material not found' });
+
+        // Delete from filesystem
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(__dirname, '..', material.fileUrl);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
+        course.materials.pull(materialId);
+        await course.save();
+
+        res.json({ message: 'Material deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

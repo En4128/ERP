@@ -21,8 +21,11 @@ const {
     getLeaveRequests,
     updateLeaveStatus,
     searchAllCourses,
-    joinCourse
+    joinCourse,
+    uploadMaterial,
+    deleteMaterial
 } = require('../controllers/facultyController');
+const upload = require('../middleware/uploadMiddleware');
 const { getFacultyExams } = require('../controllers/examController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -53,5 +56,9 @@ router.put('/leave-requests/:id', updateLeaveStatus);
 router.get('/exams', getFacultyExams);
 router.get('/search-courses', searchAllCourses);
 router.post('/join-course', joinCourse);
+
+// Course Materials
+router.post('/courses/:courseId/materials', upload.single('file'), uploadMaterial);
+router.delete('/courses/:courseId/materials/:materialId', deleteMaterial);
 
 module.exports = router;

@@ -20,25 +20,68 @@ import {
     Zap,
     Trophy,
     ArrowRight,
-    Plus
+    Plus,
+    FilePlus,
+    Trash2,
+    Download,
+    X,
+    Save,
+    Edit,
+    MessageSquare,
+    User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 // --- Premium UI Components ---
 
-const GlassCard = ({ children, className, delay = 0 }) => (
+const GlassCard = ({ children, className, delay = 0, noHover = false }) => (
     <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        whileHover={noHover ? {} : { y: -12, scale: 1.02 }}
+        transition={{
+            duration: 0.6,
+            delay,
+            type: "spring",
+            stiffness: 100,
+            damping: 15
+        }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "relative group",
             className
         )}
     >
-        {children}
+        {/* Glow Effect */}
+        <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500/20 to-teal-500/20 rounded-[2.5rem] blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+
+        <div className="relative bg-white/70 dark:bg-slate-900/60 backdrop-blur-3xl border border-white/20 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] h-full">
+            {children}
+        </div>
     </motion.div>
+);
+
+const DetailTab = ({ icon: Icon, label, active, onClick }) => (
+    <button
+        onClick={onClick}
+        className={cn(
+            "flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all relative overflow-hidden",
+            active
+                ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20"
+                : "bg-white/50 dark:bg-slate-800/50 text-slate-400 hover:text-indigo-500 border border-slate-100 dark:border-slate-800"
+        )}
+    >
+        <Icon size={18} strokeWidth={2.5} />
+        {label}
+        {active && (
+            <motion.div
+                layoutId="activeTab"
+                className="absolute inset-0 bg-indigo-600 -z-10"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+            />
+        )}
+    </button>
 );
 
 const FacultyCourses = () => {
@@ -48,12 +91,16 @@ const FacultyCourses = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('list'); // 'list' | 'detail'
+    const [detailTab, setDetailTab] = useState('roster'); // 'roster' | 'materials'
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editForm, setEditForm] = useState(null);
     const [isDiscoverOpen, setIsDiscoverOpen] = useState(false);
     const [searchAllQuery, setSearchAllQuery] = useState('');
     const [searchAllResults, setSearchAllResults] = useState([]);
     const [joining, setJoining] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [materialFile, setMaterialFile] = useState(null);
+    const [materialTitle, setMaterialTitle] = useState('');
 
     useEffect(() => {
         fetchCourses();
@@ -155,6 +202,57 @@ const FacultyCourses = () => {
         }
     };
 
+    const handleUploadMaterial = async (e) => {
+        e.preventDefault();
+        if (!materialFile) return alert('Please select a file');
+
+        setUploading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('file', materialFile);
+            formData.append('title', materialTitle);
+
+            const res = await axios.post(`http://localhost:5000/api/faculty/courses/${selectedCourse._id}/materials`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const updatedMaterials = [...(selectedCourse.materials || []), res.data];
+            setSelectedCourse({ ...selectedCourse, materials: updatedMaterials });
+            setCourses(courses.map(c => c._id === selectedCourse._id ? { ...c, materials: updatedMaterials } : c));
+
+            setMaterialFile(null);
+            setMaterialTitle('');
+            alert('Material uploaded successfully!');
+        } catch (error) {
+            console.error("Error uploading material:", error);
+            alert('Failed to upload material');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleDeleteMaterial = async (materialId) => {
+        if (!window.confirm('Are you sure you want to delete this material?')) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:5000/api/faculty/courses/${selectedCourse._id}/materials/${materialId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const updatedMaterials = selectedCourse.materials.filter(m => m._id !== materialId);
+            setSelectedCourse({ ...selectedCourse, materials: updatedMaterials });
+            setCourses(courses.map(c => c._id === selectedCourse._id ? { ...c, materials: updatedMaterials } : c));
+        } catch (error) {
+            console.error("Error deleting material:", error);
+            alert('Failed to delete material');
+        }
+    };
+
     if (loading) {
         return (
             <Layout role="faculty">
@@ -199,51 +297,64 @@ const FacultyCourses = () => {
                         </div>
 
                         {/* Courses Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {courses.map((course, idx) => (
                                 <GlassCard
                                     key={course._id}
-                                    className="group cursor-pointer p-1"
+                                    className="h-[420px]"
                                     delay={idx * 0.1}
                                 >
                                     <div
                                         onClick={() => handleViewCourse(course)}
-                                        className="p-8 rounded-[2rem] bg-white dark:bg-slate-910 flex flex-col h-full relative overflow-hidden"
+                                        className="p-10 flex flex-col h-full cursor-pointer relative"
                                     >
-                                        <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all">
-                                            <button
-                                                onClick={(e) => handleEditClick(e, course)}
-                                                className="p-3 bg-slate-50 dark:bg-slate-800 hover:bg-indigo-500 hover:text-white rounded-2xl transition-all shadow-sm"
-                                            >
-                                                <FileText size={18} />
-                                            </button>
+                                        {/* Background Decoration */}
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+
+                                        <div className="flex justify-between items-start mb-8 relative z-10">
+                                            <div className="p-6 rounded-[2rem] bg-indigo-500 text-white shadow-2xl shadow-indigo-500/40 group-hover:scale-110 transition-transform duration-500">
+                                                <BookOpen size={28} />
+                                            </div>
+                                            <div className="flex flex-col items-end gap-2">
+                                                <span className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest">
+                                                    {course.credits} Credits
+                                                </span>
+                                                <button
+                                                    onClick={(e) => handleEditClick(e, course)}
+                                                    className="p-3 bg-slate-50 dark:bg-slate-800 hover:bg-teal-500 hover:text-white rounded-2xl transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                                                >
+                                                    <Edit size={16} />
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        <div className="flex justify-between items-start mb-10">
-                                            <div className="p-5 rounded-3xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 border border-indigo-100 dark:border-indigo-800 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
-                                                <BookOpen size={32} />
+                                        <div className="space-y-3 relative z-10">
+                                            <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-[1.1] tracking-tighter group-hover:text-indigo-600 transition-colors uppercase italic line-clamp-2 min-h-[4rem]">
+                                                {course.name}
+                                            </h3>
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-0.5 w-6 bg-indigo-500/30" />
+                                                <p className="text-indigo-500 dark:text-indigo-400 font-black tracking-[0.3em] text-[11px] uppercase">
+                                                    {course.code}
+                                                </p>
                                             </div>
-                                            <span className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-slate-100 dark:border-slate-700">
-                                                {course.credits} Credits
-                                            </span>
                                         </div>
 
-                                        <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 leading-none tracking-tight group-hover:text-indigo-600 transition-colors uppercase truncate">
-                                            {course.name}
-                                        </h3>
-                                        <p className="text-indigo-500/60 dark:text-indigo-400/60 font-black tracking-[0.2em] text-[10px] uppercase mb-10">
-                                            {course.code}
-                                        </p>
-
-                                        <div className="mt-auto pt-6 border-t border-slate-50 dark:border-slate-800 flex justify-between items-center">
-                                            <div className="flex -space-x-3 overflow-hidden">
-                                                {[1, 2, 3].map(i => (
-                                                    <div key={i} className="inline-block h-8 w-8 rounded-xl ring-2 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[8px] font-black text-slate-400">ID</div>
-                                                ))}
-                                                <div className="inline-block h-8 w-8 rounded-xl ring-2 ring-white dark:ring-slate-900 bg-indigo-50 dark:bg-indigo-900/50 flex items-center justify-center text-[8px] font-black text-indigo-600">+45</div>
+                                        <div className="mt-auto pt-8 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center relative z-10">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex -space-x-4">
+                                                    {[1, 2, 3].map(i => (
+                                                        <div key={i} className="w-10 h-10 rounded-2xl ring-4 ring-white dark:ring-slate-910 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                                                            <div className="w-full h-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">UI</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                                    +{Math.floor(Math.random() * 50) + 20} Enrolled
+                                                </p>
                                             </div>
-                                            <div className="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-all">
-                                                <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                            <div className="w-12 h-12 rounded-[1.5rem] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-45 duration-500">
+                                                <ArrowRight size={20} />
                                             </div>
                                         </div>
                                     </div>
@@ -258,132 +369,315 @@ const FacultyCourses = () => {
                         className="space-y-8"
                     >
                         {/* Course Detail Header */}
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div className="flex items-start gap-6">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+                            <div className="flex items-start gap-8">
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-500 hover:border-indigo-500 transition-all shadow-sm"
+                                    className="p-5 rounded-2xl bg-slate-900/50 dark:bg-white/5 border border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-all shadow-xl backdrop-blur-3xl group"
                                 >
-                                    <ArrowLeft size={24} />
+                                    <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
                                 </button>
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <GraduationCap size={16} className="text-indigo-500" />
-                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{selectedCourse.code} UNIT</span>
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <GraduationCap size={16} className="text-indigo-400" />
+                                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] font-mono">{selectedCourse.code} UNIT</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedCourse.name}</h2>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest italic">Academic Management & Performance Intelligence</p>
+                                    <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic">{selectedCourse.name}</h2>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] italic opacity-60">Academic Management & Performance Intelligence</p>
                                 </div>
                             </div>
                             <button
                                 onClick={(e) => handleEditClick(e, selectedCourse)}
-                                className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-2"
+                                className="px-10 py-4 bg-white text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] active:scale-95 transition-all flex items-center gap-3 hover:bg-slate-50"
                             >
-                                <Edit size={16} /> Modify Parameters
+                                <Edit size={16} strokeWidth={2.5} /> Modify Parameters
                             </button>
                         </div>
 
-                        {/* High-Level Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <GlassCard className="p-8 flex items-center gap-6">
-                                <div className="p-4 rounded-[1.5rem] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600">
-                                    <Users2 size={24} />
+                        {/* Intelligence Layer (Stats) */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                            {/* Vertical Stats Pills */}
+                            <div className="flex gap-10 lg:col-span-2">
+                                <div className="relative group flex-1">
+                                    <div className="absolute inset-0 bg-indigo-600 rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                                    <div className="relative h-[220px] bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-[3rem] p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+                                        <Users size={32} strokeWidth={2.5} className="text-white/80" />
+                                        <div className="text-left relative z-10">
+                                            <p className="text-5xl font-black text-white leading-none tracking-tighter mb-2">{stats.totalStudents}</p>
+                                            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">{detailTab === 'roster' ? 'Cohort Size' : 'Content Consumers'}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-2xl font-black text-slate-900 dark:text-white leading-none">{stats.totalStudents}</p>
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Cohort Members</p>
+
+                                <div className="relative group flex-1">
+                                    <div className="absolute inset-0 bg-teal-500 rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                                    <div className="relative h-[220px] bg-gradient-to-br from-teal-400 to-teal-600 rounded-[3rem] p-10 flex flex-col justify-between overflow-hidden shadow-2xl">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+                                        <Activity size={32} strokeWidth={2.5} className="text-white/80" />
+                                        <div className="text-left relative z-10">
+                                            <p className="text-5xl font-black text-white leading-none tracking-tighter mb-2">{stats.avgAttendance}%</p>
+                                            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Active Engagement</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </GlassCard>
-                            <GlassCard className="p-8 flex items-center gap-6">
-                                <div className="p-4 rounded-[1.5rem] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600">
-                                    <Activity size={24} />
+                            </div>
+
+                            {/* Horizontal Intelligence Capsule */}
+                            <div className="lg:col-span-2 relative group">
+                                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-indigo-500/10 blur-3xl rounded-[3rem] opacity-50" />
+                                <div className="relative h-full bg-slate-800/80 dark:bg-white/5 border border-white/10 rounded-[3rem] p-12 flex flex-col justify-between backdrop-blur-3xl overflow-hidden shadow-2xl min-h-[220px]">
+                                    <div className="flex items-center gap-6">
+                                        <div className="p-4 rounded-2.5xl bg-white/10 text-white/40">
+                                            <FileText size={24} strokeWidth={2.5} />
+                                        </div>
+                                        <div className="text-left">
+                                            <h4 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-1 italic">Conceptual Framework</h4>
+                                            <div className="h-0.5 w-12 bg-indigo-500/40" />
+                                        </div>
+                                    </div>
+                                    <p className="text-lg font-bold text-white/80 leading-relaxed italic text-left max-w-2xl">
+                                        {selectedCourse.description || "Synthesizing comprehensive course objectives and modular learning outcomes through recursive intelligence vectors."}
+                                    </p>
                                 </div>
-                                <div>
-                                    <p className="text-2xl font-black text-slate-900 dark:text-white leading-none">{stats.avgAttendance}%</p>
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Global Engagement</p>
-                                </div>
-                            </GlassCard>
-                            <GlassCard className="p-8 lg:col-span-2 flex items-start gap-6 bg-indigo-600 text-white border-none shadow-2xl shadow-indigo-600/20">
-                                <div className="p-4 rounded-[1.5rem] bg-white/20">
-                                    <FileText size={24} />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1.5">Abstract / Description</p>
-                                    <p className="text-xs font-bold leading-relaxed opacity-90">{selectedCourse.description || "Synthesizing comprehensive course objectives and modular learning outcomes for this academic cycle."}</p>
-                                </div>
-                            </GlassCard>
+                            </div>
                         </div>
 
-                        {/* Student Roster Table */}
-                        <GlassCard className="p-0 overflow-hidden">
-                            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                                <div>
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Student Identity Directory</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Authorized Cohort Access</p>
-                                </div>
-                                <div className="relative group w-full md:w-80">
-                                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                                    <input
-                                        placeholder="Scan roster by ID or name..."
-                                        className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
-                                    />
-                                </div>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] border-b border-slate-100 dark:border-slate-800">
-                                            <th className="px-10 py-6">Biometric Identity</th>
-                                            <th className="px-10 py-6">Engagement Vectors</th>
-                                            <th className="px-10 py-6 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                                        {students.map((student, idx) => (
-                                            <motion.tr
-                                                key={student._id}
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                transition={{ delay: idx * 0.02 }}
-                                                className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group"
-                                            >
-                                                <td className="px-10 py-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-[1.2rem] bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-indigo-500 border border-slate-200 dark:border-slate-700">
-                                                            {student.user.name.split(' ').map(n => n[0]).join('')}
+                        {/* Detail Tabs */}
+                        <div className="flex gap-4 p-2 bg-slate-900/50 dark:bg-white/5 border border-white/10 rounded-[2.5rem] w-fit mx-auto md:mx-0 backdrop-blur-xl mb-12 shadow-2xl">
+                            <DetailTab
+                                icon={(props) => <User {...props} size={20} strokeWidth={2.5} />}
+                                label="Student Directory"
+                                active={detailTab === 'roster'}
+                                onClick={() => setDetailTab('roster')}
+                            />
+                            <DetailTab
+                                icon={(props) => <FileText {...props} size={20} strokeWidth={2.5} />}
+                                label="Course Materials"
+                                active={detailTab === 'materials'}
+                                onClick={() => setDetailTab('materials')}
+                            />
+                        </div>
+
+                        <AnimatePresence mode="wait">
+                            {detailTab === 'roster' ? (
+                                <motion.div
+                                    key="roster"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                >
+                                    {/* Student Roster Table */}
+                                    <GlassCard noHover className="overflow-hidden">
+                                        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                                            <div className="text-left">
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Cohort Registry</h3>
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1 italic">Authorized Academic Performance Vectors</p>
+                                            </div>
+                                            <div className="relative group w-full md:w-96">
+                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
+                                                <input
+                                                    placeholder="LOCATE STUDENT IDENTITY..."
+                                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-[2rem] text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em] border-b border-slate-100 dark:border-slate-800/50">
+                                                        <th className="px-12 py-8">Biometric Token</th>
+                                                        <th className="px-12 py-8">Communication Channels</th>
+                                                        <th className="px-12 py-8 text-right">Operational Logic</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-50 dark:divide-slate-800/30">
+                                                    {students.map((student, idx) => (
+                                                        <motion.tr
+                                                            key={student._id}
+                                                            initial={{ opacity: 0, x: -10 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: idx * 0.03 }}
+                                                            className="hover:bg-slate-50/80 dark:hover:bg-indigo-500/5 transition-all group"
+                                                        >
+                                                            <td className="px-12 py-8">
+                                                                <div className="flex items-center gap-6">
+                                                                    <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-lg font-black border border-indigo-500/20 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
+                                                                        {student.user.name.split(' ').map(n => n[0]).join('')}
+                                                                    </div>
+                                                                    <div className="text-left">
+                                                                        <p className="font-black text-slate-900 dark:text-white text-base tracking-tight mb-1.5">{student.user.name}</p>
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                                                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{student.admissionNumber}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-12 py-8">
+                                                                <div className="space-y-2.5">
+                                                                    <div className="flex items-center gap-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
+                                                                        <Mail size={14} className="text-indigo-400" /> {student.user.email}
+                                                                    </div>
+                                                                    <div className="flex items-center gap-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
+                                                                        <Phone size={14} className="text-teal-400" /> VECTORS_SYNCHRONIZED
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-12 py-8 text-right">
+                                                                <div className="flex justify-end gap-3">
+                                                                    <button className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 transition-all border border-transparent hover:border-indigo-500/20">
+                                                                        <MessageSquare size={18} />
+                                                                    </button>
+                                                                    <button className="px-8 py-4 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+                                                                        Detailed Audit
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </motion.tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </GlassCard>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="materials"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="grid grid-cols-1 lg:grid-cols-3 gap-10"
+                                >
+                                    <div className="lg:col-span-2 space-y-10">
+                                        <div className="relative group">
+                                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-indigo-500/5 blur-3xl opacity-50" />
+                                            <div className="relative bg-slate-800/80 dark:bg-white/5 border border-white/10 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl overflow-hidden min-h-[500px]">
+                                                <div className="flex justify-between items-center mb-12">
+                                                    <div className="text-left">
+                                                        <h3 className="text-3xl font-black text-white tracking-tighter italic">Knowledge Repository</h3>
+                                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mt-2 italic">Modular Learning Artifacts</p>
+                                                    </div>
+                                                    <div className="p-6 rounded-3xl bg-indigo-600 text-white shadow-[0_20px_40px_-10px_rgba(79,70,229,0.4)] hover:scale-110 transition-transform cursor-pointer">
+                                                        <Zap size={28} strokeWidth={2.5} />
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-6">
+                                                    {selectedCourse.materials && selectedCourse.materials.length > 0 ? (
+                                                        selectedCourse.materials.map((material, idx) => (
+                                                            <motion.div
+                                                                key={material._id}
+                                                                initial={{ opacity: 0, x: -20 }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                transition={{ delay: idx * 0.1 }}
+                                                                className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-between group hover:border-indigo-500/50 transition-all duration-500 hover:bg-white/10"
+                                                            >
+                                                                <div className="flex items-center gap-6">
+                                                                    <div className="p-5 rounded-[1.5rem] bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:scale-110">
+                                                                        <FileText size={28} strokeWidth={2.5} />
+                                                                    </div>
+                                                                    <div className="text-left">
+                                                                        <p className="font-black text-white text-xl tracking-tight mb-1">{material.title}</p>
+                                                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest flex items-center gap-2">
+                                                                            <Calendar size={12} /> {new Date(material.uploadedAt).toLocaleDateString()}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex gap-4">
+                                                                    <a
+                                                                        href={`http://localhost:5000${material.fileUrl}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="p-5 rounded-2xl bg-white/5 text-white/40 hover:text-white transition-all border border-white/5 hover:border-white/20"
+                                                                    >
+                                                                        <Download size={20} strokeWidth={2.5} />
+                                                                    </a>
+                                                                    <button
+                                                                        onClick={() => handleDeleteMaterial(material._id)}
+                                                                        className="p-5 rounded-2xl bg-white/5 text-white/40 hover:text-rose-500 transition-all border border-white/5 hover:border-rose-500/20"
+                                                                    >
+                                                                        <Trash2 size={20} strokeWidth={2.5} />
+                                                                    </button>
+                                                                </div>
+                                                            </motion.div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="py-32 border-4 border-dashed border-white/5 rounded-[4rem] text-center bg-white/[0.02] flex flex-col items-center justify-center space-y-8 group/empty hover:border-indigo-500/20 transition-all duration-700">
+                                                            <div className="relative">
+                                                                <div className="absolute inset-0 bg-indigo-500 blur-3xl opacity-0 group-hover/empty:opacity-20 transition-opacity" />
+                                                                <Sparkles size={80} strokeWidth={1} className="text-white/10 group-hover/empty:text-indigo-400 group-hover/empty:scale-110 transition-all duration-1000 animate-pulse" />
+                                                            </div>
+                                                            <p className="text-xl font-black text-white/10 uppercase tracking-[0.5em] group-hover/empty:text-white/20 transition-colors">Neural Repository Empty</p>
                                                         </div>
-                                                        <div>
-                                                            <p className="font-black text-slate-900 dark:text-white text-sm tracking-tight leading-none mb-1.5">{student.user.name}</p>
-                                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{student.admissionNumber}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-10">
+                                        <div className="relative group">
+                                            <div className="absolute inset-0 bg-indigo-500/5 rounded-[3rem] blur-3xl opacity-50" />
+                                            <div className="relative bg-slate-800/60 dark:bg-white/5 border border-white/10 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl">
+                                                <h3 className="text-2xl font-black text-white mb-10 tracking-tighter text-left italic">Ingest New Data</h3>
+                                                <form onSubmit={handleUploadMaterial} className="space-y-10">
+                                                    <div className="space-y-4">
+                                                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] px-4 block text-left italic">Asset Descriptor</label>
+                                                        <input
+                                                            type="text"
+                                                            value={materialTitle}
+                                                            onChange={(e) => setMaterialTitle(e.target.value)}
+                                                            placeholder="e.g. Theoretical Framework - Phase 1"
+                                                            className="w-full px-10 py-6 bg-white/[0.03] border border-white/10 rounded-[2.5rem] text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white shadow-inner placeholder:text-white/10"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] px-4 block text-left italic">Temporal Payload</label>
+                                                        <div className="relative">
+                                                            <input
+                                                                type="file"
+                                                                onChange={(e) => setMaterialFile(e.target.files[0])}
+                                                                className="hidden"
+                                                                id="material-upload"
+                                                                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,image/*"
+                                                            />
+                                                            <label
+                                                                htmlFor="material-upload"
+                                                                className="w-full px-10 py-16 bg-white/[0.01] border-4 border-dashed border-white/5 rounded-[3.5rem] flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500/40 transition-all group/upload overflow-hidden"
+                                                            >
+                                                                <div className="relative mb-6">
+                                                                    <div className="absolute inset-0 bg-indigo-500 blur-2xl opacity-0 group-hover/upload:opacity-20 transition-opacity" />
+                                                                    <FilePlus size={56} strokeWidth={1.5} className="text-white/5 group-hover/upload:text-indigo-400 group-hover/upload:scale-110 transition-all duration-700 relative" />
+                                                                </div>
+                                                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] text-center px-8 line-clamp-2 italic group-hover/upload:text-white/40 transition-colors">
+                                                                    {materialFile ? materialFile.name : "SYNCHRONIZE TECHNICAL ASSETS"}
+                                                                </span>
+                                                            </label>
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td className="px-10 py-6">
-                                                    <div className="flex flex-col gap-2">
-                                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                                            <Mail size={12} className="text-indigo-500" /> {student.user.email}
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                                            <Phone size={12} className="text-emerald-500" /> +1 (800) LOG-CORE
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-10 py-6 text-right">
-                                                    <div className="flex justify-end gap-2">
-                                                        <button className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 transition-all">
-                                                            <MessageSquare size={16} />
-                                                        </button>
-                                                        <button className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all">
-                                                            Inspect Profile
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </motion.tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </GlassCard>
+                                                    <button
+                                                        type="submit"
+                                                        disabled={uploading}
+                                                        className="w-full py-8 bg-indigo-600 text-white rounded-[3rem] text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_25px_50px_-15px_rgba(79,70,229,0.5)] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group/btn overflow-hidden relative"
+                                                    >
+                                                        <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
+                                                        {uploading ? (
+                                                            "TRANSMITTING..."
+                                                        ) : (
+                                                            <><Zap size={20} strokeWidth={2.5} className="animate-pulse" /> FINALIZE INGESTION</>
+                                                        )}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 )}
 

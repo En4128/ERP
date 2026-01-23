@@ -185,7 +185,6 @@ const SidebarComponent = ({ role }) => {
             { name: 'Messages', path: '/faculty/chat', icon: <MessageSquare size={20} /> },
             { name: 'Exam Schedule', path: '/faculty/exams', icon: <Clock size={20} /> },
             { name: 'Marks Management', path: '/faculty/marks', icon: <Award size={20} /> },
-            { name: 'Documents', path: '/faculty/documents', icon: <File size={20} /> },
             { name: 'Leave Requests', path: '/faculty/leave-requests', icon: <Briefcase size={20} /> },
             { name: 'Notifications', path: '/faculty/notifications', icon: <Bell size={20} /> },
             { name: 'My Profile', path: '/faculty/profile', icon: <UserCircle size={20} /> },

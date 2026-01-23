@@ -47,7 +47,21 @@ const courseSchema = new mongoose.Schema({
     assignedFaculty: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Faculty'
-    }
+    },
+    materials: [{
+        title: {
+            type: String,
+            required: true
+        },
+        fileUrl: {
+            type: String,
+            required: true
+        },
+        uploadedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Course', courseSchema);
