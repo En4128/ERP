@@ -22,6 +22,17 @@ const userSchema = new mongoose.Schema({
     profileImage: {
         type: String, // URL or path
         default: ''
+    },
+    // New Profile Fields
+    phone: { type: String },
+    address: { type: String },
+    gender: { type: String, enum: ['Male', 'Female', 'Other', ''] },
+    dob: { type: Date },
+    bio: { type: String },
+    socialLinks: {
+        linkedin: { type: String },
+        github: { type: String },
+        website: { type: String }
     }
 }, { timestamps: true });
 

@@ -81,11 +81,7 @@ const FacultyProfile = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({
-        department: '',
-        designation: '',
-        employeeId: ''
-    });
+    const [editFormData, setEditFormData] = useState({});
 
     useEffect(() => {
         fetchProfile();
@@ -101,7 +97,16 @@ const FacultyProfile = () => {
             setEditFormData({
                 department: res.data.department,
                 designation: res.data.designation,
-                employeeId: res.data.employeeId
+                employeeId: res.data.employeeId,
+                qualifications: res.data.qualifications || [],
+                experience: res.data.experience || '',
+                joiningDate: res.data.joiningDate ? new Date(res.data.joiningDate).toISOString().split('T')[0] : '',
+                phone: res.data.user.phone || '',
+                address: res.data.user.address || '',
+                gender: res.data.user.gender || '',
+                dob: res.data.user.dob ? new Date(res.data.user.dob).toISOString().split('T')[0] : '',
+                bio: res.data.user.bio || '',
+                socialLinks: res.data.user.socialLinks || { linkedin: '', github: '', website: '' }
             });
             setLoading(false);
         } catch (error) {
@@ -270,7 +275,8 @@ const FacultyProfile = () => {
                                     name="designation"
                                     onChange={(e) => setEditFormData({ ...editFormData, designation: e.target.value })}
                                 />
-                                <DetailItem icon={Calendar} label="Commencement" value="August 24, 2021" delay={0.4} />
+                                <DetailItem icon={Calendar} label="Commencement" value={editing ? editFormData.joiningDate : (profile.joiningDate ? new Date(profile.joiningDate).toLocaleDateString() : 'Not Set')} delay={0.4} editing={editing} name="joiningDate" type="date" onChange={(e) => setEditFormData({ ...editFormData, joiningDate: e.target.value })} />
+                                <DetailItem icon={Briefcase} label="Experience (Years)" value={editing ? editFormData.experience : profile.experience} delay={0.45} editing={editing} name="experience" type="number" onChange={(e) => setEditFormData({ ...editFormData, experience: e.target.value })} />
                             </div>
                         </GlassCard>
 
@@ -278,19 +284,30 @@ const FacultyProfile = () => {
                             <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mb-10 border-b border-slate-50 dark:border-slate-800 pb-6">Synchronization Channels</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 <DetailItem icon={Mail} label="Secure Relay" value={profile.user.email} delay={0.5} />
-                                <DetailItem icon={Phone} label="Voice Vector" value="+91 98765 43210" delay={0.6} />
-                                <DetailItem icon={MapPin} label="Physical Locus" value="Main Campus, Block B, Room 402" className="md:col-span-2" delay={0.7} />
+                                <DetailItem icon={Phone} label="Voice Vector" value={editing ? editFormData.phone : profile.user.phone} delay={0.6} editing={editing} name="phone" onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })} />
+                                <div className="md:col-span-2">
+                                    <DetailItem icon={MapPin} label="Physical Locus" value={editing ? editFormData.address : profile.user.address} delay={0.7} editing={editing} name="address" onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })} />
+                                </div>
                             </div>
                         </GlassCard>
 
                         <GlassCard className="p-10 relative overflow-hidden bg-slate-900 text-white border-none shadow-2xl shadow-indigo-900/20">
                             <div className="absolute top-[-50%] left-[-10%] w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px]" />
                             <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 relative z-10">Abstract / Biography</h4>
-                            <p className="text-lg font-bold leading-relaxed text-indigo-100/90 italic relative z-10 relative">
-                                <span className="text-4xl text-indigo-500 absolute -top-4 -left-6 opacity-30 select-none">"</span>
-                                Dedicated educator with over 8 years of experience in higher education. Specialized in Computer Science with a focus on Algorithm design and Web Technologies. Committed to fostering an engaging learning environment for students.
-                                <span className="text-4xl text-indigo-500 absolute -bottom-8 -right-4 opacity-30 select-none">"</span>
-                            </p>
+                            {editing ? (
+                                <textarea
+                                    value={editFormData.bio}
+                                    onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
+                                    className="w-full h-32 bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white placeholder-slate-500 focus:ring-1 focus:ring-indigo-500 outline-none relative z-10"
+                                    placeholder="Enter your professional bio..."
+                                />
+                            ) : (
+                                <p className="text-lg font-bold leading-relaxed text-indigo-100/90 italic relative z-10 relative">
+                                    <span className="text-4xl text-indigo-500 absolute -top-4 -left-6 opacity-30 select-none">"</span>
+                                    {profile.user.bio || "No biography available."}
+                                    <span className="text-4xl text-indigo-500 absolute -bottom-8 -right-4 opacity-30 select-none">"</span>
+                                </p>
+                            )}
                         </GlassCard>
                     </div>
 

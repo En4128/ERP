@@ -22,6 +22,10 @@ const studentSchema = new mongoose.Schema({
     section: {
         type: String
     },
+    // New Fields
+    batch: { type: String }, // e.g., "2023-2027"
+    guardianName: { type: String },
+    guardianPhone: { type: String },
     // References for relational data
     enrolledCourses: [{
         type: mongoose.Schema.Types.ObjectId,

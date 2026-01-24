@@ -165,6 +165,7 @@ const SidebarComponent = ({ role }) => {
             { name: 'Dashboard', path: '/student', icon: <LayoutDashboard size={20} /> },
             { name: 'Attendance', path: '/student/attendance', icon: <CheckSquare size={20} /> },
             { name: 'Courses', path: '/student/courses', icon: <FileText size={20} /> },
+            { name: 'Assignments', path: '/student/assignments', icon: <FileText size={20} /> },
             { name: 'Timetable', path: '/student/timetable', icon: <Calendar size={20} /> },
             { name: 'Messages', path: '/student/chat', icon: <MessageSquare size={20} /> },
             { name: 'Exam Schedule', path: '/student/exams', icon: <Clock size={20} /> },
@@ -180,6 +181,7 @@ const SidebarComponent = ({ role }) => {
             { name: 'Dashboard', path: '/faculty', icon: <LayoutDashboard size={20} /> },
             { name: 'Attendance', path: '/faculty/attendance', icon: <CheckSquare size={20} /> },
             { name: 'My Courses', path: '/faculty/courses', icon: <FileText size={20} /> },
+            { name: 'Assignments', path: '/faculty/assignments', icon: <FileText size={20} /> },
             { name: 'Manage Students', path: '/faculty/students', icon: <Users size={20} /> },
             { name: 'Timetable', path: '/faculty/timetable', icon: <Calendar size={20} /> },
             { name: 'Messages', path: '/faculty/chat', icon: <MessageSquare size={20} /> },
@@ -251,24 +253,7 @@ const SidebarComponent = ({ role }) => {
                             icon: <MessageSquare size={20} />
                         }}
                     />
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all duration-200 group/logout overflow-hidden w-full"
-                    >
-                        <LogOut size={20} className="flex-shrink-0 group-hover/logout:rotate-12 transition-transform" />
-                        <AnimatePresence mode="wait">
-                            {open && (
-                                <motion.span
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    className="text-sm font-bold whitespace-nowrap"
-                                >
-                                    Sign Out
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </button>
+
 
                     {/* Profile Minified */}
                     <div className="mt-2 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 px-2 overflow-hidden">

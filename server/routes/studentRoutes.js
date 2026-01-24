@@ -5,6 +5,7 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.get('/profile', protect, authorize('student'), getStudentProfile);
+router.put('/profile', protect, authorize('student'), require('../controllers/studentController').updateStudentProfile);
 router.get('/dashboard-stats', protect, authorize('student'), getDashboardStats);
 router.get('/attendance', protect, authorize('student'), getAttendanceDetails);
 router.get('/faculty', protect, authorize('student'), getStudentFaculty);

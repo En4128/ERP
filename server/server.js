@@ -43,6 +43,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/placement', require('./routes/placementRoutes'));
 app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/timetable', require('./routes/timetableRoutes'));
+app.use('/api/assignments', require('./routes/assignmentRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 

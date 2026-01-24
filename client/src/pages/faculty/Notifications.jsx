@@ -139,7 +139,6 @@ const FacultyNotifications = () => {
                         </motion.div>
                         <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
                             Broadcast <br />
-                            <span className="text-indigo-600 dark:text-indigo-400">Command</span>
                         </h1>
                     </div>
 
@@ -260,7 +259,7 @@ const FacultyNotifications = () => {
 
                                     <form onSubmit={handleCreateNotice} className="space-y-6">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Relay Objective</label>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Subject</label>
                                             <input
                                                 required
                                                 value={newNotice.title}
@@ -270,18 +269,18 @@ const FacultyNotifications = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Vanguard Target</label>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Target Audience</label>
                                             <select
                                                 value={newNotice.targetAudience}
                                                 onChange={(e) => setNewNotice({ ...newNotice, targetAudience: e.target.value })}
                                                 className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-500 dark:text-white appearance-none cursor-pointer"
                                             >
-                                                <option value="student">Cohort Members</option>
-                                                <option value="faculty">Fellow Faculty</option>
+                                                <option value="student">Students</option>
+                                                <option value="faculty">Faculty</option>
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Core Content</label>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Content</label>
                                             <textarea
                                                 required
                                                 rows="6"
@@ -298,14 +297,14 @@ const FacultyNotifications = () => {
                                                 onClick={() => setShowCreate(false)}
                                                 className="flex-1 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-200 transition-all"
                                             >
-                                                Abort
+                                                Cancel
                                             </button>
                                             <button
                                                 type="submit"
                                                 disabled={saving}
                                                 className="flex-[2] py-4 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-95 flex items-center justify-center gap-2"
                                             >
-                                                {saving ? 'Transmitting...' : <><Send size={14} /> Transmit</>}
+                                                {saving ? 'Transmitting...' : <><Send size={14} /> Send</>}
                                             </button>
                                         </div>
                                     </form>
@@ -335,15 +334,7 @@ const FacultyNotifications = () => {
                             )}
                         </AnimatePresence>
 
-                        <GlassCard className="p-8 flex items-center gap-5 border-emerald-500/20 bg-emerald-500/[0.02]">
-                            <div className="p-4 rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
-                                <ShieldCheck size={24} />
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-black text-slate-900 dark:text-emerald-200 tracking-tight">Relay Secured</h4>
-                                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">End-to-End Encryption Active</p>
-                            </div>
-                        </GlassCard>
+
                     </div>
                 </div>
 

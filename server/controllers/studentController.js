@@ -24,6 +24,41 @@ exports.getStudentProfile = async (req, res) => {
     }
 };
 
+exports.updateStudentProfile = async (req, res) => {
+    try {
+        const {
+            phone, address, gender, dob, bio, socialLinks,
+            batch, guardianName, guardianPhone
+        } = req.body;
+
+        const student = await Student.findOne({ user: req.user.id });
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        // Update Student specific fields
+        if (batch) student.batch = batch;
+        if (guardianName) student.guardianName = guardianName;
+        if (guardianPhone) student.guardianPhone = guardianPhone;
+
+        await student.save();
+
+        // Update User common fields
+        const userUpdate = {};
+        if (phone) userUpdate.phone = phone;
+        if (address) userUpdate.address = address;
+        if (gender) userUpdate.gender = gender;
+        if (dob) userUpdate.dob = dob;
+        if (bio) userUpdate.bio = bio;
+        if (socialLinks) userUpdate.socialLinks = socialLinks;
+
+        await require('../models/User').findByIdAndUpdate(req.user.id, userUpdate);
+
+        const updatedStudent = await Student.findOne({ user: req.user.id }).populate('user', '-password');
+        res.json(updatedStudent);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.getDashboardStats = async (req, res) => {
     try {
         const student = await Student.findOne({ user: req.user.id }).populate('enrolledCourses');

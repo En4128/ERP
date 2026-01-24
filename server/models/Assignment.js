@@ -23,6 +23,14 @@ const assignmentSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    points: {
+        type: Number,
+        required: true,
+        default: 100
+    },
+    fileUrl: {
+        type: String
+    },
     status: {
         type: String,
         enum: ['active', 'closed'],

@@ -19,6 +19,10 @@ const facultySchema = new mongoose.Schema({
         type: String, // e.g., Professor, Assistant Professor
         required: true
     },
+    // New Fields
+    qualifications: [{ type: String }], // e.g., ["PhD in CS", "MTech"]
+    experience: { type: Number }, // in years
+    joiningDate: { type: Date },
     // References
     assignedCourses: [{
         type: mongoose.Schema.Types.ObjectId,

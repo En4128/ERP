@@ -69,33 +69,40 @@ const ChatbotWidget = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="pointer-events-auto bg-white dark:bg-slate-900 w-96 h-[500px] rounded-2xl shadow-2xl flex flex-col border border-gray-100 dark:border-slate-700 overflow-hidden mb-4"
+                        className="pointer-events-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl w-[380px] h-[600px] rounded-[32px] shadow-2xl flex flex-col border border-white/20 dark:border-slate-700/50 overflow-hidden mb-6"
                     >
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white p-4 flex justify-between items-center shadow-md relative overflow-hidden">
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                            <div className="flex items-center space-x-3 relative z-10">
-                                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/20 shadow-inner">
-                                    <Bot size={20} className="text-white" />
+                        <div className="relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-5 flex justify-between items-center border-b border-white/20 dark:border-slate-700/50">
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 dark:from-indigo-400 dark:to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/20 dark:shadow-cyan-500/30">
+                                        <div className="w-full h-full rounded-[14px] bg-white dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                                            <img src="/icons8-chat-bot.gif" alt="Bot" className="w-full h-full object-cover dark:filter dark:brightness-110 dark:hue-rotate-15" />
+                                        </div>
+                                    </div>
+                                    <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+                                    </span>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-base leading-tight">Campus Assistant</h3>
-                                    <div className="flex items-center space-x-1.5 opacity-90">
-                                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                                        <span className="text-xs font-medium">Online</span>
-                                    </div>
+                                    <h3 className="font-black text-lg text-slate-800 dark:text-white tracking-tight">Campus AI</h3>
+                                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 uppercase tracking-wider">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        Online
+                                    </p>
                                 </div>
                             </div>
                             <button
                                 onClick={toggleChat}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors relative z-10"
+                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-colors text-slate-500 dark:text-slate-400"
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-slate-800/50 scroll-smooth">
+                        <div className="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth bg-transparent">
                             {messages.map((msg, idx) => (
                                 <motion.div
                                     key={idx}
@@ -103,47 +110,38 @@ const ChatbotWidget = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`flex items-end max-w-[80%] space-x-2 ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 ${msg.sender === 'user'
-                                            ? 'bg-purple-100 border-purple-200 dark:bg-purple-900/30 dark:border-purple-800'
-                                            : 'bg-indigo-100 border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-800'
-                                            }`}>
-                                            {msg.sender === 'user' ? (
-                                                <User size={14} className="text-purple-600 dark:text-purple-400" />
-                                            ) : (
-                                                <Bot size={14} className="text-indigo-600 dark:text-indigo-400" />
-                                            )}
-                                        </div>
+                                    <div className={`flex items-end max-w-[85%] gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                        {msg.sender === 'bot' && (
+                                            <div className="w-8 h-8 rounded-full overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-1 flex-shrink-0">
+                                                <img src="/icons8-chat-bot.gif" alt="Bot" className="w-full h-full object-cover" />
+                                            </div>
+                                        )}
 
-                                        <div className={`px-4 py-2.5 rounded-2xl text-sm shadow-sm leading-relaxed ${msg.sender === 'user'
-                                            ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-none'
+                                        <div className={`p-4 rounded-2xl text-[13px] leading-relaxed shadow-sm backdrop-blur-sm ${msg.sender === 'user'
+                                            ? 'bg-indigo-600 text-white rounded-br-none shadow-indigo-500/20'
                                             : msg.isError
-                                                ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 rounded-bl-none'
-                                                : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 border border-gray-100 dark:border-slate-700 rounded-bl-none'
+                                                ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 rounded-bl-none'
+                                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700/50 rounded-bl-none shadow-slate-200/50 dark:shadow-none'
                                             }`}>
                                             {msg.text}
-                                            <p className={`text-[10px] mt-1 opacity-70 ${msg.sender === 'user' ? 'text-indigo-100' : 'text-gray-400'}`}>
+                                            <div className={`text-[9px] mt-2 font-medium opacity-60 ${msg.sender === 'user' ? 'text-indigo-100' : 'text-slate-400'}`}>
                                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
                             ))}
 
                             {isTyping && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="flex justify-start"
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border-2 border-indigo-200 dark:border-indigo-800 flex items-center justify-center">
-                                            <Bot size={14} className="text-indigo-600 dark:text-indigo-400" />
+                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-1">
+                                            <img src="/icons8-chat-bot.gif" alt="Bot" className="w-full h-full object-cover" />
                                         </div>
-                                        <div className="bg-white dark:bg-slate-800 px-4 py-3 rounded-2xl rounded-bl-none border border-gray-100 dark:border-slate-700 shadow-sm flex space-x-1">
-                                            <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></span>
-                                            <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150"></span>
-                                            <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-300"></span>
+                                        <div className="bg-white dark:bg-slate-800 px-4 py-3 rounded-2xl rounded-bl-none border border-slate-100 dark:border-slate-700/50 shadow-sm flex gap-1">
+                                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></span>
+                                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce delay-150"></span>
+                                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce delay-300"></span>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -152,12 +150,12 @@ const ChatbotWidget = () => {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-700">
-                            <div className="flex items-center space-x-2 bg-gray-50 dark:bg-slate-800 p-1.5 rounded-full border border-gray-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-indigo-100 dark:focus-within:ring-indigo-900 transition-shadow">
+                        <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border-t border-white/20 dark:border-slate-700/50">
+                            <div className="relative flex items-center">
                                 <input
                                     type="text"
-                                    className="flex-1 bg-transparent border-none px-4 py-2 text-sm focus:outline-none focus:ring-0 text-gray-700 dark:text-white placeholder-gray-400"
-                                    placeholder="Type your message..."
+                                    className="w-full bg-slate-100/50 dark:bg-slate-800/50 border-none px-6 py-4 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all pr-14 backdrop-blur-sm"
+                                    placeholder="Ask anything..."
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
@@ -165,17 +163,18 @@ const ChatbotWidget = () => {
                                 <button
                                     onClick={handleSend}
                                     disabled={!input.trim()}
-                                    className={`p-2 rounded-full transition-all duration-300 ${input.trim()
-                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transform hover:scale-105'
-                                        : 'bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed'
+                                    className={`absolute right-2 p-2 rounded-xl transition-all duration-300 ${input.trim()
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95'
+                                        : 'bg-transparent text-slate-400 cursor-not-allowed'
                                         }`}
                                 >
                                     <Send size={18} className={input.trim() ? "translate-x-0.5" : ""} />
                                 </button>
                             </div>
-                            <div className="text-center mt-2">
-                                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-medium flex items-center justify-center">
-                                    <Sparkles size={10} className="mr-1 text-amber-400" /> Powered by Campus AI
+                            <div className="text-center mt-3">
+                                <p className="text-[10px] text-slate-400 flex items-center justify-center gap-1.5">
+                                    <Sparkles size={10} className="text-indigo-500" />
+                                    <span>Powered by <strong>Campus GenAI</strong></span>
                                 </p>
                             </div>
                         </div>
@@ -183,30 +182,28 @@ const ChatbotWidget = () => {
                 )}
             </AnimatePresence>
 
-            {/* Toggle Button */}
+            {/* Floating Toggle Button */}
             <motion.button
                 layout
                 onClick={toggleChat}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className={`pointer-events-auto p-4 rounded-full shadow-2xl transition-all duration-300 relative group overflow-hidden ${isChatOpen
-                    ? 'bg-gray-100 text-gray-600 rotate-90 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-600'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
-                    }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="pointer-events-auto h-16 w-16 rounded-full shadow-2xl overflow-hidden relative group"
             >
-                {/* Button Glow Effect */}
-                {!isChatOpen && (
-                    <div className="absolute inset-0 bg-white/20 blur-lg rounded-full animate-pulse-slow"></div>
-                )}
-
-                <div className="relative z-10">
-                    {isChatOpen ? <X size={24} /> : <MessageSquare size={24} className="fill-current" />}
+                <div className={`absolute inset-0 transition-all duration-500 ${isChatOpen
+                    ? 'bg-slate-900 dark:bg-slate-800 rotate-180'
+                    : 'bg-white dark:bg-slate-800 border-2 border-white/20'
+                    }`}>
+                    {isChatOpen ? (
+                        <div className="w-full h-full flex items-center justify-center text-white">
+                            <X size={28} />
+                        </div>
+                    ) : (
+                        <div className="w-full h-full p-0">
+                            <img src="/icons8-chat-bot.gif" alt="Chat" className="w-full h-full object-cover dark:filter dark:brightness-110 dark:hue-rotate-15" />
+                        </div>
+                    )}
                 </div>
-
-                {/* Badge for notifications if needed */}
-                {!isChatOpen && (
-                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
-                )}
             </motion.button>
         </div>
     );

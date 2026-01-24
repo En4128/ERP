@@ -16,13 +16,15 @@ import StudentFees from './pages/student/Fees';
 import StudentLibrary from './pages/student/Library';
 import StudentLeave from './pages/student/Leave';
 import StudentSupport from './pages/student/Support';
-import StudentNotifications from './pages/student/Notifications';
 import StudentProfile from './pages/student/Profile';
+import StudentAssignments from './pages/student/Assignments';
+import StudentNotifications from './pages/student/Notifications';
 import FacultyDashboard from './pages/faculty/Dashboard';
 import FacultyAttendance from './pages/faculty/Attendance';
 import FacultyMarks from './pages/faculty/Marks';
 import FacultyCourses from './pages/faculty/Courses';
 import FacultyProfile from './pages/faculty/Profile';
+import FacultyAssignments from './pages/faculty/Assignments';
 import FacultyTimetable from './pages/faculty/Timetable';
 import FacultyDocuments from './pages/faculty/Documents';
 import FacultyNotifications from './pages/faculty/Notifications';
@@ -74,6 +76,7 @@ function App() {
             <Route path="/student/exams" element={<ExamSchedule role="student" />} />
             <Route path="/student/support" element={<StudentSupport />} />
             <Route path="/student/notifications" element={<StudentNotifications />} />
+            <Route path="/student/assignments" element={<StudentAssignments />} />
             <Route path="/student/profile" element={<StudentProfile />} />
             <Route path="/student/chat" element={<Chat />} />
 
@@ -83,6 +86,7 @@ function App() {
             <Route path="/faculty/courses" element={<FacultyCourses />} />
             <Route path="/faculty/timetable" element={<FacultyTimetable />} />
             <Route path="/faculty/marks" element={<FacultyMarks />} />
+            <Route path="/faculty/assignments" element={<FacultyAssignments />} />
             <Route path="/faculty/documents" element={<FacultyDocuments />} />
             <Route path="/faculty/students" element={<FacultyManageStudents />} />
             <Route path="/faculty/notifications" element={<FacultyNotifications />} />

@@ -441,21 +441,39 @@ exports.getFacultyProfile = async (req, res) => {
 // @access  Private (Faculty)
 exports.updateFacultyProfile = async (req, res) => {
     try {
-        const { department, designation, employeeId } = req.body;
-        const faculty = await Faculty.findOne({ user: req.user.id });
+        const {
+            department, designation, employeeId,
+            qualifications, experience, joiningDate,
+            phone, address, gender, dob, bio, socialLinks
+        } = req.body;
 
+        const faculty = await Faculty.findOne({ user: req.user.id });
         if (!faculty) {
             return res.status(404).json({ message: 'Faculty profile not found' });
         }
 
-        // Only update fields if they are provided
+        // Update Faculty specific fields
         if (department) faculty.department = department;
         if (designation) faculty.designation = designation;
         if (employeeId) faculty.employeeId = employeeId;
+        if (qualifications) faculty.qualifications = qualifications;
+        if (experience) faculty.experience = experience;
+        if (joiningDate) faculty.joiningDate = joiningDate;
 
         await faculty.save();
 
-        const updatedProfile = await Faculty.findOne({ user: req.user.id }).populate('user', 'name email');
+        // Update User common fields
+        const userUpdate = {};
+        if (phone) userUpdate.phone = phone;
+        if (address) userUpdate.address = address;
+        if (gender) userUpdate.gender = gender;
+        if (dob) userUpdate.dob = dob;
+        if (bio) userUpdate.bio = bio;
+        if (socialLinks) userUpdate.socialLinks = socialLinks;
+
+        await require('../models/User').findByIdAndUpdate(req.user.id, userUpdate);
+
+        const updatedProfile = await Faculty.findOne({ user: req.user.id }).populate('user'); // populate full user
         res.json(updatedProfile);
     } catch (error) {
         res.status(500).json({ message: error.message });

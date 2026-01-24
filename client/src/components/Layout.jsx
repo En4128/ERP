@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ChatbotWidget from './ChatbotWidget';
 import NotificationBell from './NotificationBell';
-import { Search, Menu, Moon, Sun } from 'lucide-react';
+import { Search, Menu, Moon, Sun, Settings, LogOut, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
 const Layout = ({ children, role }) => {
@@ -13,6 +14,7 @@ const Layout = ({ children, role }) => {
     });
 
     const [userName, setUserName] = useState(localStorage.getItem('userName') || 'User');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     useEffect(() => {
         if (isDarkMode) {
@@ -101,14 +103,59 @@ const Layout = ({ children, role }) => {
                             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
 
-                        <NotificationBell />
+                        <NotificationBell role={role} />
 
-                        <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 p-1.5 rounded-full transition-colors pr-3" onClick={handleLogout}>
-                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt="Profile" className="w-9 h-9 rounded-full shadow-sm border-2 border-white dark:border-slate-700 ring-2 ring-gray-100 dark:ring-slate-800" />
-                            <div className="hidden md:block text-right">
-                                <p className="text-sm font-semibold text-gray-700 dark:text-slate-200 leading-tight">{user.name}</p>
-                                <p className="text-xs text-gray-400 dark:text-slate-500 font-medium">{user.role}</p>
-                            </div>
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 p-1.5 rounded-full transition-colors pr-3 outline-none"
+                            >
+                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt="Profile" className="w-9 h-9 rounded-full shadow-sm border-2 border-white dark:border-slate-700 ring-2 ring-gray-100 dark:ring-slate-800" />
+                                <div className="hidden md:block text-right">
+                                    <p className="text-sm font-semibold text-gray-700 dark:text-slate-200 leading-tight">{user.name}</p>
+                                    <p className="text-xs text-gray-400 dark:text-slate-500 font-medium">{user.role}</p>
+                                </div>
+                            </button>
+
+                            <AnimatePresence>
+                                {isDropdownOpen && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setIsDropdownOpen(false)}
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 z-50 overflow-hidden"
+                                        >
+                                            <div className="p-4 border-b border-gray-100 dark:border-slate-800">
+                                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
+                                                <p className="text-xs text-slate-500 truncate">{user.role}</p>
+                                            </div>
+                                            <div className="p-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setIsDropdownOpen(false);
+                                                        navigate(user.role === 'faculty' ? '/faculty/profile' : '/student/profile');
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                                                >
+                                                    <Settings size={16} /> Settings
+                                                </button>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors"
+                                                >
+                                                    <LogOut size={16} /> Logout
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </header>

@@ -2,15 +2,26 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure upload directory exists
-const uploadDir = 'uploads/materials';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Ensure upload directories exist
+const folders = ['uploads/materials', 'uploads/assignments', 'uploads/submissions'];
+folders.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, uploadDir);
+        let dest = 'uploads/materials';
+        const url = req.originalUrl || req.url;
+        if (url.includes('assignments')) {
+            if (url.includes('submit')) {
+                dest = 'uploads/submissions';
+            } else {
+                dest = 'uploads/assignments';
+            }
+        }
+        cb(null, dest);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
