@@ -31,7 +31,21 @@ const ChatbotWidget = () => {
         setIsTyping(true);
 
         try {
-            const res = await axios.post('http://localhost:5000/api/chatbot', { message: userQuery });
+            // Get auth token from localStorage
+            const token = localStorage.getItem('token');
+
+            // Send request with optional authentication
+            const config = token ? {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            } : {};
+
+            const res = await axios.post('http://localhost:5000/api/chatbot',
+                { message: userQuery },
+                config
+            );
+
             setMessages(prev => [...prev, { text: res.data.text, sender: 'bot', timestamp: new Date() }]);
         } catch (error) {
             console.error('Chatbot error:', error);

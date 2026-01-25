@@ -82,7 +82,7 @@ const MobileSidebar = ({ className, children, ...props }) => {
                 <div className="p-2 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-500/20">
                     <LayoutDashboard className="text-white w-5 h-5" />
                 </div>
-                <h1 className="font-black text-slate-800 dark:text-white tracking-tight uppercase text-xs">Campus Connect</h1>
+                <h1 className="font-black text-slate-800 dark:text-white tracking-tight uppercase text-xs">EduNex</h1>
             </div>
             <div className="flex justify-end z-[60]">
                 <Menu
@@ -229,7 +229,7 @@ const SidebarComponent = ({ role }) => {
                                     exit={{ opacity: 0, x: -10 }}
                                     className="flex flex-col overflow-hidden whitespace-nowrap"
                                 >
-                                    <h2 className="font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight text-sm">Campus Connect</h2>
+                                    <h2 className="font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight text-sm">EduNex</h2>
                                     <p className="text-[10px] text-indigo-500 font-black tracking-widest uppercase">{role} PORTAL</p>
                                 </motion.div>
                             )}

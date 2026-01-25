@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import PageLoader from './components/PageLoader';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import StudentDashboard from './pages/student/Dashboard';
@@ -59,7 +60,7 @@ function App() {
 
         {!appLoading && (
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
 
             <Route path="/student" element={<StudentDashboard />} />
