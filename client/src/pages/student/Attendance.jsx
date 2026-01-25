@@ -29,6 +29,7 @@ import {
 } from 'chart.js';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import QRScanner from '../../components/QRScanner';
 
 ChartJS.register(
     CategoryScale,
@@ -264,7 +265,7 @@ export default function AttendancePage() {
                         <p className="text-slate-600 dark:text-slate-400 mt-1">Track your daily progress and maintain eligibility.</p>
                     </div>
                     <div className="flex space-x-2 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl">
-                        {['overview', 'reports', 'heatmap'].map((tab) => (
+                        {['overview', 'scan', 'reports', 'heatmap'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -327,6 +328,13 @@ export default function AttendancePage() {
                                 <AttendanceCard key={subject.id} subject={subject} />
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* --- SCAN QR TAB --- */}
+                {activeTab === 'scan' && (
+                    <div className="space-y-6">
+                        <QRScanner />
                     </div>
                 )}
 

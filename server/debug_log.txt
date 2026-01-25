@@ -1,0 +1,35 @@
+--- SCAN FAILURE ---
+Student: 696f99151d2cfdf391399a0b
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5
+----------------
+--- SCAN FAILURE ---
+Student: 696f99151d2cfdf391399a0b
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5
+----------------
+--- SCAN FAILURE ---
+Student: 696f99151d2cfdf391399a0b
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5
+----------------
+--- SCAN FAILURE ---
+Student: 696f99a11d2cfdf391399a3b
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5
+----------------
+--- SCAN FAILURE ---
+Student: 697633f347df2383f98d44e8
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5, 6965355408cc21e47dec108e, 696f99151d2cfdf391399a0b, 696f996f1d2cfdf391399a1f, 696f99a11d2cfdf391399a3b
+----------------
+--- SCAN FAILURE ---
+Student: 697633f347df2383f98d44e8
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5, 6965355408cc21e47dec108e, 696f99151d2cfdf391399a0b, 696f996f1d2cfdf391399a1f, 696f99a11d2cfdf391399a3b
+----------------
+--- SCAN FAILURE ---
+Student: 697633f347df2383f98d44e8
+Course: Python (696cf9b1e4b02bd23998e5a0)
+Enrolled: 69653936bb370ac9be315db5, 6965355408cc21e47dec108e, 696f99151d2cfdf391399a0b, 696f996f1d2cfdf391399a1f, 696f99a11d2cfdf391399a3b
+----------------

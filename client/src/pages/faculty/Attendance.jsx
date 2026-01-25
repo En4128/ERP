@@ -22,10 +22,12 @@ import {
     UserCircle,
     CheckCircle2,
     TrendingUp,
-    Plus
+    Plus,
+    QrCode
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import QRGenerator from '../../components/QRGenerator';
 
 // --- Premium UI Components ---
 
@@ -67,6 +69,14 @@ const FacultyAttendance = () => {
         }
     }, [selectedCourseId, date]);
 
+    useEffect(() => {
+        let interval;
+        if (selectedCourseId && activeTab === 'mark') {
+            interval = setInterval(fetchCourseSpecificData, 5000);
+        }
+        return () => clearInterval(interval);
+    }, [selectedCourseId, date, activeTab]);
+
     const fetchInitialData = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -101,7 +111,7 @@ const FacultyAttendance = () => {
             });
 
             const currentMap = {};
-            stdRes.data.forEach(s => currentMap[s._id] = 'Present');
+            stdRes.data.forEach(s => currentMap[s._id] = 'Absent');
             attRes.data.forEach(rec => currentMap[typeof rec.student === 'object' ? rec.student._id : rec.student] = rec.status);
             setAttendanceData(currentMap);
 
@@ -269,6 +279,7 @@ const FacultyAttendance = () => {
                             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
                                 {[
                                     { id: 'mark', label: 'Mark Attendance', icon: Check },
+                                    { id: 'qr', label: 'QR Attendance', icon: QrCode },
                                     { id: 'history', label: 'Past Records', icon: Clock },
                                     { id: 'low', label: 'Alerts', icon: AlertTriangle },
                                 ].map((tab) => (
@@ -415,6 +426,18 @@ const FacultyAttendance = () => {
                                                 </button>
                                             </div>
                                         </GlassCard>
+                                    </motion.div>
+                                )}
+
+                                {activeTab === 'qr' && (
+                                    <motion.div
+                                        key="qr"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.4 }}
+                                    >
+                                        <QRGenerator courses={courses} />
                                     </motion.div>
                                 )}
 

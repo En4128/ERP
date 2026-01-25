@@ -48,6 +48,10 @@ const courseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Faculty'
     },
+    enrolledStudents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
+    }],
     materials: [{
         title: {
             type: String,
