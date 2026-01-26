@@ -79,10 +79,11 @@ const MobileSidebar = ({ className, children, ...props }) => {
             {...props}
         >
             <div className="flex items-center gap-2">
-                <div className="p-2 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-500/20">
-                    <LayoutDashboard className="text-white w-5 h-5" />
+                <div className="p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden flex items-center justify-center">
+                    <img src="/logo-light.jpg" alt="LearNex" className="w-8 h-8 block dark:hidden object-contain" />
+                    <img src="/logo-dark.jpg" alt="LearNex" className="w-8 h-8 hidden dark:block object-contain" />
                 </div>
-                <h1 className="font-black text-slate-800 dark:text-white tracking-tight uppercase text-xs">EduNex</h1>
+                <h1 className="font-black text-slate-800 dark:text-white tracking-tight uppercase text-xs">LearNex</h1>
             </div>
             <div className="flex justify-end z-[60]">
                 <Menu
@@ -218,8 +219,9 @@ const SidebarComponent = ({ role }) => {
                 <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar pt-2">
                     {/* Brand */}
                     <div className="flex items-center gap-3 px-3 py-4 mb-2">
-                        <div className="p-2.5 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 flex-shrink-0">
-                            <LayoutDashboard className="text-white w-6 h-6" />
+                        <div className="p-1.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex-shrink-0 overflow-hidden flex items-center justify-center">
+                            <img src="/logo-light.jpg" alt="LearNex" className="w-9 h-9 block dark:hidden object-contain" />
+                            <img src="/logo-dark.jpg" alt="LearNex" className="w-9 h-9 hidden dark:block object-contain" />
                         </div>
                         <AnimatePresence mode="wait">
                             {open && (
@@ -229,7 +231,7 @@ const SidebarComponent = ({ role }) => {
                                     exit={{ opacity: 0, x: -10 }}
                                     className="flex flex-col overflow-hidden whitespace-nowrap"
                                 >
-                                    <h2 className="font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight text-sm">EduNex</h2>
+                                    <h2 className="font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight text-sm">LearNex</h2>
                                     <p className="text-[10px] text-indigo-500 font-black tracking-widest uppercase">{role} PORTAL</p>
                                 </motion.div>
                             )}

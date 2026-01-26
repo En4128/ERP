@@ -122,7 +122,7 @@ class Particle {
     }
 }
 
-const DEFAULT_WORDS = ['EduNex', 'Smart ERP', 'Student Portal', 'Faculty Portal'];
+const DEFAULT_WORDS = ['LearNex', 'Smart ERP', 'Student Portal', 'Faculty Portal'];
 
 export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
     const canvasRef = useRef(null);

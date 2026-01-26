@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
-import { BookOpen, Users, Clock, ChevronRight, CheckCircle, GraduationCap, Search, X, Filter, FileText, Download, ExternalLink } from 'lucide-react';
+import { BookOpen, Users, Clock, ChevronRight, CheckCircle, GraduationCap, Search, X, Filter, FileText, Download, ExternalLink, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast, Toaster } from 'sonner';
 
@@ -19,6 +19,8 @@ const StudentCourses = () => {
     const [creditsFilter, setCreditsFilter] = useState('all');
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [enrollingId, setEnrollingId] = useState(null);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -67,15 +69,19 @@ const StudentCourses = () => {
 
     const handleEnroll = async (courseId) => {
         try {
+            setEnrollingId(courseId);
             const token = localStorage.getItem('token');
             await axios.post('http://localhost:5000/api/student/enroll', { courseId }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            toast.success('Enrolled successfully!');
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 3000);
             fetchData();
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || 'Failed to enroll');
+        } finally {
+            setEnrollingId(null);
         }
     };
 
@@ -118,7 +124,7 @@ const StudentCourses = () => {
         return (
             <Layout role="student">
                 <div className="flex justify-center items-center h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
                 </div>
             </Layout>
         );
@@ -130,194 +136,258 @@ const StudentCourses = () => {
                 <Toaster position="top-right" />
 
                 {/* Header with Stats */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Courses</h1>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">
-                            Manage your course registrations and track progress
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-1 bg-indigo-600 rounded-full"></div>
+                            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em]">Academic Portal</span>
+                        </div>
+                        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">My Courses</h1>
+                        <p className="text-slate-500 dark:text-slate-400 mt-2 max-w-md font-medium">
+                            Manage your academic path, track detailed progress, and explore new learning opportunities.
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-6 text-sm">
-                            <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                                    <BookOpen className="h-4 w-4 text-blue-700 dark:text-blue-400" />
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-4 rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="p-2 rounded-xl bg-blue-100/50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                                    <BookOpen className="h-4 w-4" />
                                 </div>
-                                <div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-xs">Current</p>
-                                    <p className="font-semibold text-slate-900 dark:text-white">{enrolledCourses.length} Courses</p>
-                                </div>
+                                <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Active</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-teal-50 dark:bg-teal-900/30">
-                                    <Clock className="h-4 w-4 text-teal-700 dark:text-teal-400" />
+                            <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{enrolledCourses.length}</p>
+                        </div>
+
+                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-4 rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="p-2 rounded-xl bg-indigo-100/50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                                    <Clock className="h-4 w-4" />
                                 </div>
-                                <div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-xs">Credits</p>
-                                    <p className="font-semibold text-slate-900 dark:text-white">{totalCredits} This Sem</p>
-                                </div>
+                                <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Credits</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30">
-                                    <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{totalCredits}</p>
+                        </div>
+
+                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-4 rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="p-2 rounded-xl bg-emerald-100/50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                    <CheckCircle className="h-4 w-4" />
                                 </div>
-                                <div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-xs">Completed</p>
-                                    <p className="font-semibold text-slate-900 dark:text-white">{completedCredits} Credits</p>
-                                </div>
+                                <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Done</span>
                             </div>
+                            <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{completedCredits}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-5">
+                <div className="bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] border border-indigo-100/50 dark:border-slate-800/50 p-6 shadow-xl shadow-indigo-100/50 dark:shadow-none">
                     <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                        <div className="flex-1 relative group">
+                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition-colors" />
                             <input
                                 type="text"
-                                placeholder="Search courses, faculty..."
+                                placeholder="Find a course, faculty member, or code..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10 w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none text-slate-900"
+                                className="pl-12 w-full p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-white/80 dark:bg-slate-950/70 dark:text-white focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/30 focus:outline-none text-slate-900 transition-all font-medium placeholder:text-slate-400 shadow-sm"
                             />
                         </div>
-                        <select
-                            value={departmentFilter}
-                            onChange={(e) => setDepartmentFilter(e.target.value)}
-                            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none text-slate-900"
-                        >
-                            {departments.map(dept => (
-                                <option key={dept} value={dept}>
-                                    {dept === 'all' ? 'All Departments' : dept}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={creditsFilter}
-                            onChange={(e) => setCreditsFilter(e.target.value)}
-                            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none text-slate-900"
-                        >
-                            {creditOptions.map(credit => (
-                                <option key={credit} value={credit}>
-                                    {credit === 'all' ? 'All Credits' : `${credit} Credits`}
-                                </option>
-                            ))}
-                        </select>
-                        {(searchQuery || departmentFilter !== 'all' || creditsFilter !== 'all') && (
-                            <button
-                                onClick={clearFilters}
-                                className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-2"
+
+                        <div className="flex gap-3">
+                            <select
+                                value={departmentFilter}
+                                onChange={(e) => setDepartmentFilter(e.target.value)}
+                                className="p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-white/80 dark:bg-slate-950/70 dark:text-white focus:ring-4 focus:ring-indigo-500/5 outline-none text-slate-900 transition-all font-semibold text-sm min-w-[170px] appearance-none cursor-pointer shadow-sm"
                             >
-                                <X className="h-4 w-4" />
-                                Clear
-                            </button>
-                        )}
+                                {departments.map(dept => (
+                                    <option key={dept} value={dept}>
+                                        {dept === 'all' ? 'All Departments' : dept}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={creditsFilter}
+                                onChange={(e) => setCreditsFilter(e.target.value)}
+                                className="p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-white/80 dark:bg-slate-950/70 dark:text-white focus:ring-4 focus:ring-indigo-500/5 outline-none text-slate-900 transition-all font-semibold text-sm min-w-[140px] appearance-none cursor-pointer shadow-sm"
+                            >
+                                {creditOptions.map(credit => (
+                                    <option key={credit} value={credit}>
+                                        {credit === 'all' ? 'Any Credits' : `${credit} Credits`}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {(searchQuery || departmentFilter !== 'all' || creditsFilter !== 'all') && (
+                                <button
+                                    onClick={clearFilters}
+                                    className="p-4 rounded-2xl bg-rose-100/50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-200/50 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center aspect-square shadow-sm"
+                                    title="Reset filters"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
-                    <div className="border-b border-gray-100 dark:border-slate-700 p-1 bg-slate-50 dark:bg-slate-900">
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setActiveTab('enrolled')}
-                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'enrolled'
-                                    ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-sm'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                    }`}
-                            >
-                                <BookOpen className="h-4 w-4" />
-                                Enrolled ({filteredEnrolled.length})
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('available')}
-                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'available'
-                                    ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-sm'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                    }`}
-                            >
-                                <GraduationCap className="h-4 w-4" />
-                                Available ({filteredAvailable.length})
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('completed')}
-                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'completed'
-                                    ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-sm'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                    }`}
-                            >
-                                <CheckCircle className="h-4 w-4" />
-                                Completed ({filteredCompleted.length})
-                            </button>
-                        </div>
-                    </div>
+                <div className="bg-indigo-50/50 dark:bg-slate-950/50 p-1.5 rounded-[2rem] flex gap-2 border border-indigo-100/50 dark:border-slate-800/50 shadow-inner shadow-indigo-100/20">
+                    <button
+                        onClick={() => setActiveTab('enrolled')}
+                        className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[1.5rem] text-sm font-black transition-all duration-500 ${activeTab === 'enrolled'
+                            ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-white shadow-xl shadow-indigo-200/50'
+                            : 'text-slate-500 hover:text-indigo-600 dark:hover:text-slate-300'
+                            }`}
+                    >
+                        <BookOpen className={`h-4 w-4 transition-transform duration-500 ${activeTab === 'enrolled' ? 'scale-125' : ''}`} />
+                        ENROLLED
+                        <span className={`ml-1 px-2.5 py-0.5 rounded-lg text-[10px] ${activeTab === 'enrolled' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
+                            {filteredEnrolled.length}
+                        </span>
+                    </button>
 
-                    {/* Tab Content */}
-                    <div className="p-6">
-                        {/* Enrolled Tab */}
-                        {activeTab === 'enrolled' && (
-                            filteredEnrolled.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                                    {filteredEnrolled.map((course) => (
-                                        <CourseCard
-                                            key={course._id}
-                                            course={course}
-                                            type="enrolled"
-                                            onEnroll={(c) => {
-                                                setSelectedCourse(c);
-                                                setDialogOpen(true);
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <EmptyState icon={BookOpen} message="No enrolled courses found matching your filters." />
-                            )
-                        )}
+                    <button
+                        onClick={() => setActiveTab('available')}
+                        className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[1.5rem] text-sm font-black transition-all duration-500 ${activeTab === 'available'
+                            ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-white shadow-xl shadow-indigo-200/50'
+                            : 'text-slate-500 hover:text-indigo-600 dark:hover:text-slate-300'
+                            }`}
+                    >
+                        <GraduationCap className={`h-4 w-4 transition-transform duration-500 ${activeTab === 'available' ? 'scale-125' : ''}`} />
+                        DISCOVER
+                        <span className={`ml-1 px-2.5 py-0.5 rounded-lg text-[10px] ${activeTab === 'available' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
+                            {filteredAvailable.length}
+                        </span>
+                    </button>
 
-                        {/* Available Tab */}
-                        {activeTab === 'available' && (
-                            filteredAvailable.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                                    {filteredAvailable.map((course) => (
-                                        <CourseCard
-                                            key={course._id}
-                                            course={course}
-                                            type="available"
-                                            onEnroll={(id) => handleEnroll(id)}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <EmptyState icon={GraduationCap} message="No available courses found matching your filters." />
-                            )
-                        )}
+                    <button
+                        onClick={() => setActiveTab('completed')}
+                        className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[1.5rem] text-sm font-black transition-all duration-500 ${activeTab === 'completed'
+                            ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-white shadow-xl shadow-indigo-200/50'
+                            : 'text-slate-500 hover:text-indigo-600 dark:hover:text-slate-300'
+                            }`}
+                    >
+                        <CheckCircle className={`h-4 w-4 transition-transform duration-500 ${activeTab === 'completed' ? 'scale-125' : ''}`} />
+                        COMPLETED
+                        <span className={`ml-1 px-2.5 py-0.5 rounded-lg text-[10px] ${activeTab === 'completed' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
+                            {filteredCompleted.length}
+                        </span>
+                    </button>
+                </div>
 
-                        {/* Completed Tab */}
-                        {activeTab === 'completed' && (
-                            filteredCompleted.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                                    {filteredCompleted.map((course) => (
-                                        <CourseCard key={course._id} course={course} type="completed" />
-                                    ))}
-                                </div>
-                            ) : (
-                                <EmptyState icon={CheckCircle} message="No completed courses found." />
-                            )
-                        )}
-                    </div>
+                {/* Tab Content */}
+                <div className="mt-8">
+                    {/* Enrolled Tab */}
+                    {activeTab === 'enrolled' && (
+                        filteredEnrolled.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                {filteredEnrolled.map((course) => (
+                                    <CourseCard
+                                        key={course._id}
+                                        course={course}
+                                        type="enrolled"
+                                        enrollingId={enrollingId}
+                                        onEnroll={(c) => {
+                                            setSelectedCourse(c);
+                                            setDialogOpen(true);
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <EmptyState icon={BookOpen} message="No enrolled courses found matching your filters." />
+                        )
+                    )}
+
+                    {/* Available Tab */}
+                    {activeTab === 'available' && (
+                        filteredAvailable.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                {filteredAvailable.map((course) => (
+                                    <CourseCard
+                                        key={course._id}
+                                        course={course}
+                                        type="available"
+                                        enrollingId={enrollingId}
+                                        onEnroll={(id) => handleEnroll(id)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <EmptyState icon={GraduationCap} message="No available courses found matching your filters." />
+                        )
+                    )}
+
+                    {/* Completed Tab */}
+                    {activeTab === 'completed' && (
+                        filteredCompleted.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                {filteredCompleted.map((course) => (
+                                    <CourseCard key={course._id} course={course} type="completed" enrollingId={enrollingId} />
+                                ))}
+                            </div>
+                        ) : (
+                            <EmptyState icon={CheckCircle} message="No completed courses found." />
+                        )
+                    )}
                 </div>
             </div>
+
+            <AnimatePresence>
+                {showSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-white/20 dark:bg-slate-950/20 backdrop-blur-3xl"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.5, opacity: 0 }}
+                            className="bg-white dark:bg-slate-900 p-12 rounded-[3.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden"
+                        >
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="relative z-10"
+                            >
+                                <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-emerald-500/40">
+                                    <CheckCircle className="text-white w-12 h-12" />
+                                </div>
+                                <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Success!</h2>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium">You have been successfully enrolled.</p>
+                            </motion.div>
+
+                            {/* Decorative Background Elements */}
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl"
+                            />
+                            <motion.div
+                                animate={{ rotate: -360 }}
+                                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                                className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"
+                            />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Course Details Modal */}
             <AnimatePresence>
                 {dialogOpen && selectedCourse && (
                     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
                         <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-slate-900/80 backdrop-blur-md"
                             onClick={() => { setDialogOpen(false); setSelectedCourse(null); }}
                         />
@@ -330,7 +400,7 @@ const StudentCourses = () => {
                             <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-[10px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest">{selectedCourse.code}</span>
+                                        <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">{selectedCourse.code}</span>
                                     </div>
                                     <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{selectedCourse.name}</h2>
                                 </div>
@@ -357,7 +427,7 @@ const StudentCourses = () => {
                                             selectedCourse.materials.map((material) => (
                                                 <div key={material._id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 flex items-center justify-between group">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 text-teal-500 shadow-sm border border-slate-100 dark:border-slate-800">
+                                                        <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 text-indigo-500 shadow-sm border border-slate-100 dark:border-slate-800">
                                                             <FileText size={18} />
                                                         </div>
                                                         <div>
@@ -371,7 +441,7 @@ const StudentCourses = () => {
                                                         href={`http://localhost:5000${material.fileUrl}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="p-2.5 rounded-xl bg-teal-500 text-white hover:bg-teal-600 transition-all shadow-md shadow-teal-500/20"
+                                                        className="p-2.5 rounded-xl bg-indigo-500 text-white hover:bg-indigo-600 transition-all shadow-md shadow-indigo-500/20"
                                                     >
                                                         <Download size={16} />
                                                     </a>
@@ -401,86 +471,129 @@ const StudentCourses = () => {
                     </div>
                 )}
             </AnimatePresence>
-        </Layout>
+        </Layout >
     );
 };
 
 // Course Card Component
-const CourseCard = ({ course, type, onEnroll }) => {
+const CourseCard = ({ course, type, onEnroll, enrollingId }) => {
     const isFull = course.status === 'full';
-    const progress = course.progress || 0;
+    const isEnrolling = enrollingId === course._id;
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-5 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-start justify-between mb-3">
-                <div>
-                    <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold">
-                        {course.code}
-                    </span>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-2 leading-tight">
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -8 }}
+            className="group relative bg-white/90 dark:bg-slate-900 rounded-[2.5rem] p-6 shadow-xl shadow-indigo-100/50 dark:shadow-none border border-indigo-50/50 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:bg-white"
+        >
+            {/* Visual Accents */}
+            <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${type === 'enrolled' ? 'from-indigo-500 to-blue-500' :
+                type === 'completed' ? 'from-emerald-500 to-teal-500' :
+                    'from-amber-500 to-orange-500'
+                }`}></div>
+
+            <div className="flex items-start justify-between mb-6">
+                <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">{course.code}</span>
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                         {course.name}
                     </h3>
                 </div>
                 {type === 'available' && (
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isFull
-                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300'
-                        : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                    <div className={`p-2 rounded-xl ${isFull
+                        ? 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
+                        : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
                         }`}>
-                        {isFull ? 'Full' : 'Open'}
-                    </span>
+                        {isFull ? <X size={16} /> : <CheckCircle size={16} />}
+                    </div>
                 )}
             </div>
 
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                {course.assignedFaculty?.user?.name || course.assignedFaculty?.name || 'TBA'}
-            </p>
-
-            <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-4">
-                <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{course.credits} Credits</span>
+            <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-white dark:border-slate-700">
+                        <img
+                            src={`https://ui-avatars.com/api/?name=${course.assignedFaculty?.user?.name || 'TBA'}&background=random`}
+                            alt="faculty"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                        {course.assignedFaculty?.user?.name || course.assignedFaculty?.name || 'TBA'}
+                    </span>
                 </div>
-                <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    <span>{course.enrolled || 0}/{course.seats}</span>
+
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="p-3 rounded-2xl bg-indigo-50/30 dark:bg-slate-800/50 border border-indigo-100/20 dark:border-slate-800">
+                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-tighter mb-1">Credits</p>
+                        <p className="text-xs font-bold text-indigo-600 dark:text-white flex items-center gap-1.5">
+                            <Award className="h-3 w-3 text-indigo-500" />
+                            {course.credits} UNIT
+                        </p>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-indigo-50/30 dark:bg-slate-800/50 border border-indigo-100/20 dark:border-slate-800">
+                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-tighter mb-1">Enrolled</p>
+                        <p className="text-xs font-bold text-indigo-600 dark:text-white flex items-center gap-1.5">
+                            <Users className="h-3 w-3 text-blue-500" />
+                            {course.enrolled || 0}/{course.seats}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-4 pt-2">
+                    <div className="flex items-center gap-2">
+                        <Clock className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="text-[11px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-tighter">{course.schedule || 'TBA'}</span>
+                    </div>
                 </div>
             </div>
 
-            {type === 'enrolled' && (
-                <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-sm">
-                        
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+                {type === 'available' && (
+                    <button
+                        onClick={() => onEnroll(course._id)}
+                        disabled={isFull || isEnrolling}
+                        className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all transform active:scale-95 flex items-center justify-center gap-3 ${isFull || isEnrolling
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800'
+                            : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-500/20'
+                            }`}
+                    >
+                        {isEnrolling ? (
+                            <>
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                >
+                                    <Clock className="w-4 h-4" />
+                                </motion.div>
+                                ENROLLING...
+                            </>
+                        ) : (
+                            isFull ? 'FULLY BOOKED' : 'SECURE SPOT'
+                        )}
+                    </button>
+                )}
+
+                {type === 'enrolled' && (
+                    <button
+                        onClick={() => onEnroll(course)}
+                        className="w-full py-4 rounded-2xl bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-100 dark:border-indigo-900 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 transition-all font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 group"
+                    >
+                        LEARNING HUB
+                        <ChevronRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                    </button>
+                )}
+
+                {type === 'completed' && (
+                    <div className="w-full py-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center gap-2 font-black text-xs uppercase tracking-[0.2em]">
+                        <CheckCircle className="h-4 w-4" />
+                        RECORDS STORED
                     </div>
-                   
-                </div>
-            )}
-
-            <p className="text-xs text-slate-500 dark:text-slate-400 border-t border-gray-100 dark:border-slate-700 pt-3">
-                {course.schedule || 'Schedule TBA'} • {course.room || 'Room TBA'}
-            </p>
-
-            {type === 'available' && (
-                <button
-                    onClick={() => onEnroll(course._id)}
-                    disabled={isFull}
-                    className={`w-full mt-4 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${isFull
-                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
-                        : 'bg-amber-500 text-white hover:bg-amber-600 shadow-md shadow-amber-200 dark:shadow-none'
-                        }`}
-                >
-                    {isFull ? 'Full' : 'Enroll Now'}
-                </button>
-            )}
-
-            {type === 'enrolled' && (
-                <button
-                    onClick={() => onEnroll(course)}
-                    className="w-full mt-4 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold text-sm hover:bg-teal-500 hover:text-white transition-all flex items-center justify-center gap-2"
-                >
-                    <ExternalLink className="h-4 w-4" /> View Materials
-                </button>
-            )}
-        </div >
+                )}
+            </div>
+        </motion.div>
     );
 };
 

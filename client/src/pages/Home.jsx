@@ -159,7 +159,7 @@ const Home = () => {
                         <div className="mb-8">
                             <ParticleTextEffect
                                 words={[
-                                    'EduNex',
+                                    'LearNex',
                                     'Smart ERP',
                                     'Student Portal',
                                     'Faculty Portal',
@@ -367,7 +367,7 @@ const Home = () => {
                             Ready to Transform Your Campus?
                         </h2>
                         <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto">
-                            Join thousands of institutions already using EduNex to streamline their operations and enhance student success.
+                            Join thousands of institutions already using LearNex to streamline their operations and enhance student success.
                         </p>
 
                         <motion.button
@@ -389,11 +389,11 @@ const Home = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="w-6 h-6 text-purple-500" />
-                            <span className="text-white font-bold text-lg">EduNex</span>
+                            <span className="text-white font-bold text-lg">LearNex</span>
                         </div>
 
                         <div className="text-sm text-center md:text-left">
-                            © 2026 EduNex. All rights reserved. Built with ❤️ for education.
+                            © 2026 LearNex. All rights reserved. Built with ❤️ for education.
                         </div>
 
                         <div className="flex gap-6">

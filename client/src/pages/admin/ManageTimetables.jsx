@@ -20,7 +20,8 @@ const periods = [
     { time: '3:30 PM', endTime: '4:30 PM', type: 'class' },
 ];
 
-const rooms = ['Room 101', 'Room 102', 'Room 201', 'Room 205', 'Room 301', 'Lab 101', 'Lab 102', 'Lab 201', 'Library Hall A', 'Library Hall B', 'Digital Library', 'Library Study Room'];
+const rooms = ['Room 101', 'Room 102', 'Room 201', 'Room 205', 'Room 301', 'Lab 101', 'Lab 102', 'Lab 201', 'Library Hall A', 'Library Hall B'];
+const buildings = ['FSH 1', 'FSH 2', 'Tech park 1', 'Tech park 2', 'UB'];
 const departments = ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Business', 'CDC'];
 
 
@@ -43,7 +44,7 @@ const ManageTimetables = () => {
         startTime: '',
         endTime: '',
         room: '',
-        building: 'Main Block',
+        building: buildings[0],
         type: 'lecture',
         facultyId: '',
         assignToCourse: false
@@ -164,7 +165,7 @@ const ManageTimetables = () => {
             const coursesRes = await axios.get('http://localhost:5000/api/courses', { headers: { Authorization: `Bearer ${token}` } });
             setCourses(Array.isArray(coursesRes.data) ? coursesRes.data : []);
 
-            setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: 'Main Block', type: 'CLASS', facultyId: '', assignToCourse: false });
+            setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: buildings[0], type: 'CLASS', facultyId: '', assignToCourse: false });
             setClashWarning(null);
             setIsAddDialogOpen(false);
             setIsEditing(false);
@@ -182,7 +183,7 @@ const ManageTimetables = () => {
             startTime: slot.startTime,
             endTime: slot.endTime,
             room: slot.room,
-            building: slot.building || 'Main Block',
+            building: slot.building || buildings[0],
             type: slot.type || 'CLASS',
             facultyId: slot.facultyId || '',
             assignToCourse: false
@@ -394,7 +395,7 @@ const ManageTimetables = () => {
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">{isEditing ? 'Edit Time Slot' : 'Add Time Slot'}</h3>
-                            <button onClick={() => { setIsAddDialogOpen(false); setClashWarning(null); setIsEditing(false); setCurrentSlotId(null); setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: 'Main Block', type: 'CLASS', facultyId: '' }); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                            <button onClick={() => { setIsAddDialogOpen(false); setClashWarning(null); setIsEditing(false); setCurrentSlotId(null); setNewSlot({ courseCode: '', day: '', startTime: '', endTime: '', room: '', building: buildings[0], type: 'CLASS', facultyId: '' }); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                                 <X size={24} />
                             </button>
                         </div>
@@ -464,11 +465,9 @@ const ManageTimetables = () => {
                                         value={newSlot.building}
                                         onChange={(e) => { setNewSlot(prev => ({ ...prev, building: e.target.value })); setClashWarning(null); }}
                                     >
-                                        <option value="Main Block">Main Block</option>
-                                        <option value="Lab Complex">Lab Complex</option>
-                                        <option value="Administrative Block">Administrative Block</option>
-                                        <option value="Auditorium">Auditorium</option>
-                                        <option value="Library">Library</option>
+                                        {buildings.map(b => (
+                                            <option key={b} value={b}>{b}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">

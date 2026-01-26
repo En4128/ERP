@@ -80,7 +80,7 @@ exports.askChatbot = async (req, res) => {
         const dbContext = buildDatabaseContext(dbResults);
 
         // Step 2: Build enhanced prompt with database context
-        let systemPrompt = `You are an intelligent ERP Chatbot integrated into the EduNex College/University Management System.
+        let systemPrompt = `You are an intelligent ERP Chatbot integrated into the LearNex College/University Management System.
 
 Your responsibility is to assist authenticated users (Students, Faculty, Admin) by answering their questions using:
 1) Authorized ERP database data accessed via backend APIs/tools

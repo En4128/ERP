@@ -1,4 +1,4 @@
-# EduNex - Advanced Smart Campus ERP
+# LearNex - Advanced Smart Campus ERP
 
 A next-generation, full-stack College ERP solution built with the **MERN Stack**. Designed with a focus on **Premium UI/UX**, real-time performance, and robust role-based access control.
 
