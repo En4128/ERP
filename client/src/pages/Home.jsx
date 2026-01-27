@@ -16,8 +16,10 @@ import {
     ArrowRight,
     Sparkles,
     Globe,
-    MessageSquare
+    MessageSquare,
+    ChevronDown
 } from 'lucide-react';
+import { useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { ParticleTextEffect } from '../components/ParticleTextEffect';
 
 const Home = () => {
@@ -29,6 +31,16 @@ const Home = () => {
         satisfaction: 0
     });
 
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
+
+    const heroY = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
+    const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+
     // Animated counter effect
     useEffect(() => {
         const duration = 2000;
@@ -36,10 +48,10 @@ const Home = () => {
         const interval = duration / steps;
 
         const targets = {
-            students: 5000,
-            faculty: 250,
-            courses: 150,
-            satisfaction: 98
+            students: 15000,
+            faculty: 450,
+            courses: 200,
+            satisfaction: 99
         };
 
         let step = 0;
@@ -119,188 +131,183 @@ const Home = () => {
             y: 0,
             opacity: 1,
             transition: {
-                duration: 0.5
+                duration: 0.6,
+                ease: "easeOut"
             }
         }
     };
 
+    const FloatingElement = ({ delay = 0, className = "" }) => (
+        <motion.div
+            animate={{
+                y: [0, -20, 0],
+                rotate: [0, 10, 0],
+                scale: [1, 1.1, 1],
+            }}
+            transition={{
+                duration: 5,
+                repeat: Infinity,
+                delay: delay,
+                ease: "easeInOut"
+            }}
+            className={`absolute rounded-full blur-3xl opacity-20 ${className}`}
+        />
+    );
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-white dark:bg-slate-950 selection:bg-purple-500/30">
+            {/* Scroll Progress Bar */}
+            <motion.div
+                className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 z-50 origin-[0%]"
+                style={{ scaleX }}
+            />
+
             {/* Hero Section */}
-            <section className="relative overflow-hidden">
-                {/* Animated Background */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-cyan-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
+                {/* Dynamic Background Elements */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <FloatingElement delay={0} className="w-96 h-96 -top-20 -left-20 bg-purple-500" />
+                    <FloatingElement delay={1} className="w-[500px] h-[500px] top-1/2 -right-20 bg-blue-500" />
+                    <FloatingElement delay={2} className="w-80 h-80 bottom-0 left-1/4 bg-cyan-500" />
+
+                    {/* Grid Pattern Overlay */}
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMTI0LCA1OCwgMjM3LCAwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')] mask-image-[radial-gradient(ellipse_at_center,black,transparent)] opacity-50" />
                 </div>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 sm:pt-32 sm:pb-32">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-center"
-                    >
+                <motion.div
+                    style={{ y: heroY, opacity: heroOpacity }}
+                    className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10"
+                >
+                    <div className="text-center">
                         {/* Badge */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-purple-200 dark:border-purple-800 mb-8 shadow-lg"
+                            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-slate-800/50 backdrop-blur-md border border-purple-200/50 dark:border-purple-800/50 mb-8 shadow-xl"
                         >
-                            <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                            <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
-                                Next-Generation Campus Management
+                            <Sparkles className="w-4 h-4 text-purple-600 animate-pulse" />
+                            <span className="text-sm font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+                                DISCOVER THE FUTURE OF LEARNING
                             </span>
                         </motion.div>
 
-
                         {/* Particle Text Animation */}
-                        <div className="mb-8">
+                        <div className="mb-8 cursor-default">
                             <ParticleTextEffect
                                 words={[
                                     'LearNex',
                                     'Smart ERP',
-                                    'Student Portal',
-                                    'Faculty Portal',
-                                    'Admin Control',
-                                    'Real-Time Chat',
-                                    'Attendance Tracking',
-                                    'Grade Management',
-                                    'Course Registration',
-                                    'Smart Timetable',
-                                    'Analytics Dashboard',
-                                    'Leave Management'
+                                    'Innovation',
+                                    'Analytics',
+                                    'Efficiency',
+                                    'Future Ready'
                                 ]}
                                 className="mx-auto"
                             />
                         </div>
 
                         {/* Subtitle */}
-                        <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                            Revolutionize your educational institution with our comprehensive,
-                            <span className="font-semibold text-purple-600 dark:text-purple-400"> AI-powered </span>
-                            management platform designed for students, faculty, and administrators.
-                        </p>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-xl sm:text-3xl text-slate-600 dark:text-slate-300 mb-12 max-w-4xl mx-auto leading-relaxed font-light"
+                        >
+                            Empowering academic excellence through
+                            <span className="relative inline-block mx-2">
+                                <span className="relative z-10 font-bold text-purple-600 dark:text-purple-400 italic">Advanced Intelligence</span>
+                                <motion.span
+                                    initial={{ width: 0 }}
+                                    animate={{ width: "100%" }}
+                                    transition={{ delay: 1, duration: 0.8 }}
+                                    className="absolute bottom-1 left-0 h-3 bg-purple-500/10 dark:bg-purple-500/20 -rotate-1"
+                                />
+                            </span>
+                            for the next generation.
+                        </motion.p>
 
                         {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => navigate('/login')}
-                                className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-2xl shadow-purple-500/50 dark:shadow-purple-500/30 transition-all duration-300 flex items-center gap-2"
-                            >
-                                Get Started
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </motion.button>
-
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => navigate('/login')}
-                                className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold rounded-xl shadow-xl border-2 border-slate-200 dark:border-slate-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300"
-                            >
-                                Sign In
-                            </motion.button>
-                        </div>
-
-                        {/* Trust Indicators */}
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.8 }}
-                            className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-slate-600 dark:text-slate-400"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
                         >
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-500" />
-                                <span>Secure & Encrypted</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-500" />
-                                <span>Real-time Updates</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="w-5 h-5 text-green-500" />
-                                <span>24/7 Support</span>
-                            </div>
+                            <motion.button
+                                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px -10px rgba(124, 58, 237, 0.5)" }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => navigate('/login')}
+                                className="group relative overflow-hidden px-10 py-5 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-2xl transition-all duration-300 flex items-center gap-3"
+                            >
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                                <span className="relative flex items-center gap-3">
+                                    Sign In
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                                </span>
+                            </motion.button>
+
                         </motion.div>
-                    </motion.div>
-                </div>
+                    </div>
+                </motion.div>
+
+                {/* Scroll Indicator */}
+                <motion.div
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 text-slate-400 flex flex-col items-center gap-2"
+                >
+                    <span className="text-xs font-semibold uppercase tracking-widest">Scroll to explore</span>
+                    <ChevronDown className="w-6 h-6" />
+                </motion.div>
             </section>
 
             {/* Statistics Section */}
-            <section className="py-16 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-y border-slate-200 dark:border-slate-800">
+            <section className="py-32 relative overflow-hidden bg-slate-50 dark:bg-slate-900/40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-center"
-                        >
-                            <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2">
-                                {stats.students.toLocaleString()}+
-                            </div>
-                            <div className="text-slate-600 dark:text-slate-400 font-medium">Active Students</div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.1 }}
-                            className="text-center"
-                        >
-                            <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
-                                {stats.faculty}+
-                            </div>
-                            <div className="text-slate-600 dark:text-slate-400 font-medium">Faculty Members</div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
-                            className="text-center"
-                        >
-                            <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent mb-2">
-                                {stats.courses}+
-                            </div>
-                            <div className="text-slate-600 dark:text-slate-400 font-medium">Courses Offered</div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.3 }}
-                            className="text-center"
-                        >
-                            <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent mb-2">
-                                {stats.satisfaction}%
-                            </div>
-                            <div className="text-slate-600 dark:text-slate-400 font-medium">Satisfaction Rate</div>
-                        </motion.div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+                        {[
+                            { label: 'Active Students', value: stats.students, color: 'from-blue-600 to-cyan-600', icon: Users },
+                            { label: 'Expert Faculty', value: stats.faculty, color: 'from-purple-600 to-pink-600', icon: GraduationCap },
+                            { label: 'Smart Courses', value: stats.courses, color: 'from-amber-600 to-orange-600', icon: BookOpen },
+                            { label: 'Satisfaction Rate', value: stats.satisfaction, color: 'from-green-600 to-emerald-600', icon: Award, suffix: '%' }
+                        ].map((stat, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-100px" }}
+                                transition={{ delay: idx * 0.1 }}
+                                className="group relative p-8 rounded-3xl bg-white dark:bg-slate-800 shadow-xl hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-slate-700/50"
+                            >
+                                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl`} />
+                                <div className={`w-12 h-12 mb-6 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-lg transform group-hover:rotate-12 transition-transform duration-500`}>
+                                    <stat.icon className="w-6 h-6" />
+                                </div>
+                                <div className={`text-4xl sm:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 tabular-nums`}>
+                                    {stat.value.toLocaleString()}{stat.suffix || '+'}
+                                </div>
+                                <div className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-sm">{stat.label}</div>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
 
             {/* Features Section */}
-            <section className="py-24">
+            <section className="py-32 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-center mb-16"
+                        className="text-center mb-24"
                     >
-                        <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-800 dark:text-white mb-4">
-                            Powerful Features for Everyone
+                        <h2 className="text-5xl sm:text-6xl font-black text-slate-800 dark:text-white mb-6 tracking-tight">
+                            Engineered for <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Excellence</span>
                         </h2>
-                        <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                            Comprehensive tools designed to streamline academic management and enhance the educational experience
+                        <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">
+                            A complete suite of modules designed to handle every aspect of modern campus administration with precision.
                         </p>
                     </motion.div>
 
@@ -308,8 +315,8 @@ const Home = () => {
                         variants={containerVariants}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true }}
-                        className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="grid md:grid-cols-2 lg:grid-cols-3 gap-10"
                     >
                         {features.map((feature, index) => {
                             const Icon = feature.icon;
@@ -317,31 +324,37 @@ const Home = () => {
                                 <motion.div
                                     key={index}
                                     variants={itemVariants}
-                                    whileHover={{ y: -8, scale: 1.02 }}
-                                    className="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 overflow-hidden"
+                                    whileHover={{
+                                        y: -15,
+                                        scale: 1.02,
+                                        rotateX: 2,
+                                        rotateY: 2,
+                                        transition: { duration: 0.2 }
+                                    }}
+                                    className="group relative bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-[2rem] p-10 shadow-2xl transition-all duration-300 border border-slate-100 dark:border-slate-700/50 overflow-hidden"
                                 >
-                                    {/* Gradient Background on Hover */}
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300`} />
 
-                                    {/* Icon */}
-                                    <div className={`relative w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 shadow-lg`}>
-                                        <Icon className="w-7 h-7 text-white" />
+                                    {/* Feature Icon */}
+                                    <div className={`relative w-20 h-20 rounded-[1.5rem] bg-gradient-to-br ${feature.color} flex items-center justify-center mb-8 shadow-2xl transform group-hover:scale-110 transition-transform duration-500`}>
+                                        <Icon className="w-10 h-10 text-white" />
+                                        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity rounded-[1.5rem]" />
                                     </div>
 
-                                    {/* Content */}
-                                    <h3 className="relative text-2xl font-bold text-slate-800 dark:text-white mb-3">
+                                    {/* Feature Content */}
+                                    <h3 className="relative text-2xl font-black text-slate-800 dark:text-white mb-4 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                                         {feature.title}
                                     </h3>
-                                    <p className="relative text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                                    <p className="relative text-slate-500 dark:text-slate-400 mb-8 leading-relaxed text-lg">
                                         {feature.description}
                                     </p>
 
                                     {/* Highlights */}
-                                    <div className="relative space-y-2">
+                                    <div className="relative grid grid-cols-1 gap-4">
                                         {feature.highlights.map((highlight, idx) => (
-                                            <div key={idx} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                                <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${feature.color}`}></div>
-                                                <span>{highlight}</span>
+                                            <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 group-hover:bg-white dark:group-hover:bg-slate-800 transition-colors shadow-sm">
+                                                <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${feature.color} shadow-lg`} />
+                                                <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{highlight}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -353,52 +366,94 @@ const Home = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-24 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-900 dark:to-blue-900"></div>
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"></div>
+            <section className="py-32 px-4 relative">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="max-w-6xl mx-auto relative rounded-[3rem] overflow-hidden bg-slate-900 dark:bg-purple-900/20 border border-white/10"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 blur-3xl" />
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTSAzMCAwIEwgMzAgNjAgTSAwIDMwIEwgNjAgMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+')] " />
 
-                <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6">
-                            Ready to Transform Your Campus?
+                    <div className="relative py-24 px-8 text-center">
+                        <h2 className="text-5xl sm:text-6xl font-black text-white mb-8 tracking-tighter">
+                            Ready to Elevate Your <br />
+                            <span className="text-purple-400">Educational Experience?</span>
                         </h2>
-                        <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto">
-                            Join thousands of institutions already using LearNex to streamline their operations and enhance student success.
+                        <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto font-light">
+                            Join the technological revolution in education. Get started with LearNex today and see the difference.
                         </p>
 
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => navigate('/login')}
-                            className="px-10 py-5 bg-white text-purple-600 font-bold rounded-xl shadow-2xl hover:shadow-white/20 transition-all duration-300 text-lg flex items-center gap-3 mx-auto"
-                        >
-                            Get Started Today
-                            <Zap className="w-6 h-6" />
-                        </motion.button>
-                    </motion.div>
-                </div>
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => navigate('/login')}
+                                className="px-12 py-5 bg-white text-slate-900 font-black rounded-2xl shadow-2xl flex items-center gap-3 hover:bg-purple-50 transition-colors mx-auto sm:mx-0"
+                            >
+                                Get Started Now
+                                <Zap className="w-6 h-6 text-purple-600" />
+                            </motion.button>
+                        </div>
+                    </div>
+                </motion.div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-slate-900 dark:bg-slate-950 text-slate-400 py-12 border-t border-slate-800">
+            <footer className="bg-slate-950 text-slate-400 py-20 border-t border-white/5">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="flex items-center gap-2">
-                            <GraduationCap className="w-6 h-6 text-purple-500" />
-                            <span className="text-white font-bold text-lg">LearNex</span>
+                    <div className="grid md:grid-cols-4 gap-12 mb-16">
+                        <div className="col-span-2">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl">
+                                    <GraduationCap className="w-8 h-8 text-white" />
+                                </div>
+                                <span className="text-white font-black text-3xl tracking-tighter">LearNex</span>
+                            </div>
+                            <p className="text-lg max-w-sm mb-8 leading-relaxed">
+                                The ultimate ecosystem for modern educational institutions.
+                                Seamless, secure, and smart management for the future of learning.
+                            </p>
+                            <div className="flex gap-4">
+                                {[Globe, MessageSquare, Users].map((Icon, i) => (
+                                    <motion.div
+                                        key={i}
+                                        whileHover={{ y: -5, color: '#a855f7' }}
+                                        className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center cursor-pointer transition-colors"
+                                    >
+                                        <Icon className="w-6 h-6" />
+                                    </motion.div>
+                                ))}
+                            </div>
                         </div>
 
-                        <div className="text-sm text-center md:text-left">
-                            © 2026 LearNex. All rights reserved. Built with ❤️ for education.
+                        <div>
+                            <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Product</h4>
+                            <ul className="space-y-4 font-medium">
+                                <li className="hover:text-purple-400 cursor-pointer transition-colors">Features</li>
+                                <li className="hover:text-purple-400 cursor-pointer transition-colors">Solutions</li>
+                                <li className="hover:text-purple-400 cursor-pointer transition-colors">Integrations</li>
+                            </ul>
                         </div>
 
-                        <div className="flex gap-6">
-                            <Globe className="w-5 h-5 hover:text-purple-400 cursor-pointer transition-colors" />
-                            <MessageSquare className="w-5 h-5 hover:text-purple-400 cursor-pointer transition-colors" />
+                        <div>
+                            <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Company</h4>
+                            <ul className="space-y-4 font-medium">
+                                <li className="hover:text-purple-400 cursor-pointer transition-colors">About Us</li>
+                                <li className="hover:text-purple-400 cursor-pointer transition-colors">Privacy Policy</li>
+                                <li className="hover:text-purple-400 cursor-pointer transition-colors">Contact</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="text-sm font-medium">
+                            © 2026 LearNex. Precision engineered for education. All rights reserved.
+                        </div>
+                        <div className="flex gap-8 text-sm font-bold uppercase tracking-widest">
+                            <span className="hover:text-purple-400 cursor-pointer">Support</span>
+                            <span className="hover:text-purple-400 cursor-pointer">Terms</span>
                         </div>
                     </div>
                 </div>
