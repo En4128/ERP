@@ -12,7 +12,9 @@ const {
     registerStudent,
     updateStudent,
     registerFaculty,
-    updateFaculty
+    updateFaculty,
+    getAllUsers,
+    toggleUserBlock
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -34,5 +36,8 @@ router.get('/notices', getAllNotices);
 router.post('/notices', createNotice);
 router.put('/notices/:id', updateNotice);
 router.delete('/notices/:id', deleteNotice);
+
+router.get('/users-all', getAllUsers);
+router.patch('/users/:id/toggle-block', toggleUserBlock);
 
 module.exports = router;

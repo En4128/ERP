@@ -42,14 +42,14 @@ const BentoCard = ({ children, className, title, icon: Icon, delay = 0 }) => (
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     {Icon && (
-                        <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-400/10 dark:text-indigo-400">
+                        <div className="p-2.5 rounded-2xl bg-cyan-500/10 text-cyan-500 dark:bg-cyan-400/10 dark:text-cyan-400">
                             <Icon size={20} />
                         </div>
                     )}
                     <h3 className="font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase text-xs">{title}</h3>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <ArrowRight size={14} className="text-slate-400" />
+                    <ArrowRight size={10} className="text-slate-400" />
                 </div>
             </div>
         )}
@@ -75,21 +75,21 @@ const MeshGradientHero = ({ name, stats }) => {
             transition={{ duration: 0.8 }}
             className="relative col-span-1 md:col-span-2 lg:col-span-2 row-span-1 rounded-[2.5rem] overflow-hidden p-8 md:p-10 flex flex-col justify-between min-h-[350px] shadow-2xl shadow-indigo-500/10"
         >
-            {/* Animated Mesh Gradient Background */}
-            <div className="absolute inset-0 bg-indigo-600">
-                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-500 rounded-full blur-[120px] animate-pulse" />
+            {/* Animated Mesh Gradient Background - Sapphire Bloom palette */}
+            <div className="absolute inset-0 bg-cyan-600">
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-light-blue-400 rounded-full blur-[120px] animate-pulse" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-400 rounded-full blur-[120px] animate-pulse delay-700" />
-                <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-indigo-400 rounded-full blur-[100px] animate-pulse delay-1000" />
+                <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-light-blue-500 rounded-full blur-[100px] animate-pulse delay-1000" />
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                     <div>
                         <motion.div
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit mb-6"
+                            className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit mb-4"
                         >
                             <Sparkles size={14} className="text-amber-300" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">{formattedDate}</span>
@@ -99,16 +99,19 @@ const MeshGradientHero = ({ name, stats }) => {
                             <span className="text-indigo-200">{name.split(' ')[0]}</span>
                         </h1>
                     </div>
-                    <div className="hidden sm:flex flex-col items-end">
-                        <div className="bg-white/10 backdrop-blur-lg px-6 py-3 rounded-[2rem] border border-white/20 text-center">
-                            <p className="text-white font-black text-2xl tracking-tighter">{formattedTime}</p>
-                            <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mt-0.5">Live Local Time</p>
-                        </div>
-                    </div>
+
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-white/10 backdrop-blur-xl px-6 py-6 rounded-[3rem] border border-white/20 flex items-center justify-center shadow-2xl shadow-black/5"
+                    >
+                        <p className="text-white font-black text-xl tracking-tighter tabular-nums leading-none">{formattedTime}</p>
+                    </motion.div>
                 </div>
 
                 <div className="flex flex-wrap gap-4 mt-12">
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-white/10 flex-1 min-w-[140px]">
+                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px]">
                         <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Attendance</p>
                         <div className="flex items-end gap-2">
                             <p className="text-3xl font-black text-white leading-none">{stats.attendance}%</p>
@@ -121,7 +124,7 @@ const MeshGradientHero = ({ name, stats }) => {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-white/10 flex-1 min-w-[140px]">
+                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px]">
                         <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">CGPA Status</p>
                         <p className="text-3xl font-black text-white leading-none">{stats.cgpa}</p>
                         <p className="text-[10px] text-white/40 font-bold uppercase mt-1 tracking-wider">Out of 10.0</p>
@@ -140,13 +143,13 @@ const TimetableWidget = ({ sessions, navigate }) => {
         <BentoCard title="Daily Schedule" icon={Calendar} className="col-span-1 lg:row-span-1" delay={0.2}>
             <div className="space-y-6">
                 {nextSession ? (
-                    <div className="p-5 rounded-[2rem] bg-indigo-600 text-white shadow-xl shadow-indigo-500/20 group-hover:scale-[1.02] transition-transform">
+                    <div className="p-5 rounded-[2rem] bg-cyan-600 text-white shadow-xl shadow-cyan-500/20 group-hover:scale-[1.02] transition-transform">
                         <div className="flex justify-between items-start mb-4">
                             <span className="bg-white/20 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm">Upcoming Now</span>
                             <Zap size={18} className="text-amber-300 animate-pulse" />
                         </div>
                         <h4 className="text-xl font-black mb-1 leading-tight">{nextSession.subject}</h4>
-                        <div className="flex items-center gap-3 text-indigo-100/80 text-sm font-bold mt-2">
+                        <div className="flex items-center gap-3 text-cyan-100/80 text-sm font-bold mt-2">
                             <Clock size={14} /> {nextSession.time}
                         </div>
                         <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
@@ -205,14 +208,14 @@ const AssignmentList = ({ assignments, count, navigate }) => (
 
             <div className="space-y-3">
                 {assignments.length > 0 ? assignments.map((task, idx) => (
-                    <div key={idx} className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 group/task hover:border-indigo-500/30 transition-all cursor-pointer">
-                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">{task.course}</p>
+                    <div key={idx} className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 group/task hover:border-cyan-500/30 transition-all cursor-pointer">
+                        <p className="text-[10px] font-black text-cyan-500 uppercase tracking-wider mb-1">{task.course}</p>
                         <h4 className="text-sm font-black text-slate-800 dark:text-slate-100 leading-tight mb-3 line-clamp-1">{task.title}</h4>
                         <div className="flex items-center justify-between text-[10px] font-bold text-slate-400">
                             <span className="flex items-center gap-1.5">
                                 <Clock size={12} /> {new Date(task.dueDate).toLocaleDateString()}
                             </span>
-                            <span className="bg-slate-200 dark:bg-slate-700 p-1.5 rounded-full group-hover/task:bg-indigo-500 group-hover/task:text-white transition-colors">
+                            <span className="bg-slate-200 dark:bg-slate-700 p-1.5 rounded-full group-hover/task:bg-cyan-500 group-hover/task:text-white transition-colors">
                                 <ArrowRight size={10} />
                             </span>
                         </div>
@@ -438,7 +441,7 @@ const DashboardPage = () => {
                         </div>
                         <button
                             onClick={() => navigate('/student/results')}
-                            className="w-full mt-6 py-4 rounded-[2rem] bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-500/20 transition"
+                            className="w-full mt-6 py-4 rounded-[2rem] bg-cyan-500/10 text-cyan-600 dark:bg-cyan-400/10 dark:text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-cyan-500/20 transition"
                         >
                             Explore Full Result
                         </button>
@@ -490,7 +493,7 @@ const DashboardPage = () => {
                     <div className="lg:col-span-1">
                         <button
                             onClick={() => navigate('/student/support')}
-                            className="w-full h-full group p-8 rounded-[3rem] bg-slate-900 dark:bg-indigo-600 text-white shadow-2xl shadow-indigo-500/20 flex flex-col justify-between transition-transform active:scale-95"
+                            className="w-full h-full group p-8 rounded-[3rem] bg-slate-900 dark:bg-cyan-600 text-white shadow-2xl shadow-cyan-500/20 flex flex-col justify-between transition-transform active:scale-95"
                         >
                             <div className="flex justify-between items-start w-full">
                                 <div className="p-4 rounded-[1.5rem] bg-white/10 backdrop-blur-md">

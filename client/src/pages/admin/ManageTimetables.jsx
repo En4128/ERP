@@ -6,7 +6,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 // Define periods including breaks
 const periods = [
@@ -20,7 +20,7 @@ const periods = [
     { time: '3:30 PM', endTime: '4:30 PM', type: 'class' },
 ];
 
-const rooms = ['Room 101', 'Room 102', 'Room 201', 'Room 205', 'Room 301', 'Lab 101', 'Lab 102', 'Lab 201', 'Library Hall A', 'Library Hall B'];
+const rooms = ['Room 101', 'Room 102', 'Room 201', 'Room 205', 'Room 301', 'Lab 101', 'Lab 102', 'Lab 201'];
 const buildings = ['FSH 1', 'FSH 2', 'Tech park 1', 'Tech park 2', 'UB'];
 const departments = ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Business', 'CDC'];
 

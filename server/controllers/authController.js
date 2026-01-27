@@ -86,6 +86,12 @@ exports.login = async (req, res) => {
         }
 
         console.log('User found:', user.email, 'Role:', user.role);
+
+        if (user.isBlocked) {
+            console.log('User is blocked:', user.email);
+            return res.status(403).json({ message: 'Your account has been blocked. Please contact admin.' });
+        }
+
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         console.log('Password match:', isPasswordMatch);
 

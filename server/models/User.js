@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
         linkedin: { type: String },
         github: { type: String },
         website: { type: String }
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

@@ -84,6 +84,35 @@ exports.deleteFaculty = async (req, res) => {
     }
 };
 
+// @desc    Get all users (students and faculty)
+// @route   GET /api/admin/users-all
+// @access  Private (Admin)
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({ role: { $ne: 'admin' } }).select('-password').sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Toggle user block status
+// @route   PATCH /api/admin/users/:id/toggle-block
+// @access  Private (Admin)
+exports.toggleUserBlock = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.isBlocked = !user.isBlocked;
+        await user.save();
+
+        res.json({ message: `User ${user.isBlocked ? 'blocked' : 'unblocked'} successfully`, isBlocked: user.isBlocked });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Helper to normalize department names
 const normalizeDept = (dept) => {
     if (!dept) return '';

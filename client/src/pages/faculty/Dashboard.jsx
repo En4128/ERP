@@ -38,7 +38,7 @@ const BentoCard = ({ children, className, title, icon: Icon, delay = 0 }) => (
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     {Icon && (
-                        <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-400/10 dark:text-indigo-400">
+                        <div className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-500 dark:bg-rose-400/10 dark:text-rose-400">
                             <Icon size={20} />
                         </div>
                     )}
@@ -68,11 +68,11 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
             transition={{ duration: 0.8 }}
             className="relative col-span-1 md:col-span-2 lg:col-span-2 row-span-1 rounded-[3rem] overflow-hidden p-8 md:p-10 flex flex-col justify-between min-h-[350px] shadow-2xl shadow-indigo-500/10"
         >
-            {/* Animated Mesh Gradient Background */}
-            <div className="absolute inset-0 bg-indigo-600">
-                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-500 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-400 rounded-full blur-[120px] animate-pulse delay-700" />
-                <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-indigo-400 rounded-full blur-[100px] animate-pulse delay-1000" />
+            {/* Animated Mesh Gradient Background - Royal Orchid palette */}
+            <div className="absolute inset-0 bg-rose-600">
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-fuchsia-500 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-400 rounded-full blur-[120px] animate-pulse delay-700" />
+                <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-rose-400 rounded-full blur-[100px] animate-pulse delay-1000" />
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-between">
@@ -111,7 +111,7 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
 
 const ActivityWidget = ({ title, value, icon: Icon, variant = "indigo", onClick }) => {
     const variants = {
-        indigo: "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400 border-indigo-200/50 dark:border-indigo-800/50",
+        rose: "bg-rose-500/10 text-rose-600 dark:bg-rose-400/10 dark:text-rose-400 border-rose-200/50 dark:border-rose-800/50",
         emerald: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/50",
         purple: "bg-purple-500/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400 border-purple-200/50 dark:border-purple-800/50",
         amber: "bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400 border-amber-200/50 dark:border-amber-800/50",
@@ -192,7 +192,7 @@ const FacultyDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-indigo-600 dark:bg-indigo-500 overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-indigo-500/20 relative group cursor-pointer"
+                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-rose-600 dark:bg-rose-500 overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-rose-500/20 relative group cursor-pointer"
                             onClick={() => navigate('/faculty/courses')}
                         >
                             <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
@@ -274,7 +274,7 @@ const FacultyDashboard = () => {
                             )}
                             <button
                                 onClick={() => navigate('/faculty/timetable')}
-                                className="w-full mt-2 py-4 rounded-[2rem] bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-500/20 transition"
+                                className="w-full mt-2 py-4 rounded-[2rem] bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-rose-500/20 transition"
                             >
                                 View Timeline
                             </button>
@@ -308,7 +308,7 @@ const FacultyDashboard = () => {
                             <motion.div
                                 whileHover={{ scale: 1.01 }}
                                 onClick={() => navigate('/faculty/marks')}
-                                className="p-8 rounded-[2.5rem] bg-indigo-600 dark:bg-indigo-700 text-white cursor-pointer group shadow-lg shadow-indigo-500/10"
+                                className="p-8 rounded-[2.5rem] bg-rose-600 dark:bg-rose-700 text-white cursor-pointer group shadow-lg shadow-rose-500/10"
                             >
                                 <div className="flex justify-between items-start mb-8">
                                     <div className="p-4 rounded-2xl bg-white/20 backdrop-blur-md">
@@ -319,7 +319,7 @@ const FacultyDashboard = () => {
                                     </div>
                                 </div>
                                 <h4 className="text-2xl font-black tracking-tight mb-2">Academic Performance</h4>
-                                <p className="text-indigo-100 text-xs font-bold leading-relaxed">Upload and manage student examination and assessment results.</p>
+                                <p className="text-rose-100 text-xs font-bold leading-relaxed">Upload and manage student examination and assessment results.</p>
                             </motion.div>
                         </div>
                     </BentoCard>

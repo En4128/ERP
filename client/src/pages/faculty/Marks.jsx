@@ -303,7 +303,7 @@ const FacultyMarks = () => {
                                             const percent = (score / maxMarks) * 100;
                                             let grade = 'F';
                                             let color = 'rose';
-                                            if (percent >= 90) { grade = 'A+'; color = 'indigo'; }
+                                            if (percent >= 90) { grade = 'O'; color = 'indigo'; }
                                             else if (percent >= 80) { grade = 'A'; color = 'indigo'; }
                                             else if (percent >= 70) { grade = 'B'; color = 'emerald'; }
                                             else if (percent >= 60) { grade = 'C'; color = 'amber'; }
