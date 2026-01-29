@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const placementController = require('../controllers/placementController');
 const { protect, authorize } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 const adminOnly = authorize('admin');
 
@@ -29,7 +30,7 @@ router.get('/student/drives', protect, placementController.getAvailableDrives);
 router.get('/student/drives/:id', protect, placementController.getDriveDetails);
 
 // Applications
-router.post('/student/apply', protect, placementController.applyToDrive);
+router.post('/student/apply', protect, upload.single('resume'), placementController.applyToDrive);
 router.get('/student/applications', protect, placementController.getMyApplications);
 
 // Statistics

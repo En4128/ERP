@@ -25,20 +25,32 @@ const initSocket = (server) => {
         });
 
         socket.on('send_message', async (data) => {
-            const { sender, receiver, content } = data;
+            const { sender, receiver, content, messageType, fileUrl, fileName, fileType, fileSize } = data;
 
-            if (!sender || !receiver || !content) {
-                console.error('Socket error - send_message: Missing required fields', { sender, receiver, content });
+            // Content is optional for file-only messages
+            if (!sender || !receiver) {
+                console.error('Socket error - send_message: Missing required fields', { sender, receiver });
                 return;
             }
 
             try {
                 // Save to database
-                const newMessage = new Message({
+                const messageData = {
                     sender,
                     receiver,
-                    content
-                });
+                    content: content || '',
+                    messageType: messageType || 'text'
+                };
+
+                // Add file fields if present
+                if (fileUrl) {
+                    messageData.fileUrl = fileUrl;
+                    messageData.fileName = fileName;
+                    messageData.fileType = fileType;
+                    messageData.fileSize = fileSize;
+                }
+
+                const newMessage = new Message(messageData);
                 await newMessage.save();
 
                 // Send to receiver if online

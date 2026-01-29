@@ -16,7 +16,7 @@ const Placements = () => {
     const [loading, setLoading] = useState(true);
     const [selectedDrive, setSelectedDrive] = useState(null);
     const [showApplyModal, setShowApplyModal] = useState(false);
-    const [resumeUrl, setResumeUrl] = useState('');
+    const [resumeFile, setResumeFile] = useState(null);
     const [coverLetter, setCoverLetter] = useState('');
     const [applying, setApplying] = useState(false);
 
@@ -46,27 +46,33 @@ const Placements = () => {
     };
 
     const handleApply = async () => {
-        if (!resumeUrl.trim()) {
-            alert('Please provide your resume URL');
+        if (!resumeFile) {
+            alert('Please upload your resume PDF');
             return;
         }
 
         setApplying(true);
         try {
             const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('driveId', selectedDrive._id);
+            formData.append('resume', resumeFile);
+            formData.append('coverLetter', coverLetter);
+
             await axios.post(
                 'http://localhost:5000/api/placement/student/apply',
+                formData,
                 {
-                    driveId: selectedDrive._id,
-                    resumeUrl,
-                    coverLetter
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             );
 
             alert('Application submitted successfully!');
             setShowApplyModal(false);
-            setResumeUrl('');
+            setResumeFile(null);
             setCoverLetter('');
             fetchData(); // Refresh data
         } catch (error) {
@@ -169,8 +175,8 @@ const Placements = () => {
                     <button
                         onClick={() => setActiveTab('drives')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'drives'
-                                ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm'
-                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                            ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                     >
                         Available Drives
@@ -178,8 +184,8 @@ const Placements = () => {
                     <button
                         onClick={() => setActiveTab('applications')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'applications'
-                                ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm'
-                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                            ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                     >
                         My Applications
@@ -322,14 +328,34 @@ const Placements = () => {
                             </div>
                             <div className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-1">Resume URL *</label>
-                                    <input
-                                        type="url"
-                                        placeholder="https://drive.google.com/..."
-                                        value={resumeUrl}
-                                        onChange={(e) => setResumeUrl(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                                    />
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-1">Upload Resume (PDF) *</label>
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            accept=".pdf"
+                                            onChange={(e) => setResumeFile(e.target.files[0])}
+                                            className="hidden"
+                                            id="resume-upload"
+                                        />
+                                        <label
+                                            htmlFor="resume-upload"
+                                            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all group"
+                                        >
+                                            {resumeFile ? (
+                                                <div className="flex flex-col items-center text-indigo-600 dark:text-indigo-400">
+                                                    <CheckCircle size={32} className="mb-2" />
+                                                    <span className="text-sm font-bold truncate max-w-[200px]">{resumeFile.name}</span>
+                                                    <span className="text-[10px] uppercase tracking-widest mt-1">Click to change</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center text-slate-400 group-hover:text-indigo-500 transition-colors">
+                                                    <FileText size={32} className="mb-2" />
+                                                    <span className="text-sm font-bold">Choose a file...</span>
+                                                    <span className="text-[10px] uppercase tracking-widest mt-1">PDF format (Max 10MB)</span>
+                                                </div>
+                                            )}
+                                        </label>
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-1">Cover Letter (Optional)</label>

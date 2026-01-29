@@ -17,9 +17,16 @@ const Chat = () => {
     const [loading, setLoading] = useState(true);
     const [recommendedUsers, setRecommendedUsers] = useState([]);
     const [activeTab, setActiveTab] = useState('chats'); // 'chats' or 'contacts'
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+    const [messageSearchQuery, setMessageSearchQuery] = useState('');
+    const [showMessageSearch, setShowMessageSearch] = useState(false);
+    const [uploadNotification, setUploadNotification] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState(false);
 
     const socket = useRef(null);
     const messagesEndRef = useRef(null);
+    const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const currentUser = JSON.parse(localStorage.getItem('user')) || { _id: '', name: '', role: '' };
 
@@ -138,6 +145,153 @@ const Chat = () => {
             setSearchResults(res.data);
         } catch (error) {
             console.error('Search error:', error);
+        }
+    };
+
+    const handleEmojiClick = (emoji) => {
+        setNewMessage(prev => prev + emoji);
+        setShowEmojiPicker(false);
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!selectedUser) {
+            setUploadNotification({
+                type: 'error',
+                message: 'Please select a user first'
+            });
+            setTimeout(() => setUploadNotification(null), 3000);
+            return;
+        }
+
+        // Check file size (50MB limit)
+        if (file.size > 50 * 1024 * 1024) {
+            setUploadNotification({
+                type: 'error',
+                message: 'File size exceeds 50MB limit'
+            });
+            setTimeout(() => setUploadNotification(null), 3000);
+            return;
+        }
+
+        try {
+            setUploadProgress(true);
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('receiverId', selectedUser._id);
+            formData.append('content', newMessage);
+
+            const token = localStorage.getItem('token');
+            const res = await axios.post('http://localhost:5000/api/chat/upload', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            // Emit via socket for real-time delivery
+            socket.current.emit('send_message', {
+                sender: currentUser._id,
+                receiver: selectedUser._id,
+                content: newMessage,
+                messageType: res.data.messageType,
+                fileUrl: res.data.fileUrl,
+                fileName: res.data.fileName,
+                fileType: res.data.fileType,
+                fileSize: res.data.fileSize
+            });
+
+            setNewMessage('');
+            setUploadProgress(false);
+
+            // Show success notification
+            setUploadNotification({
+                type: 'success',
+                message: `File "${file.name}" uploaded successfully!`
+            });
+            setTimeout(() => setUploadNotification(null), 3000);
+
+            // Reset file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        } catch (error) {
+            console.error('File upload error:', error);
+            setUploadProgress(false);
+            setUploadNotification({
+                type: 'error',
+                message: error.response?.data?.message || 'Failed to upload file'
+            });
+            setTimeout(() => setUploadNotification(null), 3000);
+        }
+    };
+
+    const handleAttachmentClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const toggleOptionsMenu = () => {
+        setShowOptionsMenu(prev => !prev);
+    };
+
+    const getFileIcon = (fileType) => {
+        if (!fileType) return '📄';
+        if (fileType.includes('image')) return '🖼️';
+        if (fileType.includes('pdf')) return '📕';
+        if (fileType.includes('video')) return '🎥';
+        if (fileType.includes('audio')) return '🎵';
+        if (fileType.includes('word') || fileType.includes('document')) return '📝';
+        if (fileType.includes('zip') || fileType.includes('rar')) return '📦';
+        return '📄';
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    };
+
+    const toggleMessageSearch = () => {
+        setShowMessageSearch(prev => !prev);
+        setMessageSearchQuery('');
+    };
+
+    const handleClearChat = async () => {
+        if (!selectedUser) return;
+
+        const confirmed = window.confirm(`Are you sure you want to clear all messages with ${selectedUser.name}? This action cannot be undone.`);
+
+        if (!confirmed) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:5000/api/chat/${selectedUser._id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Clear messages from UI
+            setMessages([]);
+            setShowOptionsMenu(false);
+
+            // Show success notification
+            setUploadNotification({
+                type: 'success',
+                message: 'Chat cleared successfully'
+            });
+            setTimeout(() => setUploadNotification(null), 3000);
+
+            // Refresh conversations list
+            fetchConversations();
+        } catch (error) {
+            console.error('Clear chat error:', error);
+            setUploadNotification({
+                type: 'error',
+                message: 'Failed to clear chat'
+            });
+            setTimeout(() => setUploadNotification(null), 3000);
         }
     };
 
@@ -311,54 +465,201 @@ const Chat = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <button className="p-3 text-slate-400 hover:text-indigo-500 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all">
+                                    <div className="flex items-center gap-2 relative">
+                                        <button
+                                            onClick={toggleMessageSearch}
+                                            className={`p-3 rounded-2xl transition-all ${showMessageSearch ? 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                        >
                                             <Search size={20} />
                                         </button>
-                                        <button className="p-3 text-slate-400 hover:text-indigo-500 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all">
+                                        <button
+                                            onClick={toggleOptionsMenu}
+                                            className={`p-3 rounded-2xl transition-all ${showOptionsMenu ? 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                        >
                                             <MoreVertical size={20} />
                                         </button>
+
+                                        {/* Options Menu Dropdown */}
+                                        {showOptionsMenu && (
+                                            <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50">
+                                                <button className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                                    View Profile
+                                                </button>
+                                                <button className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                                    Mute Notifications
+                                                </button>
+                                                <button
+                                                    onClick={handleClearChat}
+                                                    className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                                                >
+                                                    Clear Chat
+                                                </button>
+                                                <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+                                                <button className="w-full px-4 py-3 text-left text-sm font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors">
+                                                    Block User
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
+                                {/* Message Search Bar */}
+                                {showMessageSearch && (
+                                    <div className="p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                            <input
+                                                type="text"
+                                                placeholder="Search in messages..."
+                                                value={messageSearchQuery}
+                                                onChange={(e) => setMessageSearchQuery(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Messages Area */}
                                 <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar h-[300px]">
-                                    {messages.map((msg, idx) => {
-                                        const isMe = msg.sender === currentUser._id;
-                                        return (
-                                            <motion.div
-                                                key={msg._id || idx}
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
-                                            >
-                                                <div className={`max-w-[70%] space-y-1`}>
-                                                    <div className={`p-4 rounded-[2rem] text-sm font-bold shadow-sm ${isMe
-                                                        ? 'bg-indigo-600 text-white rounded-tr-none shadow-indigo-200 dark:shadow-none'
-                                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'}`}>
-                                                        {msg.content}
+                                    {messages
+                                        .filter(msg =>
+                                            !messageSearchQuery ||
+                                            msg.content.toLowerCase().includes(messageSearchQuery.toLowerCase())
+                                        )
+                                        .map((msg, idx) => {
+                                            const isMe = msg.sender === currentUser._id;
+                                            return (
+                                                <motion.div
+                                                    key={msg._id || idx}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                                                >
+                                                    <div className={`max-w-[70%] space-y-1`}>
+                                                        {/* File Attachment */}
+                                                        {(msg.messageType === 'file' || msg.messageType === 'text-with-file') && msg.fileUrl && (
+                                                            <div className={`p-3 rounded-2xl ${isMe
+                                                                ? 'bg-indigo-600 text-white rounded-tr-none'
+                                                                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'}`}>
+                                                                <a
+                                                                    href={`http://localhost:5000/${msg.fileUrl}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                                                                >
+                                                                    {msg.fileType?.includes('image') ? (
+                                                                        <img
+                                                                            src={`http://localhost:5000/${msg.fileUrl}`}
+                                                                            alt={msg.fileName}
+                                                                            className="max-w-[250px] max-h-[200px] rounded-lg object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        <>
+                                                                            <div className={`text-3xl`}>
+                                                                                {getFileIcon(msg.fileType)}
+                                                                            </div>
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <p className="font-bold text-sm truncate">{msg.fileName}</p>
+                                                                                <p className={`text-xs ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>
+                                                                                    {formatFileSize(msg.fileSize)}
+                                                                                </p>
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                </a>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Text Content */}
+                                                        {msg.content && (
+                                                            <div className={`p-4 rounded-[2rem] text-sm font-bold shadow-sm ${isMe
+                                                                ? 'bg-indigo-600 text-white rounded-tr-none shadow-indigo-200 dark:shadow-none'
+                                                                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'}`}>
+                                                                {msg.content}
+                                                            </div>
+                                                        )}
+
+                                                        <div className={`flex items-center gap-2 px-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                                            <span className="text-[10px] font-bold text-slate-400">{format(new Date(msg.createdAt), 'HH:mm')}</span>
+                                                            {isMe && <ShieldCheck size={12} className={msg.read ? 'text-indigo-500' : 'text-slate-300'} />}
+                                                        </div>
                                                     </div>
-                                                    <div className={`flex items-center gap-2 px-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                                        <span className="text-[10px] font-bold text-slate-400">{format(new Date(msg.createdAt), 'HH:mm')}</span>
-                                                        {isMe && <ShieldCheck size={12} className={msg.read ? 'text-indigo-500' : 'text-slate-300'} />}
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
+                                                </motion.div>
+                                            );
+                                        })}
                                     <div ref={messagesEndRef} />
                                 </div>
 
                                 {/* Input Area */}
                                 <div className="p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-4">
-                                        <div className="flex gap-1">
-                                            <button type="button" className="p-3 text-slate-400 hover:text-indigo-500 transition-colors">
-                                                <Paperclip size={20} />
+                                        <div className="flex gap-1 relative">
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                onChange={handleFileUpload}
+                                                className="hidden"
+                                                accept="image/*,video/*,.pdf,.doc,.docx"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleAttachmentClick}
+                                                disabled={uploadProgress}
+                                                className={`p-3 rounded-xl transition-all ${uploadProgress ? 'opacity-50 cursor-not-allowed' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                                title="Attach file"
+                                            >
+                                                {uploadProgress ? (
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-500 border-t-transparent"></div>
+                                                ) : (
+                                                    <Paperclip size={20} />
+                                                )}
                                             </button>
-                                            <button type="button" className="p-3 text-slate-400 hover:text-indigo-500 transition-colors">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEmojiPicker(prev => !prev)}
+                                                className={`p-3 rounded-xl transition-all ${showEmojiPicker ? 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                                title="Add emoji"
+                                            >
                                                 <Smile size={20} />
                                             </button>
+
+                                            {/* Emoji Picker */}
+                                            {showEmojiPicker && (
+                                                <div className="absolute bottom-full left-0 mb-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden">
+                                                    <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+                                                        <h4 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider">Pick an Emoji</h4>
+                                                    </div>
+                                                    <div className="p-3 max-h-64 overflow-y-auto">
+                                                        <div className="grid grid-cols-8 gap-1">
+                                                            {['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣',
+                                                                '😊', '😇', '🙂', '😉', '😌', '😍', '🥰', '😘',
+                                                                '😙', '😚', '😋', '😛', '😝', '😜', '🤪',
+                                                                '🤨', '🧐', '🤓', '😎', '🤩', '😏', '😒',
+                                                                '😞', '😔', '😟', '😕', '🙁', '😣', '😖', '😫',
+                                                                '😩', '🥺', '😢', '😭', '😤', '😠', '🤬',
+                                                                '👍', '👎', '✊', '🤛', '🤜', '👏', '🙌',
+                                                                '👐', '🤲', '🤝', '🙏', '✌️', '🤞', '🤟', '🤘',
+                                                                '👌', '🤌', '🤏', '👈', '👉', '👆', '👇', '☝️',
+                                                                '✋', '🤚', '🖐️', '🖖', '👋', '🤙', '💪', '🦾',
+                                                                '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍',
+
+                                                                '🔥', '✨', '⭐', '🌟', '✅',
+                                                                '🎉', '🎊', '🎈', '🎁', '🏆', '🥇', '🥈', '🥉'
+                                                            ].map((emoji, index) => (
+                                                                <button
+                                                                    key={`${emoji}-${index}`}
+                                                                    type="button"
+                                                                    onClick={() => handleEmojiClick(emoji)}
+                                                                    className="text-2xl hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded-lg transition-all hover:scale-110 active:scale-95"
+                                                                    title={emoji}
+                                                                >
+                                                                    {emoji}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex-1 relative">
                                             <input
@@ -378,6 +679,47 @@ const Chat = () => {
                                         </button>
                                     </form>
                                 </div>
+
+                                {/* Upload Notification Toast */}
+                                <AnimatePresence>
+                                    {uploadNotification && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 20 }}
+                                            className={`absolute bottom-24 left-1/2 -translate-x-1/2 px-6 py-4 rounded-2xl shadow-2xl border z-50 min-w-[320px] ${uploadNotification.type === 'error'
+                                                ? 'bg-rose-900 dark:bg-rose-800 text-white border-rose-700'
+                                                : 'bg-emerald-900 dark:bg-emerald-800 text-white border-emerald-700'
+                                                }`}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <div className={`p-2 rounded-lg ${uploadNotification.type === 'error'
+                                                    ? 'bg-rose-500/20'
+                                                    : 'bg-emerald-500/20'
+                                                    }`}>
+                                                    {uploadNotification.type === 'error' ? (
+                                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                            <path d="M10 6V10M10 14H10.01M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                                        </svg>
+                                                    ) : (
+                                                        <Paperclip size={20} className="text-emerald-400" />
+                                                    )}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-bold">{uploadNotification.message}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setUploadNotification(null)}
+                                                    className="text-white/60 hover:text-white transition-colors"
+                                                >
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </>
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center p-10 text-center space-y-6">

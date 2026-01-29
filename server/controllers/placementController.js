@@ -82,7 +82,8 @@ exports.getAllApplications = async (req, res) => {
             role: app.drive?.role || 'N/A',
             appliedDate: app.appliedDate.toISOString().split('T')[0],
             status: app.status,
-            resumeUrl: app.resumeUrl
+            resumeUrl: app.resumeUrl,
+            coverLetter: app.coverLetter
         }));
 
         res.json(formattedApplications);
@@ -237,7 +238,8 @@ exports.applyToDrive = async (req, res) => {
         const student = await Student.findOne({ user: req.user.id });
         if (!student) return res.status(404).json({ message: 'Student profile not found' });
 
-        const { driveId, resumeUrl, coverLetter } = req.body;
+        const { driveId, coverLetter } = req.body;
+        const resumeUrl = req.file ? req.file.path.replace(/\\/g, '/') : '';
 
         // Check if drive exists and is still accepting applications
         const drive = await PlacementDrive.findById(driveId);

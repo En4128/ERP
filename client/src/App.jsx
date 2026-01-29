@@ -75,7 +75,7 @@ function App() {
             <Route path="/student/library" element={<StudentLibrary />} />
             <Route path="/student/leave" element={<StudentLeave />} />
             <Route path="/student/exams" element={<ExamSchedule role="student" />} />
-            <Route path="/student/support" element={<StudentSupport />} />
+            <Route path="/student/support" element={<StudentSupport role="student" />} />
             <Route path="/student/notifications" element={<StudentNotifications />} />
             <Route path="/student/assignments" element={<StudentAssignments />} />
             <Route path="/student/profile" element={<StudentProfile />} />
@@ -94,11 +94,13 @@ function App() {
             <Route path="/faculty/profile" element={<FacultyProfile />} />
             <Route path="/faculty/leave-requests" element={<FacultyLeaveRequests />} />
             <Route path="/faculty/chat" element={<Chat />} />
+            <Route path="/faculty/support" element={<StudentSupport role="faculty" />} />
 
             <Route path="/faculty/exams" element={<ExamSchedule role="faculty" />} />
 
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/exams" element={<AdminManageExams />} />
+            <Route path="/admin/support" element={<StudentSupport role="admin" />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
           </Routes>
         )}

@@ -294,7 +294,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
         const ctx = canvas.getContext('2d');
         const particles = particlesRef.current;
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         for (let i = particles.length - 1; i >= 0; i--) {

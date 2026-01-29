@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { Trash2, Search, Plus, Edit2, X, AlertCircle, Building, Calendar, DollarSign, TrendingUp, CheckCircle, Users, FileText, Eye, XCircle, Loader2 } from 'lucide-react';
 
 const ManagePlacements = () => {
@@ -13,6 +14,7 @@ const ManagePlacements = () => {
     const [error, setError] = useState('');
     const [formLoading, setFormLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('drives');
+    const [viewingApp, setViewingApp] = useState(null);
 
     const [formData, setFormData] = useState({
         companyName: '',
@@ -354,6 +356,7 @@ const ManagePlacements = () => {
                                     <th className="px-6 py-4 text-sm font-semibold text-gray-600 dark:text-slate-400">Company</th>
                                     <th className="px-6 py-4 text-sm font-semibold text-gray-600 dark:text-slate-400">Role</th>
                                     <th className="px-6 py-4 text-sm font-semibold text-gray-600 dark:text-slate-400">Applied Date</th>
+                                    <th className="px-6 py-4 text-sm font-semibold text-gray-600 dark:text-slate-400">Documents</th>
                                     <th className="px-6 py-4 text-sm font-semibold text-gray-600 dark:text-slate-400">Status</th>
                                     <th className="px-6 py-4 text-sm font-semibold text-gray-600 dark:text-slate-400 text-center">Actions</th>
                                 </tr>
@@ -370,6 +373,32 @@ const ManagePlacements = () => {
                                         <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">{app.company}</td>
                                         <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">{app.role}</td>
                                         <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">{app.appliedDate}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                {app.resumeUrl ? (
+                                                    <a
+                                                        href={`http://localhost:5000/${app.resumeUrl}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-500/20 transition-all text-[10px] font-black uppercase tracking-wider whitespace-nowrap flex-shrink-0 min-w-fit"
+                                                    >
+                                                        <FileText size={12} /> Resume
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider italic">No Resume</span>
+                                                )}
+                                                {app.coverLetter ? (
+                                                    <button
+                                                        onClick={() => setViewingApp(app)}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl hover:bg-amber-500/20 transition-all text-[10px] font-black uppercase tracking-wider whitespace-nowrap flex-shrink-0 min-w-fit"
+                                                    >
+                                                        <Eye size={12} /> Response
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider italic">No Response</span>
+                                                )}
+                                            </div>
+                                        </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(app.status)}`}>
                                                 {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
@@ -560,6 +589,49 @@ const ManagePlacements = () => {
                             </button>
                         </form>
                     </div>
+                </div>
+            )}
+            {/* Cover Letter Modal */}
+            {viewingApp && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+                    >
+                        <div className="flex justify-between items-center p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                                    <FileText size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Response</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">From {viewingApp.studentName}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setViewingApp(null)}
+                                className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                            >
+                                <X size={24} className="text-slate-400" />
+                            </button>
+                        </div>
+                        <div className="p-8 max-h-[60vh] overflow-y-auto">
+                            <div className="prose dark:prose-invert prose-slate max-w-none">
+                                <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed font-medium">
+                                    {viewingApp.coverLetter}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-6 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                            <button
+                                onClick={() => setViewingApp(null)}
+                                className="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition"
+                            >
+                                Close Document
+                            </button>
+                        </div>
+                    </motion.div>
                 </div>
             )}
         </div>

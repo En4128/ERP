@@ -3,8 +3,10 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import {
     Calendar, Plus, Clock, MapPin, Trash2,
-    FileText, CheckCircle, AlertCircle, Users, Download
+    FileText, CheckCircle, AlertCircle, Users, Download, Loader2
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const ManageExams = () => {
     const [exams, setExams] = useState([]);
@@ -26,11 +28,26 @@ const ManageExams = () => {
     // Filters
     const [selectedDept, setSelectedDept] = useState('all');
     const [selectedSem, setSelectedSem] = useState('all');
+    const [adminStats, setAdminStats] = useState({ totalStudents: 0, resultsPublished: 0 });
+    const [generating, setGenerating] = useState(false);
 
     useEffect(() => {
         fetchExams();
         fetchCourses();
+        fetchStats();
     }, [selectedDept, selectedSem]);
+
+    const fetchStats = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('http://localhost:5000/api/admin/dashboard-stats', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAdminStats(res.data.stats);
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        }
+    };
 
     const fetchExams = async () => {
         try {
@@ -81,6 +98,98 @@ const ManageExams = () => {
         }
     };
 
+    const handleGenerateHallTickets = async () => {
+        if (selectedDept === 'all' || selectedSem === 'all') {
+            alert('Please select a specific Department and Semester to generate hall tickets.');
+            return;
+        }
+
+        setGenerating(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:5000/api/exams/hall-tickets?department=${selectedDept}&semester=${selectedSem}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const { students, exams } = res.data;
+
+            if (students.length === 0) {
+                alert('No students found for the selected department and semester.');
+                return;
+            }
+
+            if (exams.length === 0) {
+                alert('No exams scheduled for the selected filters.');
+                return;
+            }
+
+            const doc = new jsPDF();
+
+            students.forEach((student, index) => {
+                if (index > 0) doc.addPage();
+
+                // Professional Header
+                doc.setFontSize(22);
+                doc.setTextColor(40);
+                doc.text('LEARNEX ERP - ACADEMIC PORTAL', 105, 20, { align: 'center' });
+
+                doc.setFontSize(16);
+                doc.text('EXAMINATION HALL TICKET', 105, 30, { align: 'center' });
+
+                doc.setDrawColor(200);
+                doc.line(20, 35, 190, 35);
+
+                // Student Info Box
+                const studentName = student.user?.name || 'N/A';
+                doc.setFontSize(12);
+                doc.setTextColor(60);
+                doc.text(`Student Name: ${studentName}`, 20, 50);
+                doc.text(`Admission No: ${student.admissionNumber || 'N/A'}`, 20, 60);
+                doc.text(`Department: ${student.department || 'N/A'}`, 120, 50);
+                doc.text(`Semester: ${student.sem || 'N/A'}`, 120, 60);
+
+                // Table of Exams
+                const tableData = exams.map(exam => [
+                    exam.course.code,
+                    exam.course.name,
+                    new Date(exam.date).toLocaleDateString(),
+                    exam.time,
+                    exam.venue
+                ]);
+
+                autoTable(doc, {
+                    startY: 75,
+                    head: [['Code', 'Course Name', 'Date', 'Time', 'Venue']],
+                    body: tableData,
+                    theme: 'striped',
+                    headStyles: { fillColor: [124, 58, 237] }, // Purple-600
+                    margin: { top: 75 }
+                });
+
+                // Footer / Instructions
+                const finalY = doc.lastAutoTable.finalY + 20;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'italic');
+                doc.text('Important Instructions:', 20, finalY);
+                doc.setFont('helvetica', 'normal');
+                doc.text('1. Please carry your physical ID card along with this hall ticket.', 20, finalY + 7);
+                doc.text('2. Report to the examination hall 30 minutes before the scheduled time.', 20, finalY + 14);
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Controller of Examinations', 150, finalY + 40, { align: 'center' });
+            });
+
+            doc.save(`HallTickets_${selectedDept}_Sem${selectedSem}.pdf`);
+        } catch (error) {
+            console.error("Error generating hall tickets:", error);
+            const errorMessage = error.response?.data?.message || error.message || 'Unknown error occurred';
+            alert(`Error generating hall tickets: ${errorMessage}`);
+        } finally {
+            setGenerating(false);
+        }
+    };
+
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this exam?')) return;
         try {
@@ -107,8 +216,17 @@ const ManageExams = () => {
                         <p className="text-slate-600 dark:text-gray-400">Schedule exams, generate hall tickets, and manage results</p>
                     </div>
                     <div className="flex gap-3">
-                        <button className="flex items-center px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-gray-200 hover:bg-white dark:hover:bg-slate-700 transition">
-                            <FileText size={18} className="mr-2" /> Generate Hall Tickets
+                        <button
+                            disabled={generating}
+                            onClick={handleGenerateHallTickets}
+                            className="flex items-center px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-gray-200 hover:bg-white dark:hover:bg-slate-700 transition disabled:opacity-50"
+                        >
+                            {generating ? (
+                                <Loader2 size={18} className="mr-2 animate-spin" />
+                            ) : (
+                                <FileText size={18} className="mr-2" />
+                            )}
+                            {generating ? 'Generating...' : 'Generate Hall Tickets'}
                         </button>
                         <button
                             onClick={() => setShowModal(true)}
@@ -147,7 +265,9 @@ const ManageExams = () => {
                             <CheckCircle size={24} />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white">--</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                                {adminStats.resultsPublished}
+                            </p>
                             <p className="text-sm text-slate-600">Results Published</p>
                         </div>
                     </div>
@@ -156,7 +276,9 @@ const ManageExams = () => {
                             <Users size={24} />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white">--</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                                {adminStats.totalStudents}
+                            </p>
                             <p className="text-sm text-slate-600">Total Students</p>
                         </div>
                     </div>

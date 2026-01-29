@@ -251,7 +251,7 @@ const SidebarComponent = ({ role }) => {
                     <SidebarLink
                         link={{
                             name: 'Help & Support',
-                            path: '/student/support',
+                            path: `/${role}/support`,
                             icon: <MessageSquare size={20} />
                         }}
                     />

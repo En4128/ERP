@@ -3,6 +3,7 @@ const Faculty = require('../models/Faculty');
 const Course = require('../models/Course');
 const User = require('../models/User');
 const Notice = require('../models/Notice');
+const Mark = require('../models/Mark');
 const bcrypt = require('bcryptjs');
 
 // @desc    Get counts for dashboard
@@ -13,12 +14,14 @@ exports.getAdminStats = async (req, res) => {
         const studentCount = await Student.countDocuments();
         const facultyCount = await Faculty.countDocuments();
         const courseCount = await Course.countDocuments();
+        const resultsCount = await Mark.distinct('course').then(courses => courses.length);
 
         res.json({
             stats: {
                 totalStudents: studentCount,
                 totalFaculty: facultyCount,
-                totalCourses: courseCount
+                totalCourses: courseCount,
+                resultsPublished: resultsCount
             }
         });
     } catch (error) {

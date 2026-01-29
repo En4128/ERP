@@ -47,9 +47,17 @@ exports.getConversations = async (req, res) => {
                 conversationPartners.add(partnerId);
                 const partner = await User.findById(partnerId).select('name email role');
                 if (partner) {
+                    // Format last message preview based on message type
+                    let lastMessagePreview = msg.content;
+                    if (msg.messageType === 'file') {
+                        lastMessagePreview = `📎 ${msg.fileName}`;
+                    } else if (msg.messageType === 'text-with-file') {
+                        lastMessagePreview = `📎 ${msg.content}`;
+                    }
+
                     conversations.push({
                         user: partner,
-                        lastMessage: msg.content,
+                        lastMessage: lastMessagePreview,
                         lastMessageDate: msg.createdAt,
                         unread: !msg.read && msg.receiver.toString() === currentUserId.toString()
                     });
@@ -60,6 +68,43 @@ exports.getConversations = async (req, res) => {
         res.json(conversations);
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Upload file and create message with attachment
+// @route   POST /api/chat/upload
+// @access  Private
+exports.uploadChatFile = async (req, res) => {
+    try {
+        const { receiverId, content } = req.body;
+        const currentUserId = req.user._id;
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        if (!receiverId) {
+            return res.status(400).json({ message: 'Receiver ID is required' });
+        }
+
+        // Create message with file attachment
+        const messageType = content ? 'text-with-file' : 'file';
+
+        const message = await Message.create({
+            sender: currentUserId,
+            receiver: receiverId,
+            content: content || '',
+            messageType: messageType,
+            fileUrl: req.file.path,
+            fileName: req.file.originalname,
+            fileType: req.file.mimetype,
+            fileSize: req.file.size
+        });
+
+        res.status(201).json(message);
+    } catch (error) {
+        console.error('File upload error:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -113,3 +158,27 @@ exports.getRecommendedUsers = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Clear all messages in a conversation
+// @route   DELETE /api/chat/:userId
+// @access  Private
+exports.clearChat = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user._id;
+
+        // Delete all messages between the two users
+        await Message.deleteMany({
+            $or: [
+                { sender: currentUserId, receiver: userId },
+                { sender: userId, receiver: currentUserId }
+            ]
+        });
+
+        res.json({ message: 'Chat cleared successfully' });
+    } catch (error) {
+        console.error('Clear chat error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+

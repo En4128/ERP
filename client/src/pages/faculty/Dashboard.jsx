@@ -24,13 +24,15 @@ import { cn } from '../../lib/utils';
 
 // --- Premium Bento Components ---
 
-const BentoCard = ({ children, className, title, icon: Icon, delay = 0 }) => (
+const BentoCard = ({ children, className, title, icon: Icon, delay = 0, onClick }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
+        onClick={onClick}
         className={cn(
             "relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 p-6 md:p-8 group",
+            onClick && "cursor-pointer",
             className
         )}
     >
@@ -222,17 +224,16 @@ const FacultyDashboard = () => {
                     <div className="grid grid-cols-2 gap-4 lg:col-span-1">
                         <ActivityWidget
                             title="Pending Evals"
-                            value={data.stats.pendingEvaluations?.value || 0}
                             icon={ClipboardList}
                             variant="amber"
                             onClick={() => navigate('/faculty/marks')}
                         />
                         <ActivityWidget
                             title="Messages"
-                            value="4"
+                            value={data.stats.messages?.value || "4"}
                             icon={MessageSquare}
                             variant="purple"
-                            onClick={() => { }}
+                            onClick={() => navigate('/faculty/chat')}
                         />
                         <button
                             onClick={() => navigate('/faculty/notifications')}
@@ -354,7 +355,11 @@ const FacultyDashboard = () => {
                 </div>
 
                 {/* Layer 3: Announcements */}
-                <BentoCard title="Faculty Notice Board" icon={Bell}>
+                <BentoCard
+                    title="Faculty Notice Board"
+                    icon={Bell}
+                    onClick={() => navigate('/faculty/notifications')}
+                >
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {data.announcements.length > 0 ? data.announcements.slice(0, 3).map((a, idx) => (
                             <div key={idx} className="p-6 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex flex-col justify-between group/ann">

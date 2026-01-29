@@ -112,3 +112,23 @@ exports.deleteExam = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+// Get hall ticket data for students (Admin)
+exports.getHallTicketData = async (req, res) => {
+    try {
+        const { department, semester } = req.query;
+        if (!department || !semester || department === 'all' || semester === 'all') {
+            return res.status(400).json({ message: 'Please select a specific department and semester' });
+        }
+
+        // Find students in the dept and semester
+        const students = await Student.find({ department, sem: semester }).populate('user', 'name');
+
+        // Find exams for this dept and semester
+        const exams = await Exam.find({ department, semester }).populate('course', 'name code');
+
+        res.json({ students, exams });
+    } catch (error) {
+        console.error('Get Hall Ticket Data Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};

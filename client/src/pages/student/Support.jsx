@@ -4,7 +4,7 @@ import { MessageSquare, Phone, HelpCircle, FileText, ChevronDown, ChevronUp, Arr
 
 import { useChat } from '../../context/ChatContext';
 
-const Support = () => {
+const Support = ({ role = "student" }) => {
     const { openChat } = useChat();
     const [view, setView] = useState('main'); // 'main', 'faq', 'article'
     const [expandedFaq, setExpandedFaq] = useState(null);
@@ -96,7 +96,7 @@ const Support = () => {
     };
 
     return (
-        <Layout role="student">
+        <Layout role={role}>
             <div className="animate-fade-in-up space-y-8">
                 {view === 'main' ? (
                     <>
