@@ -23,7 +23,10 @@ const {
     searchAllCourses,
     joinCourse,
     uploadMaterial,
-    deleteMaterial
+    deleteMaterial,
+    sendStudentAlert,
+    getMarks,
+    clearMarks
 } = require('../controllers/facultyController');
 const upload = require('../middleware/uploadMiddleware');
 const { getFacultyExams } = require('../controllers/examController');
@@ -56,6 +59,9 @@ router.put('/leave-requests/:id', updateLeaveStatus);
 router.get('/exams', getFacultyExams);
 router.get('/search-courses', searchAllCourses);
 router.post('/join-course', joinCourse);
+router.post('/send-alert', sendStudentAlert);
+router.get('/marks', getMarks);
+router.delete('/marks', clearMarks);
 
 // Course Materials
 router.post('/courses/:courseId/materials', upload.single('file'), uploadMaterial);

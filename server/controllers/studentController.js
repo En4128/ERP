@@ -11,6 +11,7 @@ const NoticeRead = require('../models/NoticeRead');
 const Assignment = require('../models/Assignment');
 const Leave = require('../models/Leave');
 const Faculty = require('../models/Faculty');
+const Notification = require('../models/Notification');
 
 exports.getStudentProfile = async (req, res) => {
     try {
@@ -135,11 +136,15 @@ exports.getDashboardStats = async (req, res) => {
             };
         }).sort((a, b) => a.time.localeCompare(b.time));
 
-        // 3. Recent Announcements
+        // 3. Recent Announcements & Direct Alerts
         const notices = await Notice.find({
             targetAudience: { $in: ['all', 'student'] },
             isPublished: true
         }).sort({ createdAt: -1 }).limit(5).populate('postedBy', 'name');
+
+        const directAlerts = await Notification.find({
+            recipient: req.user._id
+        }).sort({ createdAt: -1 }).limit(5);
 
         const formattedNotices = notices.map(notice => ({
             id: notice._id,
@@ -147,8 +152,23 @@ exports.getDashboardStats = async (req, res) => {
             content: notice.content,
             type: notice.type || 'general',
             author: notice.postedBy?.name || 'Admin',
-            date: notice.date || notice.createdAt
+            date: notice.date || notice.createdAt,
+            isGlobal: true
         }));
+
+        const formattedDirect = directAlerts.map(notif => ({
+            id: notif._id,
+            title: notif.title,
+            content: notif.message,
+            type: notif.type || 'alert',
+            author: notif.title.includes('Alert from') ? notif.title.replace('Alert from ', '') : 'Faculty',
+            date: notif.createdAt,
+            isGlobal: false
+        }));
+
+        const combinedAnnouncements = [...formattedNotices, ...formattedDirect]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 5);
 
         // 4. Grades/CGPA
         const marks = await Mark.find({ student: student._id }).populate('course');
@@ -216,7 +236,7 @@ exports.getDashboardStats = async (req, res) => {
                 leaveStats
             },
             timetable: formattedTimetable,
-            announcements: formattedNotices,
+            announcements: combinedAnnouncements,
             recentGrades,
             attendanceOverview: subjectWiseAttendance
         });
@@ -479,6 +499,10 @@ exports.getNotifications = async (req, res) => {
             isPublished: true
         }).sort({ createdAt: -1 }).populate('postedBy', 'name');
 
+        const notifications = await Notification.find({
+            recipient: req.user._id
+        }).sort({ createdAt: -1 });
+
         const readNotices = await NoticeRead.find({ userId: req.user._id });
         const readNoticeIds = readNotices.map(rn => rn.noticeId.toString());
 
@@ -489,10 +513,24 @@ exports.getNotifications = async (req, res) => {
             type: notice.type || 'general',
             author: notice.postedBy?.name || 'Admin',
             date: notice.createdAt,
-            read: readNoticeIds.includes(notice._id.toString())
+            read: readNoticeIds.includes(notice._id.toString()),
+            isGlobal: true
         }));
 
-        res.json(formattedNotices);
+        const formattedDirect = notifications.map(notif => ({
+            id: notif._id,
+            title: notif.title,
+            content: notif.message,
+            type: notif.type || 'alert',
+            author: notif.title.includes('Alert from') ? notif.title.replace('Alert from ', '') : 'Faculty',
+            date: notif.createdAt,
+            read: notif.read,
+            isGlobal: false
+        }));
+
+        const merged = [...formattedNotices, ...formattedDirect].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        res.json(merged);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -500,9 +538,20 @@ exports.getNotifications = async (req, res) => {
 
 exports.markAsRead = async (req, res) => {
     try {
+        const id = req.params.id;
+
+        // Try finding it as a direct notification first
+        const directNotif = await Notification.findById(id);
+        if (directNotif) {
+            directNotif.read = true;
+            await directNotif.save();
+            return res.json({ message: 'Notification marked as read' });
+        }
+
+        // Otherwise assume it's a Notice and use NoticeRead
         await NoticeRead.findOneAndUpdate(
-            { noticeId: req.params.id, userId: req.user._id },
-            { noticeId: req.params.id, userId: req.user._id },
+            { noticeId: id, userId: req.user._id },
+            { noticeId: id, userId: req.user._id },
             { upsert: true, new: true }
         );
         res.json({ message: 'Marked as read' });

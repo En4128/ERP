@@ -56,6 +56,9 @@ const ManageStudents = () => {
     const [facultyCourses, setFacultyCourses] = useState([]);
     const [enrollCourseId, setEnrollCourseId] = useState('');
     const [enrolling, setEnrolling] = useState(false);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [sendingAlert, setSendingAlert] = useState(false);
 
     useEffect(() => {
         fetchStudents();
@@ -141,6 +144,27 @@ const ManageStudents = () => {
             alert(error.response?.data?.message || "Enrollment failed");
         } finally {
             setEnrolling(false);
+        }
+    };
+
+    const handleSendAlert = async () => {
+        if (!alertMessage.trim()) return alert("Please enter an alert message");
+        setSendingAlert(true);
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post('http://localhost:5000/api/faculty/send-alert', {
+                studentId: selectedStudent.profile._id,
+                message: alertMessage
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert("Alert sent to student successfully!");
+            setAlertMessage('');
+            setIsAlertModalOpen(false);
+        } catch (error) {
+            alert(error.response?.data?.message || "Failed to send alert");
+        } finally {
+            setSendingAlert(false);
         }
     };
 
@@ -238,7 +262,7 @@ const ManageStudents = () => {
                                     onChange={(e) => setFilterCourse(e.target.value)}
                                     className="h-full pl-6 pr-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white appearance-none cursor-pointer min-w-[180px]"
                                 >
-                                    <option value="all">Global Roster</option>
+                                    <option value="all">ALL STUDENTS</option>
                                     {facultyCourses.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                                 </select>
                                 <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
@@ -338,77 +362,77 @@ const ManageStudents = () => {
                                     exit={{ opacity: 0, x: 20 }}
                                     className="space-y-6 sticky top-24"
                                 >
-                                    <GlassCard className="p-10 text-center">
-                                        <div className="mx-auto w-24 h-24 rounded-[2rem] bg-indigo-500 text-white flex items-center justify-center text-2xl font-black shadow-2xl shadow-indigo-500/30 mb-6">
+                                    <GlassCard className="p-10 text-center bg-[#070b14] border-slate-800/50">
+                                        <div className="mx-auto w-32 h-32 rounded-[2.5rem] bg-[#6366f1] text-white flex items-center justify-center text-4xl font-black shadow-2xl shadow-indigo-500/20 mb-8">
                                             {selectedStudent.profile.user.name.split(' ').map(n => n[0]).join('')}
                                         </div>
-                                        <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter mb-1 leading-none">{selectedStudent.profile.user.name}</h3>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{selectedStudent.profile.admissionNumber}</p>
+                                        <h3 className="text-4xl font-black text-white tracking-tighter mb-2 leading-none">{selectedStudent.profile.user.name}</h3>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">{selectedStudent.profile.admissionNumber}</p>
 
-                                        <div className="grid grid-cols-2 gap-3 mt-8">
-                                            <div className="p-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-left">
-                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Department</p>
-                                                <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">{selectedStudent.profile.department}</p>
+                                        <div className="grid grid-cols-2 gap-4 mt-12">
+                                            <div className="p-6 rounded-[2rem] bg-slate-900/50 border border-slate-800/50 text-left">
+                                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Department</p>
+                                                <p className="text-xs font-black text-white truncate">{selectedStudent.profile.department}</p>
                                             </div>
-                                            <div className="p-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-left">
-                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Semester</p>
-                                                <p className="text-xs font-black text-slate-800 dark:text-slate-200">{selectedStudent.profile.semester}</p>
+                                            <div className="p-6 rounded-[2rem] bg-slate-900/50 border border-slate-800/50 text-left">
+                                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Semester</p>
+                                                <p className="text-xs font-black text-white">{selectedStudent.profile.semester}</p>
                                             </div>
                                         </div>
 
-                                        <div className="flex gap-2 mt-4">
-                                            <button className="flex-1 px-4 py-4 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
-                                                <MailCheck size={14} /> Send Alert
+                                        <div className="flex gap-3 mt-6">
+                                            <button
+                                                onClick={() => setIsAlertModalOpen(true)}
+                                                className="flex-1 px-4 py-5 rounded-3xl bg-[#4f46e5] text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3"
+                                            >
+                                                <MailCheck size={16} /> Send Alert
                                             </button>
-                                            <button className="p-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
-                                                <Phone size={14} />
+                                            <button className="p-5 rounded-3xl bg-white text-slate-900 shadow-xl shadow-black/10">
+                                                <Phone size={18} />
                                             </button>
                                         </div>
                                     </GlassCard>
 
-                                    <GlassCard title="Academic Units" icon={GraduationCap} className="p-8">
-                                        <div className="space-y-6 mt-2">
+                                    <GlassCard className="p-10 bg-[#070b14] border-slate-800/50">
+                                        <div className="space-y-10">
                                             {selectedStudent.courseDetails.map((course, idx) => (
                                                 <div key={idx} className="group/unit">
-                                                    <div className="flex justify-between items-start mb-3">
+                                                    <div className="flex justify-between items-start mb-6">
                                                         <div>
-                                                            <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">{course.courseCode}</p>
-                                                            <p className="text-sm font-black text-slate-800 dark:text-white leading-tight">{course.courseName}</p>
+                                                            <p className="text-[10px] font-black text-[#6366f1] uppercase tracking-widest mb-1">{course.courseCode}</p>
+                                                            <h4 className="text-lg font-black text-white leading-tight">{course.courseName}</h4>
                                                         </div>
                                                         <button
                                                             onClick={() => handleUnenroll(selectedStudent.profile._id, course.courseCode)}
-                                                            className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all opacity-0 group-hover/unit:opacity-100"
+                                                            className="p-2 text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all opacity-0 group-hover/unit:opacity-100"
                                                         >
-                                                            <Trash2 size={14} />
+                                                            <Trash2 size={16} />
                                                         </button>
                                                     </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="flex-1 h-[3px] bg-slate-800/50 rounded-full overflow-hidden">
                                                             <motion.div
                                                                 initial={{ width: 0 }}
                                                                 animate={{ width: `${course.attendance.total > 0 ? (course.attendance.present / course.attendance.total) * 100 : 0}%` }}
-                                                                className="h-full bg-indigo-500"
+                                                                className="h-full bg-[#6366f1]"
                                                             />
                                                         </div>
-                                                        <span className="text-[10px] font-black text-slate-500">
+                                                        <span className="text-[11px] font-black text-slate-500 tabular-nums">
                                                             {course.attendance.total > 0 ? Math.round((course.attendance.present / course.attendance.total) * 100) : 0}%
                                                         </span>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
-                                        <button className="w-full mt-8 py-4 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            View Academic Transcript
-                                        </button>
                                     </GlassCard>
                                 </motion.div>
                             ) : (
-                                <GlassCard className="p-16 flex flex-col items-center justify-center text-center h-[600px] border-dashed">
-                                    <div className="w-20 h-20 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8">
-                                        <Users size={32} />
+                                <GlassCard className="p-16 flex flex-col items-center justify-center text-center h-[600px] border-dashed bg-[#070b14]/30 border-slate-800">
+                                    <div className="w-24 h-24 rounded-[3rem] bg-slate-900/50 flex items-center justify-center text-slate-700 mb-8 border border-slate-800">
+                                        <Users size={36} />
                                     </div>
-                                    <h4 className="text-xl font-black text-slate-400 dark:text-slate-600 uppercase tracking-tight">Selective Focus</h4>
-                                    <p className="text-xs font-bold text-slate-400 dark:text-slate-600 mt-2 leading-relaxed">Choose a student identity to inspect <br />their scholarly trajectory and biometrics.</p>
+                                    <h4 className="text-2xl font-black text-slate-500 uppercase tracking-tight">Selective Focus</h4>
+                                    <p className="text-xs font-bold text-slate-600 mt-4 leading-relaxed px-8">Choose a student identity to inspect <br />their scholarly trajectory and biometrics.</p>
                                 </GlassCard>
                             )}
                         </AnimatePresence>
@@ -512,6 +536,68 @@ const ManageStudents = () => {
                                         </div>
                                     )}
                                 </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+            {/* Send Alert Modal */}
+            <AnimatePresence>
+                {isAlertModalOpen && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl"
+                            onClick={() => setIsAlertModalOpen(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 40 }}
+                            className="bg-[#070b14] w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-800/50 p-10"
+                        >
+                            <div className="flex justify-between items-start mb-8">
+                                <div>
+                                    <h2 className="text-3xl font-black text-white tracking-tighter">Direct Alert</h2>
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Broadcast to specific identity</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsAlertModalOpen(false)}
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-slate-900 rounded-2xl transition-colors text-slate-500"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="p-6 rounded-[2.5rem] bg-slate-900/50 border border-slate-800/50 flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-[#6366f1] text-white flex items-center justify-center text-xs font-black">
+                                        {selectedStudent.profile.user.name.split(' ').map(n => n[0]).join('')}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-black text-white">{selectedStudent.profile.user.name}</p>
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{selectedStudent.profile.admissionNumber}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Message Payload</label>
+                                    <textarea
+                                        rows="4"
+                                        placeholder="Type your alert message here..."
+                                        value={alertMessage}
+                                        onChange={(e) => setAlertMessage(e.target.value)}
+                                        className="w-full px-8 py-6 bg-slate-900/50 border border-slate-800/50 rounded-[2.5rem] text-sm font-bold focus:ring-2 focus:ring-[#6366f1] focus:outline-none text-white transition-all resize-none shadow-inner"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleSendAlert}
+                                    disabled={sendingAlert}
+                                    className="w-full py-6 bg-[#4f46e5] text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-indigo-600/20 active:scale-95 transition-all flex items-center justify-center gap-3"
+                                >
+                                    {sendingAlert ? <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full" /> : <><Mail size={16} /> Deploy Alert</>}
+                                </button>
                             </div>
                         </motion.div>
                     </div>

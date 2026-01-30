@@ -380,7 +380,6 @@ const Chat = () => {
                                             >
                                                 <div className="relative">
                                                     <img src={`https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
-                                                    <div className="absolute right-0 bottom-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
                                                 </div>
                                                 <div className="flex-1 text-left overflow-hidden">
                                                     <h4 className="font-black text-slate-800 dark:text-white truncate">{user.name}</h4>
@@ -397,9 +396,6 @@ const Chat = () => {
                                             >
                                                 <div className="relative flex-shrink-0">
                                                     <img src={`https://ui-avatars.com/api/?name=${conv.user.name}&background=6366f1&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
-                                                    {conv.unread && (
-                                                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
-                                                    )}
                                                 </div>
                                                 <div className="flex-1 text-left min-w-0">
                                                     <div className="flex justify-between items-center mb-1">
@@ -454,13 +450,10 @@ const Chat = () => {
                                         </button>
                                         <div className="relative">
                                             <img src={`https://ui-avatars.com/api/?name=${selectedUser.name}&background=6366f1&color=fff`} className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-100 dark:border-slate-800" alt="" />
-                                            <div className="absolute right-0 bottom-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
                                         </div>
                                         <div>
                                             <h3 className="font-black text-slate-800 dark:text-white leading-tight">{selectedUser.name}</h3>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Online</span>
-                                                <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{selectedUser.role}</span>
                                             </div>
                                         </div>

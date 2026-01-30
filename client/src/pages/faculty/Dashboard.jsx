@@ -63,6 +63,9 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
         return () => clearInterval(timer);
     }, []);
 
+    const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const formattedDate = time.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -78,22 +81,31 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                     <div>
                         <motion.div
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit mb-6"
+                            className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit mb-4"
                         >
                             <Sparkles size={14} className="text-amber-300" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">Faculty Leadership Portal</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">{formattedDate}</span>
                         </motion.div>
                         <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">
                             Welcome, <br />
                             <span className="text-indigo-200">Prof. {name.split(' ').pop()}</span>
                         </h1>
                     </div>
+
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-white/10 backdrop-blur-xl px-6 py-6 rounded-[3rem] border border-white/20 flex items-center justify-center shadow-2xl shadow-black/5"
+                    >
+                        <p className="text-white font-black text-xl tracking-tighter tabular-nums leading-none">{formattedTime}</p>
+                    </motion.div>
                 </div>
 
                 <div className="flex flex-wrap gap-4 mt-12">

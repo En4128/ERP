@@ -5,6 +5,7 @@ const Student = require('../models/Student');
 const Notice = require('../models/Notice');
 const NoticeRead = require('../models/NoticeRead');
 const Mark = require('../models/Mark');
+const Notification = require('../models/Notification');
 
 // @desc    Get faculty dashboard stats
 // @route   GET /api/faculty/dashboard-stats
@@ -743,6 +744,64 @@ exports.deleteMaterial = async (req, res) => {
         await course.save();
 
         res.json({ message: 'Material deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Send alert to a specific student
+// @route   POST /api/faculty/send-alert
+// @access  Private (Faculty)
+exports.sendStudentAlert = async (req, res) => {
+    try {
+        const { studentId, message } = req.body;
+        const faculty = await Faculty.findOne({ user: req.user.id }).populate('user', 'name');
+
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        await Notification.create({
+            recipient: student.user,
+            title: `Alert from Prof. ${faculty.user.name.split(' ').pop()}`,
+            message: message,
+            type: 'alert'
+        });
+
+        res.json({ message: 'Alert sent successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get marks for a course and exam type
+// @route   GET /api/faculty/marks
+// @access  Private (Faculty)
+exports.getMarks = async (req, res) => {
+    try {
+        const { courseId, examType } = req.query;
+        if (!courseId || !examType) {
+            return res.status(400).json({ message: 'Course ID and Exam Type are required' });
+        }
+
+        const marks = await Mark.find({ course: courseId, examType });
+        res.json(marks);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Clear marks for a course and exam type
+// @route   DELETE /api/faculty/marks
+// @access  Private (Faculty)
+exports.clearMarks = async (req, res) => {
+    try {
+        const { courseId, examType } = req.query;
+        if (!courseId || !examType) {
+            return res.status(400).json({ message: 'Course ID and Exam Type are required' });
+        }
+
+        await Mark.deleteMany({ course: courseId, examType });
+        res.json({ message: 'Marks cleared successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

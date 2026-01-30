@@ -121,9 +121,6 @@ const FacultyTimetable = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-3">
-                            <Download size={16} /> Sync to Device
-                        </button>
                     </div>
                 </div>
 

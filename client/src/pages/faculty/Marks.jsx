@@ -73,6 +73,28 @@ const FacultyMarks = () => {
         }
     };
 
+    const fetchExistingMarks = async (courseId, type) => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:5000/api/faculty/marks?courseId=${courseId}&examType=${type}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const existingData = {};
+            // Initialize with empty first
+            students.forEach(s => {
+                existingData[s._id] = '';
+            });
+            // Overwrite with fetched data
+            res.data.forEach(m => {
+                existingData[m.student] = m.marksObtained.toString();
+            });
+            setMarksData(existingData);
+        } catch (error) {
+            console.error("Error fetching existing marks:", error);
+        }
+    };
+
     const handleSelectCourse = async (course) => {
         setLoading(true);
         try {
@@ -81,11 +103,20 @@ const FacultyMarks = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSelectedCourse(course);
-            setStudents(res.data);
+            const studentList = res.data;
+            setStudents(studentList);
+
+            // Fetch existing marks for the current exam type
+            const marksRes = await axios.get(`http://localhost:5000/api/faculty/marks?courseId=${course._id}&examType=${examType}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
             const initialData = {};
-            res.data.forEach(s => {
+            studentList.forEach(s => {
                 initialData[s._id] = '';
+            });
+            marksRes.data.forEach(m => {
+                initialData[m.student] = m.marksObtained.toString();
             });
             setMarksData(initialData);
 
@@ -97,11 +128,41 @@ const FacultyMarks = () => {
         }
     };
 
+    useEffect(() => {
+        if (selectedCourse && marksMode) {
+            fetchExistingMarks(selectedCourse._id, examType);
+        }
+    }, [examType]);
+
     const handleMarkChange = (studentId, value) => {
         setMarksData(prev => ({
             ...prev,
             [studentId]: value
         }));
+    };
+
+    const handleClearMarks = async () => {
+        if (!window.confirm('Are you sure you want to clear all marks for this assessment? This action cannot be undone.')) return;
+
+        setSaving(true);
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:5000/api/faculty/marks?courseId=${selectedCourse._id}&examType=${examType}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const resetData = {};
+            students.forEach(s => {
+                resetData[s._id] = '';
+            });
+            setMarksData(resetData);
+            alert('Academic records cleared successfully.');
+        } catch (error) {
+            console.error("Error clearing marks:", error);
+            alert('Failed to clear academic records.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleSubmitMarks = async () => {
@@ -274,6 +335,14 @@ const FacultyMarks = () => {
                                         className="w-full px-6 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white text-center focus:ring-2 focus:ring-indigo-500 shadow-inner"
                                     />
                                 </div>
+
+                                <button
+                                    onClick={handleClearMarks}
+                                    disabled={saving}
+                                    className="px-6 py-4 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 border border-rose-500/20"
+                                >
+                                    <AlertCircle size={14} /> Clear Records
+                                </button>
 
                                 <button
                                     onClick={handleSubmitMarks}
