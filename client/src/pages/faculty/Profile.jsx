@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import {
@@ -18,8 +19,11 @@ import {
     Sparkles,
     CheckCircle2,
     ShieldCheck,
-    ArrowRight
+    ArrowRight,
+    BookOpen,
+    Binary
 } from 'lucide-react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
@@ -82,6 +86,9 @@ const FacultyProfile = () => {
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
+    const fileInputRef = useRef(null);
+    const [uploading, setUploading] = useState(false);
+
 
     useEffect(() => {
         fetchProfile();
@@ -106,8 +113,10 @@ const FacultyProfile = () => {
                 gender: res.data.user.gender || '',
                 dob: res.data.user.dob ? new Date(res.data.user.dob).toISOString().split('T')[0] : '',
                 bio: res.data.user.bio || '',
+                researchArea: res.data.researchArea || '',
                 socialLinks: res.data.user.socialLinks || { linkedin: '', github: '', website: '' }
             });
+
             setLoading(false);
         } catch (error) {
             console.error("Error fetching profile:", error);
@@ -123,11 +132,43 @@ const FacultyProfile = () => {
             });
             setProfile(res.data);
             setEditing(false);
+            alert("Profile synchronized successfully");
         } catch (error) {
             console.error("Error updating profile:", error);
             alert("Failed to update profile");
         }
     };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            setUploading(true);
+            const token = localStorage.getItem('token');
+            const res = await axios.post('http://localhost:5000/api/faculty/profile/image', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            setProfile(prev => ({
+                ...prev,
+                user: { ...prev.user, profileImage: res.data.profileImage }
+            }));
+            alert("Profile image updated!");
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Failed to upload image");
+        } finally {
+            setUploading(false);
+        }
+    };
+
 
     if (loading) {
         return (
@@ -189,20 +230,36 @@ const FacultyProfile = () => {
                         <GlassCard className="p-10 text-center relative overflow-hidden">
                             <div className="absolute top-[-20%] right-[-20%] w-[150px] h-[150px] bg-indigo-500/10 rounded-full blur-[60px]" />
 
-                            <div className="relative inline-block mb-8">
+                            <div className="relative inline-block mb-8 group">
                                 <div className="w-40 h-40 rounded-[3rem] bg-indigo-600 p-1.5 shadow-2xl shadow-indigo-600/30">
-                                    <div className="w-full h-full bg-white dark:bg-slate-900 rounded-[2.8rem] flex items-center justify-center overflow-hidden">
+                                    <div className="w-full h-full bg-white dark:bg-slate-900 rounded-[2.8rem] flex items-center justify-center overflow-hidden relative">
                                         <img
-                                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.user.name)}&size=200&background=6366f1&color=fff&bold=true`}
+                                            src={profile.user.profileImage ? `http://localhost:5000${profile.user.profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.user.name)}&size=200&background=6366f1&color=fff&bold=true`}
                                             alt="Profile"
                                             className="w-full h-full object-cover"
                                         />
+                                        {uploading && (
+                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                <button className="absolute bottom-2 right-2 p-3.5 bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-indigo-600 shadow-xl hover:scale-110 active:scale-95 transition-all">
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                />
+                                <button
+                                    onClick={() => fileInputRef.current.click()}
+                                    className="absolute bottom-2 right-2 p-3.5 bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-indigo-600 shadow-xl hover:scale-110 active:scale-95 transition-all"
+                                >
                                     <Camera size={18} />
                                 </button>
                             </div>
+
 
                             <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter mb-1.5 leading-none">{profile.user.name}</h3>
                             <p className="text-indigo-500 font-black tracking-[0.2em] text-[10px] uppercase mb-8">{profile.designation} <br /> <span className="text-slate-400">{profile.department} Unit</span></p>
@@ -216,29 +273,29 @@ const FacultyProfile = () => {
 
                         <GlassCard className="p-8 space-y-6">
                             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-3">
-                                <ShieldCheck size={16} className="text-indigo-600" /> Security Protocol
+                                <BookOpen size={16} className="text-indigo-600" /> Assigned Courses
                             </h4>
                             <div className="space-y-3">
-                                <button className="w-full flex items-center justify-between p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-indigo-500/50 active:scale-[0.98] transition-all group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-400 group-hover:text-indigo-500 shadow-sm border border-slate-50 dark:border-slate-800 transition-colors">
-                                            <Key size={16} />
+                                {profile.assignedCourses && profile.assignedCourses.length > 0 ? (
+                                    profile.assignedCourses.map(course => (
+                                        <div key={course._id} className="w-full flex items-center justify-between p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 group">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 text-indigo-500 shadow-sm border border-slate-50 dark:border-slate-800">
+                                                    <BookOpen size={16} />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">{course.name}</span>
+                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{course.code}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">Update Cipher</span>
-                                    </div>
-                                    <ArrowRight size={14} className="text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
-                                </button>
-                                <button className="w-full flex items-center justify-between p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-indigo-500/50 active:scale-[0.98] transition-all group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-400 group-hover:text-indigo-500 shadow-sm border border-slate-50 dark:border-slate-800 transition-colors">
-                                            <Shield size={16} />
-                                        </div>
-                                        <span className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">Biometric MFA</span>
-                                    </div>
-                                    <ArrowRight size={14} className="text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
-                                </button>
+                                    ))
+                                ) : (
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center py-4">No courses assigned</p>
+                                )}
                             </div>
                         </GlassCard>
+
                     </div>
 
                     {/* Meta Information */}
@@ -277,7 +334,28 @@ const FacultyProfile = () => {
                                 />
                                 <DetailItem icon={Calendar} label="Commencement" value={editing ? editFormData.joiningDate : (profile.joiningDate ? new Date(profile.joiningDate).toLocaleDateString() : 'Not Set')} delay={0.4} editing={editing} name="joiningDate" type="date" onChange={(e) => setEditFormData({ ...editFormData, joiningDate: e.target.value })} />
                                 <DetailItem icon={Briefcase} label="Experience (Years)" value={editing ? editFormData.experience : profile.experience} delay={0.45} editing={editing} name="experience" type="number" onChange={(e) => setEditFormData({ ...editFormData, experience: e.target.value })} />
+                                <DetailItem
+                                    icon={Binary}
+                                    label="Gender"
+                                    value={editing ? editFormData.gender : profile.user.gender}
+                                    delay={0.5}
+                                    editing={editing}
+                                    name="gender"
+                                    type="select"
+                                    options={["", "Male", "Female", "Other"]}
+                                    onChange={(e) => setEditFormData({ ...editFormData, gender: e.target.value })}
+                                />
+                                <DetailItem
+                                    icon={Sparkles}
+                                    label="Research Interest"
+                                    value={editing ? editFormData.researchArea : profile.researchArea}
+                                    delay={0.55}
+                                    editing={editing}
+                                    name="researchArea"
+                                    onChange={(e) => setEditFormData({ ...editFormData, researchArea: e.target.value })}
+                                />
                             </div>
+
                         </GlassCard>
 
                         <GlassCard className="p-10">

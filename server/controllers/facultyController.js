@@ -108,7 +108,7 @@ exports.getAssignedCourses = async (req, res) => {
         });
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        today.setUTCHours(0, 0, 0, 0);
 
         const coursesWithStatus = await Promise.all(courses.map(async (course) => {
             const marked = await Attendance.findOne({
@@ -120,6 +120,7 @@ exports.getAssignedCourses = async (req, res) => {
                 isMarkedToday: !!marked
             };
         }));
+
 
         res.json(coursesWithStatus);
     } catch (error) {
@@ -278,29 +279,56 @@ exports.markAttendance = async (req, res) => {
 
     try {
         const dateObj = new Date(date);
-        dateObj.setHours(0, 0, 0, 0);
+        dateObj.setUTCHours(0, 0, 0, 0);
 
-        const promises = attendanceData.map(item =>
-            Attendance.findOneAndUpdate(
-                {
+        // Get existing QR attendance for this course and date
+        const qrAttendance = await Attendance.find({
+            course: courseId,
+            date: dateObj,
+            markedVia: 'QR'
+        });
+
+        const qrStudentIds = new Set(qrAttendance.map(a => a.student.toString()));
+
+        // Filter out students who already have QR attendance
+        const studentsToUpdate = attendanceData.filter(s => !qrStudentIds.has(s.studentId));
+
+        if (studentsToUpdate.length === 0 && attendanceData.length > 0) {
+            return res.status(200).json({ message: 'Attendance skipped for students with QR records', skippedCount: qrStudentIds.size });
+        }
+
+        const operations = studentsToUpdate.map(item => ({
+            updateOne: {
+                filter: {
                     course: courseId,
                     student: item.studentId,
                     date: dateObj
                 },
-                {
-                    status: item.status,
-                    markedBy: req.user.id
+                update: {
+                    $set: {
+                        status: item.status,
+                        markedBy: req.user.id,
+                        markedByType: 'Faculty',
+                        markedVia: 'Manual'
+                    }
                 },
-                { upsert: true, new: true }
-            )
-        );
+                upsert: true
+            }
+        }));
 
-        await Promise.all(promises);
-        res.status(200).json({ message: 'Attendance updated successfully' });
+        if (operations.length > 0) {
+            await Attendance.bulkWrite(operations);
+        }
+
+        res.status(200).json({
+            message: 'Attendance updated successfully',
+            skippedCount: qrStudentIds.size
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // @desc    Get attendance records for a specific course and date
 // @route   GET /api/faculty/attendance
@@ -310,7 +338,7 @@ exports.getAttendance = async (req, res) => {
 
     try {
         const dateObj = new Date(date);
-        dateObj.setHours(0, 0, 0, 0);
+        dateObj.setUTCHours(0, 0, 0, 0);
 
         const attendance = await Attendance.find({
             course: courseId,
@@ -322,6 +350,7 @@ exports.getAttendance = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // @desc    Upload marks for a course
 // @route   POST /api/faculty/marks
@@ -401,7 +430,7 @@ exports.getAttendanceHistory = async (req, res) => {
             { $match: { course: new (require('mongoose').Types.ObjectId)(req.params.courseId) } },
             {
                 $group: {
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$date", timezone: "UTC" } },
                     present: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },
                     absent: { $sum: { $cond: [{ $eq: ["$status", "Absent"] }, 1, 0] } },
                     total: { $sum: 1 }
@@ -422,12 +451,15 @@ exports.getAttendanceHistory = async (req, res) => {
     }
 };
 
+
 // @desc    Get faculty profile
 // @route   GET /api/faculty/profile
 // @access  Private (Faculty)
 exports.getFacultyProfile = async (req, res) => {
     try {
-        const faculty = await Faculty.findOne({ user: req.user.id }).populate('user', 'name email');
+        const faculty = await Faculty.findOne({ user: req.user.id })
+            .populate('user', 'name email profileImage phone address gender dob bio socialLinks')
+            .populate('assignedCourses', 'name code');
         if (!faculty) {
             return res.status(404).json({ message: 'Faculty profile not found' });
         }
@@ -437,6 +469,7 @@ exports.getFacultyProfile = async (req, res) => {
     }
 };
 
+
 // @desc    Update faculty profile
 // @route   PUT /api/faculty/profile
 // @access  Private (Faculty)
@@ -444,9 +477,10 @@ exports.updateFacultyProfile = async (req, res) => {
     try {
         const {
             department, designation, employeeId,
-            qualifications, experience, joiningDate,
+            qualifications, experience, joiningDate, researchArea,
             phone, address, gender, dob, bio, socialLinks
         } = req.body;
+
 
         const faculty = await Faculty.findOne({ user: req.user.id });
         if (!faculty) {
@@ -460,6 +494,8 @@ exports.updateFacultyProfile = async (req, res) => {
         if (qualifications) faculty.qualifications = qualifications;
         if (experience) faculty.experience = experience;
         if (joiningDate) faculty.joiningDate = joiningDate;
+        if (researchArea !== undefined) faculty.researchArea = researchArea;
+
 
         await faculty.save();
 
@@ -474,12 +510,39 @@ exports.updateFacultyProfile = async (req, res) => {
 
         await require('../models/User').findByIdAndUpdate(req.user.id, userUpdate);
 
-        const updatedProfile = await Faculty.findOne({ user: req.user.id }).populate('user'); // populate full user
+        const updatedProfile = await Faculty.findOne({ user: req.user.id })
+            .populate('user', '-password')
+            .populate('assignedCourses', 'name code');
         res.json(updatedProfile);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Upload faculty profile image
+// @route   POST /api/faculty/profile/image
+// @access  Private (Faculty)
+exports.uploadProfileImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const profileImageUrl = `/uploads/profile/${req.file.filename}`;
+
+        await require('../models/User').findByIdAndUpdate(req.user.id, {
+            profileImage: profileImageUrl
+        });
+
+        res.json({
+            message: 'Profile image updated successfully',
+            profileImage: profileImageUrl
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 
 // @desc    Search all students in the system (for enrollment)

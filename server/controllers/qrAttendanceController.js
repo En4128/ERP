@@ -174,20 +174,27 @@ exports.scanQR = async (req, res) => {
         });
         await qrSession.save();
 
-        // Create attendance record
+        // Create/Update attendance record
         // Normalize date to midnight to match getAttendance query
-        const attendDate = new Date(qrSession.date);
-        attendDate.setHours(0, 0, 0, 0);
+        const attendDate = new Date(qrSession.date || new Date());
+        attendDate.setUTCHours(0, 0, 0, 0);
 
-        const attendance = new Attendance({
-            student: student._id,
-            course: qrSession.course,
-            date: attendDate,
-            status: 'Present',
-            markedBy: qrSession.faculty,
-            markedVia: 'QR'
-        });
-        await attendance.save();
+        await Attendance.findOneAndUpdate(
+            {
+                student: student._id,
+                course: qrSession.course,
+                date: attendDate
+            },
+            {
+                $set: {
+                    status: 'Present',
+                    markedBy: qrSession.faculty,
+                    markedVia: 'QR'
+                }
+            },
+            { upsert: true, new: true }
+        );
+
 
         res.json({
             message: 'Attendance marked successfully',

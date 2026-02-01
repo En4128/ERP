@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 import Layout from '../../components/Layout';
 import {
     Calendar,
@@ -58,6 +59,21 @@ const FacultyAttendance = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [attendanceData, setAttendanceData] = useState({});
+    const [markedViaData, setMarkedViaData] = useState({});
+    const dirtyStudentsRef = useRef(new Set());
+
+    // For UI triggering
+    const [dirtyTrigger, setDirtyTrigger] = useState(0);
+    const setDirty = (id) => {
+        dirtyStudentsRef.current.add(id);
+        setDirtyTrigger(prev => prev + 1);
+    };
+    const clearDirty = () => {
+        dirtyStudentsRef.current.clear();
+        setDirtyTrigger(0);
+    };
+
+
 
     useEffect(() => {
         fetchInitialData();
@@ -111,9 +127,32 @@ const FacultyAttendance = () => {
             });
 
             const currentMap = {};
-            stdRes.data.forEach(s => currentMap[s._id] = 'Absent');
-            attRes.data.forEach(rec => currentMap[typeof rec.student === 'object' ? rec.student._id : rec.student] = rec.status);
-            setAttendanceData(currentMap);
+            const viaMap = {};
+
+            stdRes.data.forEach(s => {
+                currentMap[s._id] = 'Absent';
+                viaMap[s._id] = 'Manual';
+            });
+
+            attRes.data.forEach(rec => {
+                const sId = typeof rec.student === 'object' ? rec.student._id : rec.student;
+                currentMap[sId] = rec.status;
+                viaMap[sId] = rec.markedVia || 'Manual';
+            });
+
+            setAttendanceData(prev => {
+                const merged = { ...prev };
+                Object.keys(currentMap).forEach(sId => {
+                    if (!dirtyStudentsRef.current.has(sId) || viaMap[sId] === 'QR') {
+                        merged[sId] = currentMap[sId];
+                    }
+                });
+                return merged;
+            });
+
+
+            setMarkedViaData(viaMap);
+
 
             const histRes = await axios.get(`http://localhost:5000/api/faculty/courses/${selectedCourseId}/history`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -136,10 +175,18 @@ const FacultyAttendance = () => {
     const absentCount = Object.values(attendanceData).filter(v => v === 'Absent').length;
 
     const markAll = (status) => {
-        const newData = {};
-        students.forEach(s => newData[s._id] = status);
+        const newData = { ...attendanceData };
+        students.forEach(s => {
+            if (markedViaData[s._id] !== 'QR') {
+                newData[s._id] = status;
+                dirtyStudentsRef.current.add(s._id);
+            }
+        });
         setAttendanceData(newData);
+        setDirtyTrigger(prev => prev + 1);
     };
+
+
 
     const handleSave = async () => {
         setSaving(true);
@@ -159,7 +206,10 @@ const FacultyAttendance = () => {
             });
 
             alert('Attendance saved successfully!');
+            clearDirty();
             fetchCourseSpecificData();
+
+
         } catch (error) {
             console.error("Error saving attendance:", error);
             alert('Failed to save attendance.');
@@ -375,40 +425,61 @@ const FacultyAttendance = () => {
                                                                 </td>
                                                                 <td className="px-10 py-6 font-black text-slate-500 dark:text-slate-400 text-xs tracking-widest">{std.admissionNumber}</td>
                                                                 <td className="px-10 py-6 text-center">
-                                                                    <span className={cn(
-                                                                        "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                                                        attendanceData[std._id] === 'Present'
-                                                                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                                                            : "bg-rose-500/10 text-rose-600 border-rose-500/20"
-                                                                    )}>
-                                                                        {attendanceData[std._id]}
-                                                                    </span>
+                                                                    <div className="flex flex-col items-center gap-1">
+                                                                        <span className={cn(
+                                                                            "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                                                            attendanceData[std._id] === 'Present'
+                                                                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                                                                : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                                                                        )}>
+                                                                            {attendanceData[std._id]}
+                                                                        </span>
+                                                                        {markedViaData[std._id] === 'QR' && (
+                                                                            <span className="flex items-center gap-1 text-[8px] font-black text-indigo-500 uppercase tracking-tighter">
+                                                                                <QrCode size={10} /> Verified QR
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
                                                                 </td>
+
                                                                 <td className="px-10 py-6">
                                                                     <div className="flex items-center justify-end gap-3">
                                                                         <button
-                                                                            onClick={() => setAttendanceData(p => ({ ...p, [std._id]: 'Present' }))}
+                                                                            onClick={() => {
+                                                                                setAttendanceData(p => ({ ...p, [std._id]: 'Present' }));
+                                                                                setDirty(std._id);
+                                                                            }}
+
+                                                                            disabled={markedViaData[std._id] === 'QR'}
                                                                             className={cn(
                                                                                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all border",
                                                                                 attendanceData[std._id] === 'Present'
                                                                                     ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
-                                                                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-200 dark:border-slate-800 hover:border-emerald-500 hover:text-emerald-500"
+                                                                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-200 dark:border-slate-800 hover:border-emerald-500 hover:text-emerald-500",
+                                                                                markedViaData[std._id] === 'QR' && "opacity-50 cursor-not-allowed"
                                                                             )}
                                                                         >
                                                                             <Check size={20} />
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => setAttendanceData(p => ({ ...p, [std._id]: 'Absent' }))}
+                                                                            onClick={() => {
+                                                                                setAttendanceData(p => ({ ...p, [std._id]: 'Absent' }));
+                                                                                setDirty(std._id);
+                                                                            }}
+
+                                                                            disabled={markedViaData[std._id] === 'QR'}
                                                                             className={cn(
                                                                                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all border",
                                                                                 attendanceData[std._id] === 'Absent'
                                                                                     ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
-                                                                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-200 dark:border-slate-800 hover:border-rose-500 hover:text-rose-500"
+                                                                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-200 dark:border-slate-800 hover:border-rose-500 hover:text-rose-500",
+                                                                                markedViaData[std._id] === 'QR' && "opacity-50 cursor-not-allowed"
                                                                             )}
                                                                         >
                                                                             <X size={20} />
                                                                         </button>
                                                                     </div>
+
                                                                 </td>
                                                             </motion.tr>
                                                         ))}

@@ -474,15 +474,16 @@ exports.getStudentFaculty = async (req, res) => {
                 _id: f._id, // Actual MongoDB ID for linking
                 id: f.employeeId, // Display ID
                 name: f.user.name,
-                image: f.user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.user.name)}&background=random`,
+                image: f.user.profileImage ? f.user.profileImage : `https://ui-avatars.com/api/?name=${encodeURIComponent(f.user.name)}&background=random`,
                 designation: f.designation,
                 department: f.department,
                 email: f.user.email,
-                phone: '+1 (555) 001-0011', // Placeholder
+                phone: f.user.phone || 'Not Shared',
                 subjects: sharedSubjects.length > 0 ? sharedSubjects : [f.department + " Faculty"],
                 availability: 'Available',
-                researchArea: 'Education'
+                researchArea: f.researchArea || 'General Academics'
             };
+
         });
 
         res.json(formattedFaculty);

@@ -26,8 +26,10 @@ const {
     deleteMaterial,
     sendStudentAlert,
     getMarks,
-    clearMarks
+    clearMarks,
+    uploadProfileImage
 } = require('../controllers/facultyController');
+
 const upload = require('../middleware/uploadMiddleware');
 const { getFacultyExams } = require('../controllers/examController');
 const { protect, authorize } = require('../middleware/authMiddleware');
@@ -43,7 +45,9 @@ router.get('/courses/:courseId/stats', getCourseStats);
 router.get('/courses/:courseId/history', getAttendanceHistory);
 router.get('/profile', getFacultyProfile);
 router.put('/profile', updateFacultyProfile);
+router.post('/profile/image', upload.single('image'), uploadProfileImage);
 router.get('/all-students', getAllFacultyStudents);
+
 router.get('/students/:studentId', getStudentDetail);
 router.get('/search-students', searchAllStudents);
 router.post('/enroll-student', enrollStudent);

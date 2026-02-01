@@ -1,23 +1,63 @@
 const Attendance = require('../models/Attendance');
 
 exports.markAttendance = async (req, res) => {
-    const { courseId, students } = req.body; // students: [{ studentId, status }]
-    const date = new Date();
+    const { courseId, students, date: reqDate } = req.body;
+
+    // Normalize date to UTC midnight
+    const date = reqDate ? new Date(reqDate) : new Date();
+    date.setUTCHours(0, 0, 0, 0);
 
     try {
-        const records = students.map(s => ({
+        // Find faculty profile
+        const Faculty = require('../models/Faculty');
+        const faculty = await Faculty.findOne({ user: req.user._id });
+
+        // Get existing QR attendance for this course and date
+        const qrAttendance = await Attendance.find({
             course: courseId,
-            student: s.studentId,
             date: date,
-            status: s.status
+            markedVia: 'QR'
+        });
+
+        const qrStudentIds = new Set(qrAttendance.map(a => a.student.toString()));
+
+        // Filter out students who already have QR attendance
+        const studentsToUpdate = students.filter(s => !qrStudentIds.has(s.studentId));
+
+        const operations = studentsToUpdate.map(s => ({
+            updateOne: {
+                filter: {
+                    course: courseId,
+                    student: s.studentId,
+                    date: date
+                },
+                update: {
+                    $set: {
+                        status: s.status,
+                        markedBy: faculty ? faculty._id : req.user._id,
+                        markedByType: faculty ? 'Faculty' : 'Admin',
+                        markedVia: 'Manual'
+                    }
+                },
+                upsert: true
+            }
         }));
 
-        await Attendance.insertMany(records);
-        res.status(201).json({ message: 'Attendance marked successfully' });
+        if (operations.length > 0) {
+            await Attendance.bulkWrite(operations);
+        }
+
+        res.status(200).json({
+            message: 'Attendance updated successfully',
+            skippedCount: qrStudentIds.size
+        });
     } catch (error) {
+        console.error('Mark Attendance Error:', error);
         res.status(400).json({ message: error.message });
     }
 };
+
+
 
 exports.getAttendanceByCourse = async (req, res) => {
     try {

@@ -14,6 +14,9 @@ const FacultyInfoCard = ({ faculty }) => {
     };
 
     const themeColor = getThemeColor(faculty.department);
+    const imageUrl = faculty.image && faculty.image.startsWith('/uploads')
+        ? `http://localhost:5000${faculty.image}`
+        : faculty.image;
 
     return (
         <div
@@ -33,8 +36,9 @@ const FacultyInfoCard = ({ faculty }) => {
                 <div
                     className="absolute inset-0 bg-cover bg-center 
                                transition-transform duration-700 ease-out group-hover:scale-110"
-                    style={{ backgroundImage: `url(${faculty.image || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887'})` }}
+                    style={{ backgroundImage: `url(${imageUrl})` }}
                 />
+
 
                 {/* Themed Gradient Overlay */}
                 <div
@@ -77,7 +81,11 @@ const FacultyInfoCard = ({ faculty }) => {
                         <p className="text-sm font-bold text-white/90 italic flex items-center gap-2">
                             {faculty.designation}
                         </p>
+                        <p className="text-[9px] font-black text-white/60 uppercase tracking-widest mt-1">
+                            Focus: {faculty.researchArea}
+                        </p>
                     </motion.div>
+
 
                     <div className="mt-6 flex flex-wrap gap-2">
                         {faculty.subjects.slice(0, 3).map((sub, i) => (
