@@ -140,61 +140,63 @@ const TimetableWidget = ({ sessions, navigate }) => {
     const otherSessions = sessions.filter(s => !s.isNext);
 
     return (
-        <BentoCard title="Daily Schedule" icon={Calendar} className="col-span-1 lg:row-span-1" delay={0.2}>
-            <div className="space-y-6">
-                {nextSession ? (
-                    <div className="p-5 rounded-[2rem] bg-cyan-600 text-white shadow-xl shadow-cyan-500/20 group-hover:scale-[1.02] transition-transform">
-                        <div className="flex justify-between items-start mb-4">
-                            <span className="bg-white/20 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm">Upcoming Now</span>
-                            <Zap size={18} className="text-amber-300 animate-pulse" />
-                        </div>
-                        <h4 className="text-xl font-black mb-1 leading-tight">{nextSession.subject}</h4>
-                        <div className="flex items-center gap-3 text-cyan-100/80 text-sm font-bold mt-2">
-                            <Clock size={14} /> {nextSession.time}
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                                    <Users size={14} />
+        <div onClick={() => navigate('/student/timetable')} className="cursor-pointer">
+            <BentoCard title="Daily Schedule" icon={Calendar} className="col-span-1 lg:row-span-1" delay={0.2}>
+                <div className="space-y-6">
+                    {nextSession ? (
+                        <div className="p-5 rounded-[2rem] bg-cyan-600 text-white shadow-xl shadow-cyan-500/20 group-hover:scale-[1.02] transition-transform">
+                            <div className="flex justify-between items-start mb-4">
+                                <span className="bg-white/20 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm">Upcoming Now</span>
+                                <Zap size={18} className="text-amber-300 animate-pulse" />
+                            </div>
+                            <h4 className="text-xl font-black mb-1 leading-tight">{nextSession.subject}</h4>
+                            <div className="flex items-center gap-3 text-cyan-100/80 text-sm font-bold mt-2">
+                                <Clock size={14} /> {nextSession.time}
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                                        <Users size={14} />
+                                    </div>
+                                    <span className="text-xs font-bold truncate max-w-[100px]">{nextSession.faculty}</span>
                                 </div>
-                                <span className="text-xs font-bold truncate max-w-[100px]">{nextSession.faculty}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest bg-white/10 px-3 py-1 rounded-lg">
-                                <MapPin size={12} /> {nextSession.room}
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No Active Sessions</p>
-                    </div>
-                )}
-
-                <div className="space-y-4">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Timeline</p>
-                    {sessions.length > 0 ? sessions.map((slot, idx) => (
-                        <div key={idx} className={cn(
-                            "flex items-center gap-4 p-3 rounded-2xl transition-colors",
-                            slot.isNext ? "bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/30"
-                        )}>
-                            <div className="text-[10px] font-black text-slate-500 w-16 text-right leading-none uppercase tracking-tighter">
-                                {slot.time.split(' - ')[0]}
-                            </div>
-                            <div className={cn(
-                                "w-1.5 h-8 rounded-full",
-                                slot.isNext ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"
-                            )} />
-                            <div className="flex-1 overflow-hidden">
-                                <p className="text-xs font-black text-slate-800 dark:text-slate-100 truncate">{slot.subject}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">{slot.type}</p>
+                                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest bg-white/10 px-3 py-1 rounded-lg">
+                                    <MapPin size={12} /> {nextSession.room}
+                                </div>
                             </div>
                         </div>
-                    )) : (
-                        <p className="text-center py-4 text-xs font-bold text-slate-400">Rest day! No classes scheduled.</p>
+                    ) : (
+                        <div className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No Active Sessions</p>
+                        </div>
                     )}
+
+                    <div className="space-y-4">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Timeline</p>
+                        {sessions.length > 0 ? sessions.map((slot, idx) => (
+                            <div key={idx} className={cn(
+                                "flex items-center gap-4 p-3 rounded-2xl transition-colors",
+                                slot.isNext ? "bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/30"
+                            )}>
+                                <div className="text-[10px] font-black text-slate-500 w-16 text-right leading-none uppercase tracking-tighter">
+                                    {slot.time.split(' - ')[0]}
+                                </div>
+                                <div className={cn(
+                                    "w-1.5 h-8 rounded-full",
+                                    slot.isNext ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"
+                                )} />
+                                <div className="flex-1 overflow-hidden">
+                                    <p className="text-xs font-black text-slate-800 dark:text-slate-100 truncate">{slot.subject}</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase">{slot.type}</p>
+                                </div>
+                            </div>
+                        )) : (
+                            <p className="text-center py-4 text-xs font-bold text-slate-400">Rest day! No classes scheduled.</p>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </BentoCard>
+            </BentoCard>
+        </div>
     );
 };
 

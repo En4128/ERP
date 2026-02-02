@@ -200,6 +200,7 @@ const SidebarComponent = ({ role }) => {
             { name: 'Announcements', path: '/admin/notifications', icon: <Bell size={20} /> },
             { name: 'Manage Courses', path: '/admin/courses', icon: <FileText size={20} /> },
             { name: 'Timetables', path: '/admin/timetables', icon: <Calendar size={20} /> },
+            { name: 'Fees Management', path: '/admin/fees', icon: <CreditCard size={20} /> },
             { name: 'Placements', path: '/admin/placements', icon: <Briefcase size={20} /> },
         ],
     };

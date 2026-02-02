@@ -7,6 +7,7 @@ import AdminCourses from './Courses';
 import ManagePlacements from './ManagePlacements';
 import ManageTimetables from './ManageTimetables';
 import Notifications from './Notifications';
+import ManageFees from './ManageFees';
 
 const AdminDashboard = () => {
     return (
@@ -19,6 +20,7 @@ const AdminDashboard = () => {
                 <Route path="placements" element={<ManagePlacements />} />
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="timetables" element={<ManageTimetables />} />
+                <Route path="fees" element={<ManageFees />} />
             </Routes>
         </Layout>
     );

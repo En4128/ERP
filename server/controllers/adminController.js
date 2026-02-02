@@ -4,6 +4,8 @@ const Course = require('../models/Course');
 const User = require('../models/User');
 const Notice = require('../models/Notice');
 const Mark = require('../models/Mark');
+const Fee = require('../models/Fee');
+const Notification = require('../models/Notification');
 const bcrypt = require('bcryptjs');
 
 // @desc    Get counts for dashboard
@@ -295,6 +297,82 @@ exports.deleteNotice = async (req, res) => {
         const notice = await Notice.findByIdAndDelete(req.params.id);
         if (!notice) return res.status(404).json({ message: 'Notice not found' });
         res.json({ message: 'Notice deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+// @desc    Get all fees
+// @route   GET /api/admin/fees
+// @access  Private (Admin)
+exports.getAllFees = async (req, res) => {
+    try {
+        const fees = await Fee.find().sort({ createdAt: -1 });
+        res.json(fees);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Create a new fee
+// @route   POST /api/admin/fees
+// @access  Private (Admin)
+exports.createFee = async (req, res) => {
+    try {
+        const { title, description, amount, dueDate, semester, department, status } = req.body;
+        const fee = await Fee.create({
+            title,
+            description,
+            amount,
+            dueDate,
+            semester: semester || 0,
+            department: department || 'All',
+            status: status || 'active'
+        });
+
+        // Send notifications to targeted students
+        const query = {};
+        if (fee.semester !== 0) query.sem = fee.semester;
+        if (fee.department !== 'All') query.department = fee.department;
+
+        const students = await Student.find(query);
+        const notifications = students.map(student => ({
+            recipient: student.user,
+            title: 'New Fee Added',
+            message: `A new fee "${fee.title}" of $${fee.amount} has been added. Due date: ${new Date(fee.dueDate).toLocaleDateString()}.`,
+            type: 'alert'
+        }));
+
+        if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
+        }
+
+        res.status(201).json(fee);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Update a fee
+// @route   PUT /api/admin/fees/:id
+// @access  Private (Admin)
+exports.updateFee = async (req, res) => {
+    try {
+        const fee = await Fee.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!fee) return res.status(404).json({ message: 'Fee not found' });
+        res.json(fee);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete a fee
+// @route   DELETE /api/admin/fees/:id
+// @access  Private (Admin)
+exports.deleteFee = async (req, res) => {
+    try {
+        const fee = await Fee.findByIdAndDelete(req.params.id);
+        if (!fee) return res.status(404).json({ message: 'Fee not found' });
+        res.json({ message: 'Fee deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

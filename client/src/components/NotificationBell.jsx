@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -7,6 +8,7 @@ import axios from 'axios';
 const NotificationBell = ({ role }) => {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchNotifications();
@@ -52,6 +54,47 @@ const NotificationBell = ({ role }) => {
             ));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
+        }
+    };
+
+    const handleNotificationClick = async (notif) => {
+        setIsOpen(false);
+
+        // Mark as read if not already
+        if (!notif.read) {
+            try {
+                const token = localStorage.getItem('token');
+                const endpoint = role === 'student' ? '/api/student/notifications' : '/api/faculty/notifications';
+                await axios.post(`http://localhost:5000${endpoint}/${notif.id}/read`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setNotifications(notifications.map(n => n.id === notif.id ? { ...n, read: true } : n));
+            } catch (error) {
+                console.error("Error marking notification as read:", error);
+            }
+        }
+
+        // Navigation logic based on type or content keywords
+        const type = notif.type?.toLowerCase();
+        const title = notif.title?.toLowerCase() || '';
+        const content = notif.content?.toLowerCase() || '';
+
+        if (title.includes('fee') || content.includes('fee')) {
+            navigate(`/${role}/fees`);
+        } else if (type === 'exam' || title.includes('exam') || content.includes('exam')) {
+            navigate(`/${role}/exams`);
+        } else if (type === 'assignment' || title.includes('assignment') || content.includes('assignment')) {
+            navigate(`/${role}/assignments`);
+        } else if (type === 'attendance' || title.includes('attendance') || content.includes('attendance')) {
+            navigate(`/${role}/attendance`);
+        } else if (title.includes('marks') || content.includes('marks') || title.includes('result') || content.includes('result')) {
+            navigate(role === 'student' ? '/student/results' : '/faculty/marks');
+        } else if (type === 'leave' || title.includes('leave') || content.includes('leave')) {
+            navigate(role === 'student' ? '/student/leave' : '/faculty/leave-requests');
+        } else if (type === 'alert' || title.includes('alert') || title.includes('message')) {
+            navigate(`/${role}/notifications`);
+        } else {
+            navigate(`/${role}/notifications`);
         }
     };
 
@@ -119,7 +162,8 @@ const NotificationBell = ({ role }) => {
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.1 }}
-                                            className={`p-4 border-b border-gray-100 dark:border-slate-800 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${!n.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                                            onClick={() => handleNotificationClick(n)}
+                                            className={`p-4 border-b border-gray-100 dark:border-slate-800 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${!n.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
                                         >
                                             <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">{n.title}</p>
                                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{n.content}</p>

@@ -14,7 +14,11 @@ const {
     registerFaculty,
     updateFaculty,
     getAllUsers,
-    toggleUserBlock
+    toggleUserBlock,
+    getAllFees,
+    createFee,
+    updateFee,
+    deleteFee
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -39,5 +43,11 @@ router.delete('/notices/:id', deleteNotice);
 
 router.get('/users-all', getAllUsers);
 router.patch('/users/:id/toggle-block', toggleUserBlock);
+
+// Fee Management
+router.get('/fees', getAllFees);
+router.post('/fees', createFee);
+router.put('/fees/:id', updateFee);
+router.delete('/fees/:id', deleteFee);
 
 module.exports = router;

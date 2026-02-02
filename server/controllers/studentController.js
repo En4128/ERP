@@ -12,6 +12,7 @@ const Assignment = require('../models/Assignment');
 const Leave = require('../models/Leave');
 const Faculty = require('../models/Faculty');
 const Notification = require('../models/Notification');
+const Fee = require('../models/Fee');
 
 exports.getStudentProfile = async (req, res) => {
     try {
@@ -132,9 +133,10 @@ exports.getDashboardStats = async (req, res) => {
                 room: slot.room,
                 faculty: slot.faculty?.user?.name || 'TBA',
                 type: slot.type || 'lecture',
-                isNext
+                isNext,
+                startTimeMinutes: slotStartTime
             };
-        }).sort((a, b) => a.time.localeCompare(b.time));
+        }).sort((a, b) => a.startTimeMinutes - b.startTimeMinutes);
 
         // 3. Recent Announcements & Direct Alerts
         const notices = await Notice.find({
@@ -173,33 +175,37 @@ exports.getDashboardStats = async (req, res) => {
         // 4. Grades/CGPA
         const marks = await Mark.find({ student: student._id }).populate('course');
 
-        let totalMarksObtained = 0;
-        let totalMaxPossibleMarks = 0;
+        let totalWeightedPoints = 0;
+        let totalCredits = 0;
 
         const recentGrades = marks.map(mark => {
             if (!mark.course) return null;
-            totalMarksObtained += mark.marksObtained;
-            totalMaxPossibleMarks += mark.maxMarks;
 
-            const percentage = (mark.marksObtained / mark.maxMarks) * 100;
+            const percentage = mark.maxMarks > 0 ? (mark.marksObtained / mark.maxMarks) * 100 : 0;
             let grade = 'F';
-            if (percentage >= 90) grade = 'O';
-            else if (percentage >= 80) grade = 'A+';
-            else if (percentage >= 70) grade = 'A';
-            else if (percentage >= 60) grade = 'B+';
-            else if (percentage >= 50) grade = 'B';
-            else if (percentage >= 40) grade = 'C';
+            let gradePoint = 0;
+
+            if (percentage >= 90) { grade = 'O'; gradePoint = 10; }
+            else if (percentage >= 80) { grade = 'A+'; gradePoint = 9; }
+            else if (percentage >= 70) { grade = 'A'; gradePoint = 8; }
+            else if (percentage >= 60) { grade = 'B+'; gradePoint = 7; }
+            else if (percentage >= 50) { grade = 'B'; gradePoint = 6; }
+            else if (percentage >= 40) { grade = 'C'; gradePoint = 5; }
+
+            const credits = mark.course.credits || 3;
+            totalWeightedPoints += (gradePoint * credits);
+            totalCredits += credits;
 
             return {
                 subject: mark.course.name,
                 marks: mark.marksObtained,
                 maxMarks: mark.maxMarks,
-                grade
+                grade,
+                percentage: percentage.toFixed(1)
             };
         }).filter(g => g).slice(0, 4);
 
-        const overallPercentage = totalMaxPossibleMarks > 0 ? (totalMarksObtained / totalMaxPossibleMarks) * 100 : 0;
-        const cgpa = (overallPercentage / 10).toFixed(2);
+        const cgpa = totalCredits > 0 ? (totalWeightedPoints / totalCredits).toFixed(2) : "0.00";
 
         // 5. Pending Assignments (Detailed List)
         const assignments = await Assignment.find({
@@ -230,7 +236,7 @@ exports.getDashboardStats = async (req, res) => {
             stats: {
                 enrolledCourses: validEnrolledCourses.length,
                 attendance: parseFloat(overallAttendance),
-                cgpa: parseFloat(cgpa),
+                cgpa: cgpa,
                 pendingAssignmentsCount: formattedAssignments.length,
                 pendingAssignments: formattedAssignments,
                 leaveStats
@@ -713,6 +719,25 @@ exports.enrollCourse = async (req, res) => {
         res.json({ message: 'Enrolled successfully' });
     } catch (error) {
         console.error('Enroll Course Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getStudentFees = async (req, res) => {
+    try {
+        const student = await Student.findOne({ user: req.user.id });
+        if (!student) return res.status(404).json({ message: 'Student profile not found' });
+
+        const fees = await Fee.find({
+            status: 'active',
+            $and: [
+                { $or: [{ semester: student.sem }, { semester: 0 }] },
+                { $or: [{ department: student.department }, { department: 'All' }] }
+            ]
+        }).sort({ dueDate: 1 });
+
+        res.json(fees);
+    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
