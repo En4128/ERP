@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/campus-erp')
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => console.log('Database Connected'))
     .catch(err => console.log('MongoDB Connection Error:', err));
 
 // Routes Configuration
