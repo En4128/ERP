@@ -10,11 +10,14 @@ A next-generation, full-stack College ERP solution built with the **MERN Stack**
 - **Fees & Payments**: View outstanding dues, payment history, and "Pay Now" options.
 - **Academic Hub**: Access Enrolled Courses, Timetable, Results, and Exam Schedules.
 - **Support & Leaves**: Apply for leave and request support directly from the portal.
+- **AI Chatbot**: Integrated **Google Gemini AI** powered assistant for academic queries and support.
+- **Real-time Chat**: Instant messaging with faculty and peers, powered by **Socket.IO**.
 
 ### 👨‍🏫 Faculty Portal
 - **Dashboard**: Quick overview of daily schedules and pending requests.
 - **Attendance Management**: Mark and update student attendance efficiently.
 - **Student Management**: View student profiles and academic performance.
+- **Real-time Communication**: Direct messaging channels with students for mentoring and doubt resolution.
 
 ### 🛡️ Admin Portal
 - **User Management**: Create and manage Students and Faculty.
@@ -28,14 +31,20 @@ A next-generation, full-stack College ERP solution built with the **MERN Stack**
 - **Styling**: Tailwind CSS (Modern, Responsive, Dark Mode)
 - **Animations**: Framer Motion (Smooth transitions and micro-interactions)
 - **Icons**: Lucide React
-- **Charts**: Recharts (for Analytics and Heatmaps)
+- **Charts**: Recharts & Chart.js (for Analytics and Heatmaps)
 - **HTTP Client**: Axios
+- **Notifications**: Sonner
+- **PDF Generation**: jsPDF, html2canvas
+- **Real-time**: Socket.IO Client
 
 ### Backend
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB (Mongoose ODM)
 - **Authentication**: JWT (JSON Web Tokens) with secure password hashing (Bcrypt)
+- **AI Integration**: Google Generative AI (Gemini)
+- **Real-time**: Socket.IO
+- **Validation**: Zod (if applicable) / Manual validation
 - **Logging**: File-based persistent debugging
 
 ## ⚙️ Setup Instructions
@@ -55,6 +64,7 @@ Create a `.env` file in the `server` directory:
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/campus-erp
 JWT_SECRET=your_super_secret_key
+GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
 Seed the database with sample data (Optional but recommended):
@@ -87,6 +97,24 @@ npm run dev
 | **Admin**   | admin@test.com   | 123456   |
 | **Faculty** | faculty@test.com | 123456   |
 | **Student** | student@test.com | 123456   |
+
+## 🔌 API Overview
+
+### Auth
+- `POST /api/auth/login`: User login
+- `POST /api/auth/register`: User registration (if public)
+
+### Students
+- `GET /api/student/profile`: Get student profile
+- `GET /api/student/attendance`: Get attendance records
+- `GET /api/student/marks`: Get academic performance
+
+### Faculty
+- `GET /api/faculty/schedule`: Get daily timetable
+- `POST /api/faculty/attendance`: Mark student attendance
+
+### Chat
+- Socket.IO events: `join_room`, `send_message`, `receive_message`
 
 ## 📂 Project Structure
 ```
