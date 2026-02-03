@@ -579,7 +579,7 @@ exports.searchAllStudents = async (req, res) => {
                 { user: { $in: userIds } },
                 { department: { $regex: query, $options: 'i' } } // Also allow searching by department
             ]
-        }).populate('user', 'name email').limit(20);
+        }).populate('user', 'name email profileImage').limit(20);
 
         res.json(studentsByBoth);
     } catch (error) {

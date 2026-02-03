@@ -299,9 +299,17 @@ const ManageStudents = () => {
                                             >
                                                 <td className="px-10 py-6">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-indigo-500 border border-slate-200 dark:border-slate-700 group-hover:scale-110 transition-transform">
-                                                            {std.user.name.split(' ').map(n => n[0]).join('')}
-                                                        </div>
+                                                        {std.user.profileImage ? (
+                                                            <img
+                                                                src={`http://localhost:5000${std.user.profileImage}`}
+                                                                alt={std.user.name}
+                                                                className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 group-hover:scale-110 transition-transform"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-indigo-500 border border-slate-200 dark:border-slate-700 group-hover:scale-110 transition-transform">
+                                                                {std.user.name.split(' ').map(n => n[0]).join('')}
+                                                            </div>
+                                                        )}
                                                         <div>
                                                             <p className="font-black text-slate-900 dark:text-white text-sm tracking-tight">{std.user.name}</p>
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{std.admissionNumber}</p>
@@ -363,9 +371,17 @@ const ManageStudents = () => {
                                     className="space-y-6 sticky top-24"
                                 >
                                     <GlassCard className="p-10 text-center bg-[#070b14] border-slate-800/50">
-                                        <div className="mx-auto w-32 h-32 rounded-[2.5rem] bg-[#6366f1] text-white flex items-center justify-center text-4xl font-black shadow-2xl shadow-indigo-500/20 mb-8">
-                                            {selectedStudent.profile.user.name.split(' ').map(n => n[0]).join('')}
-                                        </div>
+                                        {selectedStudent.profile.user.profileImage ? (
+                                            <img
+                                                src={`http://localhost:5000${selectedStudent.profile.user.profileImage}`}
+                                                alt={selectedStudent.profile.user.name}
+                                                className="mx-auto w-32 h-32 rounded-[2.5rem] object-cover border-4 border-slate-900 shadow-2xl shadow-indigo-500/20 mb-8"
+                                            />
+                                        ) : (
+                                            <div className="mx-auto w-32 h-32 rounded-[2.5rem] bg-[#6366f1] text-white flex items-center justify-center text-4xl font-black shadow-2xl shadow-indigo-500/20 mb-8">
+                                                {selectedStudent.profile.user.name.split(' ').map(n => n[0]).join('')}
+                                            </div>
+                                        )}
                                         <h3 className="text-4xl font-black text-white tracking-tighter mb-2 leading-none">{selectedStudent.profile.user.name}</h3>
                                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">{selectedStudent.profile.admissionNumber}</p>
 
@@ -507,9 +523,17 @@ const ManageStudents = () => {
                                                 className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[2rem] group hover:border-indigo-500 transition-all"
                                             >
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center text-[10px] font-black">
-                                                        {res.user.name.split(' ').map(n => n[0]).join('')}
-                                                    </div>
+                                                    {res.user.profileImage ? (
+                                                        <img
+                                                            src={`http://localhost:5000${res.user.profileImage}`}
+                                                            alt={res.user.name}
+                                                            className="w-12 h-12 rounded-2xl object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-12 h-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center text-[10px] font-black">
+                                                            {res.user.name.split(' ').map(n => n[0]).join('')}
+                                                        </div>
+                                                    )}
                                                     <div>
                                                         <p className="font-black text-slate-900 dark:text-white text-sm">{res.user.name}</p>
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{res.admissionNumber}</p>
@@ -571,9 +595,17 @@ const ManageStudents = () => {
 
                             <div className="space-y-6">
                                 <div className="p-6 rounded-[2.5rem] bg-slate-900/50 border border-slate-800/50 flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-[#6366f1] text-white flex items-center justify-center text-xs font-black">
-                                        {selectedStudent.profile.user.name.split(' ').map(n => n[0]).join('')}
-                                    </div>
+                                    {selectedStudent.profile.user.profileImage ? (
+                                        <img
+                                            src={`http://localhost:5000${selectedStudent.profile.user.profileImage}`}
+                                            alt={selectedStudent.profile.user.name}
+                                            className="w-12 h-12 rounded-2xl object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded-2xl bg-[#6366f1] text-white flex items-center justify-center text-xs font-black">
+                                            {selectedStudent.profile.user.name.split(' ').map(n => n[0]).join('')}
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="text-sm font-black text-white">{selectedStudent.profile.user.name}</p>
                                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{selectedStudent.profile.admissionNumber}</p>
