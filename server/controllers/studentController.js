@@ -477,7 +477,7 @@ exports.getStudentFaculty = async (req, res) => {
         const allFacultyIds = [...new Set([...enrolledCourseFacultyIds, ...deptFacultyIds])];
 
         const faculty = await Faculty.find({ _id: { $in: allFacultyIds } })
-            .populate('user', 'name email profileImage')
+            .populate('user', 'name email profileImage bio socialLinks')
             .populate('assignedCourses', 'name code');
 
         // Format for frontend
@@ -498,7 +498,10 @@ exports.getStudentFaculty = async (req, res) => {
                 phone: f.user.phone || 'Not Shared',
                 subjects: sharedSubjects.length > 0 ? sharedSubjects : [f.department + " Faculty"],
                 availability: 'Available',
-                researchArea: f.researchArea || 'General Academics'
+                researchArea: f.researchArea || 'General Academics',
+                bio: f.user.bio || f.researchArea || `${f.designation} in ${f.department}`,
+                socialLinks: f.user.socialLinks || {},
+                experience: f.experience || '5+' // Mock default if missing for display
             };
 
         });

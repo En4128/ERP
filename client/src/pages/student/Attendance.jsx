@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import {
@@ -29,7 +28,7 @@ import {
     Filler
 } from 'chart.js';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import autoTable from 'jspdf-autotable';
 import { motion, AnimatePresence } from 'framer-motion';
 import QRScanner from '../../components/QRScanner';
 
@@ -44,9 +43,6 @@ ChartJS.register(
     Legend,
     Filler
 );
-
-// --- Mock Data Removed ---
-
 
 // --- Components ---
 
@@ -158,18 +154,6 @@ export default function AttendancePage() {
         fetchAttendanceData();
     }, []);
 
-    const exportPDF = () => {
-        const input = document.getElementById('attendance-report');
-        html2canvas(input).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('attendance_report.pdf');
-        });
-    };
-
     const filteredHistory = history.filter((record) => {
         if (!startDate && !endDate) return true;
         try {
@@ -191,6 +175,56 @@ export default function AttendancePage() {
             return true;
         }
     });
+
+    const exportPDF = () => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(18);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Attendance Report", 14, 22);
+
+        // Filter Info
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const dateRange = startDate && endDate
+            ? `From: ${startDate} To: ${endDate}`
+            : startDate ? `From: ${startDate}`
+                : endDate ? `To: ${endDate}`
+                    : "All Records";
+        doc.text(`Date Range: ${dateRange}`, 14, 32);
+
+        // Table Data
+        const tableColumn = ["Date", "Time", "Subject", "Status", "Mode"];
+        const tableRows = [];
+
+        filteredHistory.forEach(record => {
+            const rowData = [
+                record.date,
+                record.time,
+                record.subject,
+                record.status,
+                record.mode
+            ];
+            tableRows.push(rowData);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 40,
+            theme: 'grid',
+            headStyles: { fillColor: [79, 70, 229] },
+            alternateRowStyles: { fillColor: [249, 250, 251] }
+        });
+
+        // Footer
+        const date = new Date().toLocaleDateString();
+        doc.setFontSize(8);
+        doc.text(`Generated on: ${date}`, 14, doc.internal.pageSize.height - 10);
+
+        doc.save('attendance_report.pdf');
+    };
 
     // Chart Options
     const chartOptions = {

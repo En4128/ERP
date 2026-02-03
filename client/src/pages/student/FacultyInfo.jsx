@@ -2,117 +2,254 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
-import { Mail, Phone, BookOpen, Search, Filter, Users, Award, ExternalLink } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {
+    Github, Twitter, Youtube, Linkedin, ChevronLeft, ChevronRight,
+    Search, Filter, Mail, Users, BookOpen, Award
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
-const FacultyInfoCard = ({ faculty, onContact }) => {
-    // Generate a consistent HSL color based on department
-    const getThemeColor = (dept) => {
-        const hash = dept.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const hue = hash % 360;
-        return `${hue} 60% 35%`; // Vibrant but dark enough for white text
-    };
+const FacultyCarousel = ({ facultyList, onContact }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
 
-    const themeColor = getThemeColor(faculty.department);
-    const imageUrl = faculty.image && faculty.image.startsWith('/uploads')
-        ? `http://localhost:5000${faculty.image}`
-        : faculty.image;
+    // Reset index when list changes
+    useEffect(() => {
+        setCurrentIndex(0);
+    }, [facultyList]);
+
+    if (!facultyList || facultyList.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="bg-gray-100 dark:bg-slate-800 p-6 rounded-full mb-4">
+                    <Users size={48} className="text-gray-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Faculty Found</h3>
+                <p className="text-slate-600 dark:text-slate-400 max-w-md">
+                    Try adjusting your search or filters.
+                </p>
+            </div>
+        );
+    }
+
+    const handleNext = () =>
+        setCurrentIndex((index) => (index + 1) % facultyList.length);
+    const handlePrevious = () =>
+        setCurrentIndex(
+            (index) => (index - 1 + facultyList.length) % facultyList.length
+        );
+
+    const currentFaculty = facultyList[currentIndex];
+
+    const socialIcons = [
+        { icon: Github, url: currentFaculty.socialLinks?.github, label: "GitHub" },
+        { icon: Linkedin, url: currentFaculty.socialLinks?.linkedin, label: "LinkedIn" },
+        // Add others if your backend supports them
+    ].filter(link => link.url);
+
+    const imageUrl = currentFaculty.image && currentFaculty.image.startsWith('/uploads')
+        ? `http://localhost:5000${currentFaculty.image}`
+        : currentFaculty.image;
 
     return (
-        <div
-            style={{ "--theme-color": themeColor }}
-            className="group w-full h-[480px] perspective-1000"
-        >
-            <div
-                className="relative block w-full h-full rounded-3xl overflow-hidden shadow-xl 
-                           transition-all duration-500 ease-out 
-                           group-hover:scale-[1.02] group-hover:shadow-[0_0_60px_-15px_hsl(var(--theme-color)/0.6)]
-                           border border-slate-200 dark:border-slate-800"
-                style={{
-                    boxShadow: `0 20px 40px -20px hsl(var(--theme-color) / 0.4)`
-                }}
-            >
-                {/* Background Image with Parallax Zoom */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center 
-                               transition-transform duration-700 ease-out group-hover:scale-110"
-                    style={{ backgroundImage: `url(${imageUrl})` }}
-                />
-
-
-                {/* Themed Gradient Overlay */}
-                <div
-                    className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-90"
-                    style={{
-                        background: `linear-gradient(to top, 
-                            hsl(var(--theme-color) / 0.95) 0%, 
-                            hsl(var(--theme-color) / 0.8) 35%, 
-                            hsl(var(--theme-color) / 0.1) 100%)`,
-                    }}
-                />
-
-                {/* Availability Badge */}
-                <div className="absolute top-4 right-4 z-20">
-                    <div className={cn(
-                        "px-3 py-1.5 rounded-full backdrop-blur-md border border-white/20 flex items-center gap-2 shadow-lg",
-                        faculty.availability === 'Available' ? "bg-emerald-500/20 text-emerald-100" : "bg-rose-500/20 text-rose-100"
-                    )}>
-                        <span className={cn(
-                            "w-2 h-2 rounded-full",
-                            faculty.availability === 'Available' ? "bg-emerald-400 animate-pulse" : "bg-rose-400"
-                        )} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">{faculty.availability}</span>
-                    </div>
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+            {/* Desktop layout */}
+            <div className='hidden md:flex relative items-center justify-center'>
+                {/* Avatar */}
+                <div className='w-[400px] h-[500px] lg:w-[470px] lg:h-[550px] rounded-[2.5rem] overflow-hidden bg-gray-200 dark:bg-slate-800 shadow-[0_0_80px_-20px_rgba(99,102,241,0.6)] dark:shadow-[0_0_100px_-20px_rgba(99,102,241,0.4)] flex-shrink-0 relative z-0'>
+                    <AnimatePresence mode='wait'>
+                        <motion.div
+                            key={currentFaculty._id}
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                            className='w-full h-full'
+                        >
+                            <img
+                                src={imageUrl}
+                                alt={currentFaculty.name}
+                                className='w-full h-full object-cover'
+                                draggable={false}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
 
-                {/* Content */}
-                <div className="relative flex flex-col justify-end h-full p-8 text-white">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="space-y-1"
-                    >
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 mb-2">
-                            {faculty.department}
-                        </p>
-                        <h3 className="text-3xl font-black tracking-tight leading-tight">
-                            {faculty.name}
-                        </h3>
-                        <p className="text-sm font-bold text-white/90 italic flex items-center gap-2">
-                            {faculty.designation}
-                        </p>
-                        <p className="text-[9px] font-black text-white/60 uppercase tracking-widest mt-1">
-                            Focus: {faculty.researchArea}
-                        </p>
-                    </motion.div>
+                {/* Card */}
+                <div className='bg-white/30 dark:bg-slate-900/60 backdrop-blur-3xl border border-white/40 dark:border-white/10 rounded-[2rem] shadow-[0_0_60px_-15px_rgba(99,102,241,0.5)] dark:shadow-[0_0_80px_-20px_rgba(99,102,241,0.3)] p-8 lg:p-10 -ml-24 z-10 max-w-xl flex-1 relative overflow-hidden'>
+                    {/* Liquid Shine Effect */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-20 pointer-events-none" />
+                    <AnimatePresence mode='wait'>
+                        <motion.div
+                            key={currentFaculty._id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                        >
+                            <div className='mb-6'>
+                                <p className='text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 mb-2'>
+                                    {currentFaculty.department}
+                                </p>
+                                <h2 className='text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight'>
+                                    {currentFaculty.name}
+                                </h2>
+                                <p className='text-md font-bold text-slate-500 dark:text-slate-400'>
+                                    {currentFaculty.designation}
+                                </p>
+                            </div>
 
+                            <p className='text-slate-700 dark:text-slate-300 text-base leading-relaxed mb-6 min-h-[80px]'>
+                                {currentFaculty.bio || "No biography available."}
+                            </p>
 
-                    <div className="mt-6 flex flex-wrap gap-2">
-                        {faculty.subjects.slice(0, 3).map((sub, i) => (
-                            <span key={i} className="text-[10px] bg-white/10 backdrop-blur-sm border border-white/10 px-2 py-1 rounded-md font-bold text-white/90">
-                                {sub}
-                            </span>
-                        ))}
-                    </div>
+                            <div className="grid grid-cols-1 gap-3 mb-8">
+                                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <Mail size={16} className="text-indigo-500" />
+                                    <span>{currentFaculty.email}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <BookOpen size={16} className="text-indigo-500" />
+                                    <span>{currentFaculty.researchArea}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <Award size={16} className="text-indigo-500" />
+                                    <span>{currentFaculty.experience} Years Experience</span>
+                                </div>
+                            </div>
 
-                    <div
-                        onClick={() => onContact && onContact(faculty)}
-                        className="mt-8 flex items-center justify-between bg-white text-slate-900 rounded-2xl px-5 py-4 transition-all duration-300 transform group-hover:-translate-y-1 shadow-lg cursor-pointer hover:bg-slate-50 active:scale-95"
-                    >
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-tighter text-slate-400">Contact Faculty</span>
-                            <span className="text-sm font-black truncate max-w-[150px]">{faculty.email}</span>
-                        </div>
-                        <div className="p-2 bg-indigo-600 rounded-xl text-white group-hover:rotate-12 transition-transform shadow-indigo-500/30 shadow-lg">
-                            <Mail className="h-4 w-4" />
-                        </div>
-                    </div>
+                            <div className='flex items-center gap-4'>
+                                <button
+                                    onClick={() => onContact(currentFaculty)}
+                                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2"
+                                >
+                                    <Mail size={18} />
+                                    Message Faculty
+                                </button>
+
+                                {socialIcons.map(({ icon: IconComponent, url, label }) => (
+                                    <a
+                                        key={label}
+                                        href={url}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        className='w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center transition-all hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                        aria-label={label}
+                                    >
+                                        <IconComponent size={20} />
+                                    </a>
+                                ))}
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
+            </div>
+
+            {/* Mobile layout */}
+            <div className='md:hidden max-w-sm mx-auto bg-transparent relative'>
+                <div className='w-full aspect-[4/5] bg-gray-200 dark:bg-slate-800 rounded-3xl overflow-hidden mb-[-40px] relative z-0 shadow-[0_0_60px_-15px_rgba(99,102,241,0.6)]'>
+                    <AnimatePresence mode='wait'>
+                        <motion.div
+                            key={currentFaculty._id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className='w-full h-full'
+                        >
+                            <img
+                                src={imageUrl}
+                                alt={currentFaculty.name}
+                                className='w-full h-full object-cover'
+                                draggable={false}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                <div className='bg-white/30 dark:bg-slate-900/60 backdrop-blur-3xl border border-white/40 dark:border-white/10 rounded-[2rem] p-6 shadow-[0_0_50px_-12px_rgba(99,102,241,0.5)] relative z-10 mx-2 overflow-hidden'>
+                    {/* Liquid Shine Effect */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-20 pointer-events-none" />
+                    <AnimatePresence mode='wait'>
+                        <motion.div
+                            key={currentFaculty._id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <p className='text-[10px] font-black uppercase tracking-wider text-indigo-500 mb-1'>
+                                {currentFaculty.department}
+                            </p>
+                            <h2 className='text-2xl font-black text-slate-900 dark:text-white mb-1'>
+                                {currentFaculty.name}
+                            </h2>
+                            <p className='text-sm font-bold text-slate-500 dark:text-slate-400 mb-4'>
+                                {currentFaculty.designation}
+                            </p>
+                            <p className='text-slate-600 dark:text-slate-300 text-xs leading-relaxed mb-6 line-clamp-4'>
+                                {currentFaculty.bio || "No biography available."}
+                            </p>
+
+                            <div className='flex gap-2'>
+                                <button
+                                    onClick={() => onContact(currentFaculty)}
+                                    className="flex-1 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-bold py-2.5 rounded-xl transition-colors text-sm"
+                                >
+                                    Message
+                                </button>
+                                {socialIcons.map(({ icon: IconComponent, url, label }) => (
+                                    <a
+                                        key={label}
+                                        href={url}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        className='w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center transition-colors text-slate-600 dark:text-slate-400'
+                                    >
+                                        <IconComponent size={16} />
+                                    </a>
+                                ))}
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Navigation */}
+            <div className='flex justify-center items-center gap-6 mt-8'>
+                <button
+                    onClick={handlePrevious}
+                    className='w-12 h-12 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg flex items-center justify-center hover:scale-110 transition-transform active:scale-95 text-slate-700 dark:text-slate-300'
+                >
+                    <ChevronLeft size={24} />
+                </button>
+
+                <div className='flex gap-2 overflow-x-auto max-w-[200px] px-2'>
+                    {facultyList.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentIndex(index)}
+                            className={cn(
+                                "w-2.5 h-2.5 rounded-full transition-all duration-300 flex-shrink-0",
+                                index === currentIndex
+                                    ? "bg-indigo-600 w-8"
+                                    : "bg-slate-300 dark:bg-slate-700 hover:bg-indigo-400"
+                            )}
+                        />
+                    ))}
+                </div>
+
+                <button
+                    onClick={handleNext}
+                    className='w-12 h-12 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg flex items-center justify-center hover:scale-110 transition-transform active:scale-95 text-slate-700 dark:text-slate-300'
+                >
+                    <ChevronRight size={24} />
+                </button>
             </div>
         </div>
     );
-};
+}
 
 const FacultyInfo = () => {
     const navigate = useNavigate();
@@ -122,9 +259,6 @@ const FacultyInfo = () => {
     const [filterDept, setFilterDept] = useState('All');
 
     const handleContact = (faculty) => {
-        // Navigate to chat with the faculty details
-        // We pass the faculty object as the contactUser
-        // The chat page expects a user object with _id, name, and role
         navigate('/student/chat', {
             state: {
                 contactUser: {
@@ -167,7 +301,7 @@ const FacultyInfo = () => {
     if (loading) {
         return (
             <Layout role="student">
-                <div className="flex justify-center items-center h-96">
+                <div className="flex justify-center items-center h-screen">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
                 </div>
             </Layout>
@@ -176,30 +310,29 @@ const FacultyInfo = () => {
 
     return (
         <Layout role="student">
-            <div className="animate-fade-in-up space-y-8">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="space-y-4 max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 px-2">
                     <div>
-                        <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 tracking-tight">Faculty Directory</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">Connect with your professors and mentors.</p>
+                        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Meet Our Faculty</h2>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">Discover mentors who inspire excellence.</p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex gap-3">
                         <div className="relative group">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-700 transition-colors" size={18} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600" size={16} />
                             <input
                                 type="text"
-                                placeholder="Search faculty or subject..."
-                                className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-indigo-500 transition-all w-full sm:w-64 text-sm dark:text-white placeholder-gray-400 outline-none"
+                                placeholder="Search..."
+                                className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm outline-none w-40 sm:w-64"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
 
-                        <div className="relative group">
-                            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-700 transition-colors" size={18} />
+                        <div className="relative">
+                            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                             <select
-                                className="pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-indigo-500 transition-all appearance-none cursor-pointer text-sm dark:text-white outline-none font-medium text-slate-700"
+                                className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm outline-none appearance-none cursor-pointer"
                                 value={filterDept}
                                 onChange={(e) => setFilterDept(e.target.value)}
                             >
@@ -211,28 +344,7 @@ const FacultyInfo = () => {
                     </div>
                 </div>
 
-                {/* Faculty Grid */}
-                {filteredFaculty.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-8">
-                        {filteredFaculty.map(faculty => (
-                            <FacultyInfoCard
-                                key={faculty.id || faculty._id}
-                                faculty={faculty}
-                                onContact={handleContact}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <div className="bg-gray-100 dark:bg-slate-800 p-6 rounded-full mb-4">
-                            <Users size={48} className="text-gray-400" />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Faculty Found</h3>
-                        <p className="text-slate-600 dark:text-slate-400 max-w-md">
-                            We couldn't find any faculty members matching "{searchTerm}". Try adjusting your search or filters.
-                        </p>
-                    </div>
-                )}
+                <FacultyCarousel facultyList={filteredFaculty} onContact={handleContact} />
             </div>
         </Layout>
     );

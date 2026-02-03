@@ -3,7 +3,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Award, FileText, ChevronDown, ChevronUp, Download, PieChart, TrendingUp } from 'lucide-react';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import autoTable from 'jspdf-autotable';
 
 const Results = () => {
     const [resultsData, setResultsData] = useState(null);
@@ -39,20 +39,56 @@ const Results = () => {
     };
 
     const downloadGradeSheet = (sem) => {
-        const input = document.getElementById(`grade-sheet-${sem}`);
-        if (!input) return;
+        const semesterData = resultsData.results.find(r => r.semester === sem);
+        if (!semesterData) return;
 
-        html2canvas(input, { scale: 2 }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        const doc = new jsPDF();
 
-            // Add some padding and header info in PDF if needed, 
-            // but for now, we'll just export the table area
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`grade_sheet_sem_${sem}.pdf`);
+        // Header
+        doc.setFontSize(18);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Semester Grade Sheet", 14, 22);
+
+        // Student Details
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Name: ${resultsData.studentName}`, 14, 32);
+        doc.text(`Admission No: ${resultsData.admissionNumber}`, 14, 38);
+        doc.text(`Department: ${resultsData.department}`, 14, 44);
+        doc.text(`Semester: ${sem}`, 150, 32);
+        doc.text(`SGPA: ${semesterData.sgpa}`, 150, 38);
+
+        // Table Data
+        const tableColumn = ["Course Code", "Subject", "Type", "Credits", "Marks", "Grade"];
+        const tableRows = [];
+
+        semesterData.results.forEach(subject => {
+            const rowData = [
+                subject.courseCode,
+                subject.courseName,
+                subject.examType,
+                subject.credits,
+                `${subject.marksObtained} / ${subject.maxMarks}`,
+                subject.grade
+            ];
+            tableRows.push(rowData);
         });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 55,
+            theme: 'grid',
+            headStyles: { fillColor: [79, 70, 229] }, // Indigo color
+            alternateRowStyles: { fillColor: [249, 250, 251] }
+        });
+
+        // Footer / Timestamp
+        const date = new Date().toLocaleDateString();
+        doc.setFontSize(8);
+        doc.text(`Generated on: ${date}`, 14, doc.internal.pageSize.height - 10);
+
+        doc.save(`grade_sheet_sem_${sem}.pdf`);
     };
 
     if (loading) {
@@ -201,7 +237,7 @@ const Results = () => {
                                             className="flex items-center gap-2 text-sm text-blue-700 hover:text-indigo-800 font-medium transition-colors bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg"
                                         >
                                             <Download size={16} />
-                                            Download Grade Sheet
+                                            Download Grade Sheet PDF
                                         </button>
                                     </div>
                                 </div>

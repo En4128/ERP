@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Download, Clock, MapPin, Users, TriangleAlert, Trash2, Calendar, BookOpen, Building, X, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -209,23 +209,81 @@ const ManageTimetables = () => {
         }
     };
 
-    const handleExportPDF = async () => {
-        const element = document.getElementById('timetable-grid');
-        if (!element) return;
+    const handleExportPDF = () => {
+        const doc = new jsPDF('l', 'mm', 'a4');
 
-        try {
-            const canvas = await html2canvas(element, { scale: 2 });
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('l', 'mm', 'a4');
-            const imgWidth = 280;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-            pdf.save(`timetable-${selectedDepartment}-sem-${selectedSemester}.pdf`);
-            toast.success('Timetable exported as PDF');
-        } catch (error) {
-            console.error('PDF Export Error:', error);
-            toast.error('Failed to export PDF');
-        }
+        // Header
+        doc.setFontSize(18);
+        doc.setTextColor(40, 40, 40);
+        doc.text(`Weekly Timetable - ${selectedDepartment} (Semester ${selectedSemester})`, 14, 22);
+
+        const date = new Date().toLocaleDateString();
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Generated on: ${date}`, 14, 28);
+
+        // Table Columns
+        const tableColumn = ["Time", ...days];
+
+        // Table Body
+        const tableRows = [];
+
+        periods.forEach(period => {
+            const row = [];
+
+            // Time Column
+            row.push(`${period.time}\n-\n${period.endTime}`);
+
+            if (period.type === 'break') {
+                // For breaks, we want a single cell spanning the days
+                // automtable hook will handle colSpan via didParseCell or by manipulating data
+                // Simpler approach for basic data: push the label in the first day column and use styling/hooks to span
+                // Alternatively, we can just push empty strings and use a hook to merge.
+                // Best simple way with autoTable:
+                const breakLabel = { content: period.label, colSpan: 5, styles: { halign: 'center', fontStyle: 'bold', fillColor: [240, 240, 240] } };
+                row.push(breakLabel);
+            } else {
+                // For class periods, iterate days
+                days.forEach(day => {
+                    const slot = getSlotForCell(day, period.time);
+                    if (slot) {
+                        const cellContent = `${slot.courseCode}\n${slot.room}\n${slot.faculty ? slot.faculty.split(' ')[0] : 'N/A'}`;
+                        row.push(cellContent);
+                    } else {
+                        row.push("");
+                    }
+                });
+            }
+            tableRows.push(row);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 35,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [79, 70, 229],
+                halign: 'center',
+                valign: 'middle'
+            },
+            styles: {
+                fontSize: 9,
+                cellPadding: 3,
+                valign: 'middle',
+                halign: 'center',
+                overflow: 'linebreak'
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 30 } // Time column
+            },
+            didParseCell: (data) => {
+                // Add custom styling for break rows if not using the object config above
+            }
+        });
+
+        doc.save(`timetable-${selectedDepartment}-sem-${selectedSemester}.pdf`);
+        toast.success('Timetable exported as PDF');
     };
 
     const getTypeColor = (type) => {

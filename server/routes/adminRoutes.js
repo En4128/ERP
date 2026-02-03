@@ -18,7 +18,8 @@ const {
     getAllFees,
     createFee,
     updateFee,
-    deleteFee
+    deleteFee,
+    getRecentActivity
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -27,6 +28,7 @@ router.use(protect);
 router.use(authorize('admin'));
 
 router.get('/dashboard-stats', getAdminStats);
+router.get('/activity', getRecentActivity);
 router.get('/students', getAllStudents);
 router.post('/students', registerStudent);
 router.put('/students/:id', updateStudent);

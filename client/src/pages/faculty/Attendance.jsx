@@ -29,6 +29,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import QRGenerator from '../../components/QRGenerator';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // --- Premium UI Components ---
 
@@ -216,6 +218,55 @@ const FacultyAttendance = () => {
         } finally {
             setSaving(false);
         }
+    };
+
+
+    const exportPDF = () => {
+        if (!history || history.length === 0) {
+            alert("No archive records to export.");
+            return;
+        }
+
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(18);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Attendance Archive Records", 14, 22);
+
+        // Course Details
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Course: ${currentCourse?.code || ''} - ${currentCourse?.name || 'Unknown Course'}`, 14, 32);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 38);
+
+        // Table Data
+        const tableColumn = ["Session Date", "Present", "Absent", "Total", "Compliance"];
+        const tableRows = [];
+
+        history.forEach(record => {
+            const dateStr = new Date(record.date).toLocaleDateString();
+            const compliance = record.total > 0 ? Math.round((record.present / record.total) * 100) : 0;
+            const rowData = [
+                dateStr,
+                record.present,
+                record.absent,
+                record.total,
+                `${compliance}%`
+            ];
+            tableRows.push(rowData);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 45,
+            theme: 'grid',
+            headStyles: { fillColor: [79, 70, 229] }, // Indigo color
+            alternateRowStyles: { fillColor: [249, 250, 251] }
+        });
+
+        doc.save(`archive_records_${currentCourse?.code || 'course'}.pdf`);
     };
 
     if (loading) {
@@ -524,8 +575,8 @@ const FacultyAttendance = () => {
                                                 <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter flex items-center gap-3">
                                                     <BarChart3 size={24} className="text-indigo-600" /> Archive Records
                                                 </h3>
-                                                <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                                                    <Download size={14} /> Export CSV
+                                                <button onClick={exportPDF} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                                    <Download size={14} /> Export PDF
                                                 </button>
                                             </div>
                                             <div className="overflow-x-auto">

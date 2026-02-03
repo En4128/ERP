@@ -377,3 +377,43 @@ exports.deleteFee = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+// @desc    Get recent activity (Users, Courses, Notices)
+// @route   GET /api/admin/activity
+// @access  Private (Admin)
+exports.getRecentActivity = async (req, res) => {
+    try {
+        const [users, courses, notices] = await Promise.all([
+            User.find().sort({ createdAt: -1 }).limit(5).select('name role createdAt'),
+            Course.find().sort({ createdAt: -1 }).limit(5).select('name code createdAt'),
+            Notice.find().sort({ createdAt: -1 }).limit(5).select('title type createdAt')
+        ]);
+
+        const activities = [
+            ...users.map(u => ({
+                id: u._id,
+                text: `New ${u.role} registered: ${u.name}`,
+                time: u.createdAt,
+                type: 'user'
+            })),
+            ...courses.map(c => ({
+                id: c._id,
+                text: `Course added: ${c.name} (${c.code})`,
+                time: c.createdAt,
+                type: 'course'
+            })),
+            ...notices.map(n => ({
+                id: n._id,
+                text: `Notice posted: ${n.title}`,
+                time: n.createdAt,
+                type: 'system' // Mapping notice to 'system' or similar icon
+            }))
+        ];
+
+        // Sort by time (newest first) and take top 10
+        activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+        res.json(activities.slice(0, 10));
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
