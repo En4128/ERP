@@ -28,13 +28,15 @@ import { cn } from '../../lib/utils';
 
 // --- Premium Bento Components ---
 
-const BentoCard = ({ children, className, title, icon: Icon, delay = 0 }) => (
+const BentoCard = ({ children, className, title, icon: Icon, delay = 0, onClick }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
+        onClick={onClick}
         className={cn(
             "relative overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 p-6 group",
+            onClick && "cursor-pointer hover:border-indigo-500/30 transition-all duration-300",
             className
         )}
     >
@@ -57,7 +59,7 @@ const BentoCard = ({ children, className, title, icon: Icon, delay = 0 }) => (
     </motion.div>
 );
 
-const MeshGradientHero = ({ name, stats }) => {
+const MeshGradientHero = ({ name, stats, navigate }) => {
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -111,7 +113,10 @@ const MeshGradientHero = ({ name, stats }) => {
                 </div>
 
                 <div className="flex flex-wrap gap-4 mt-12">
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px]">
+                    <div
+                        onClick={() => navigate('/student/attendance')}
+                        className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px] cursor-pointer hover:bg-white/20 transition-colors"
+                    >
                         <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Attendance</p>
                         <div className="flex items-end gap-2">
                             <p className="text-3xl font-black text-white leading-none">{stats.attendance}%</p>
@@ -124,7 +129,10 @@ const MeshGradientHero = ({ name, stats }) => {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px]">
+                    <div
+                        onClick={() => navigate('/student/results')}
+                        className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px] cursor-pointer hover:bg-white/20 transition-colors"
+                    >
                         <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">CGPA Status</p>
                         <p className="text-3xl font-black text-white leading-none">{stats.cgpa}</p>
                         <p className="text-[10px] text-white/40 font-bold uppercase mt-1 tracking-wider">Out of 10.0</p>
@@ -140,68 +148,78 @@ const TimetableWidget = ({ sessions, navigate }) => {
     const otherSessions = sessions.filter(s => !s.isNext);
 
     return (
-        <div onClick={() => navigate('/student/timetable')} className="cursor-pointer">
-            <BentoCard title="Daily Schedule" icon={Calendar} className="col-span-1 lg:row-span-1" delay={0.2}>
-                <div className="space-y-6">
-                    {nextSession ? (
-                        <div className="p-5 rounded-[2rem] bg-cyan-600 text-white shadow-xl shadow-cyan-500/20 group-hover:scale-[1.02] transition-transform">
-                            <div className="flex justify-between items-start mb-4">
-                                <span className="bg-white/20 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm">Upcoming Now</span>
-                                <Zap size={18} className="text-amber-300 animate-pulse" />
-                            </div>
-                            <h4 className="text-xl font-black mb-1 leading-tight">{nextSession.subject}</h4>
-                            <div className="flex items-center gap-3 text-cyan-100/80 text-sm font-bold mt-2">
-                                <Clock size={14} /> {nextSession.time}
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                                        <Users size={14} />
-                                    </div>
-                                    <span className="text-xs font-bold truncate max-w-[100px]">{nextSession.faculty}</span>
+        <BentoCard
+            title="Daily Schedule"
+            icon={Calendar}
+            className="col-span-1 lg:row-span-1"
+            delay={0.2}
+            onClick={() => navigate('/student/timetable')}
+        >
+            <div className="space-y-6">
+                {nextSession ? (
+                    <div className="p-5 rounded-[2rem] bg-cyan-600 text-white shadow-xl shadow-cyan-500/20 group-hover:scale-[1.02] transition-transform">
+                        <div className="flex justify-between items-start mb-4">
+                            <span className="bg-white/20 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm">Upcoming Now</span>
+                            <Zap size={18} className="text-amber-300 animate-pulse" />
+                        </div>
+                        <h4 className="text-xl font-black mb-1 leading-tight">{nextSession.subject}</h4>
+                        <div className="flex items-center gap-3 text-cyan-100/80 text-sm font-bold mt-2">
+                            <Clock size={14} /> {nextSession.time}
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                                    <Users size={14} />
                                 </div>
-                                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest bg-white/10 px-3 py-1 rounded-lg">
-                                    <MapPin size={12} /> {nextSession.room}
-                                </div>
+                                <span className="text-xs font-bold truncate max-w-[100px]">{nextSession.faculty}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest bg-white/10 px-3 py-1 rounded-lg">
+                                <MapPin size={12} /> {nextSession.room}
                             </div>
                         </div>
-                    ) : (
-                        <div className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No Active Sessions</p>
-                        </div>
-                    )}
-
-                    <div className="space-y-4">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Timeline</p>
-                        {sessions.length > 0 ? sessions.map((slot, idx) => (
-                            <div key={idx} className={cn(
-                                "flex items-center gap-4 p-3 rounded-2xl transition-colors",
-                                slot.isNext ? "bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/30"
-                            )}>
-                                <div className="text-[10px] font-black text-slate-500 w-16 text-right leading-none uppercase tracking-tighter">
-                                    {slot.time.split(' - ')[0]}
-                                </div>
-                                <div className={cn(
-                                    "w-1.5 h-8 rounded-full",
-                                    slot.isNext ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"
-                                )} />
-                                <div className="flex-1 overflow-hidden">
-                                    <p className="text-xs font-black text-slate-800 dark:text-slate-100 truncate">{slot.subject}</p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase">{slot.type}</p>
-                                </div>
-                            </div>
-                        )) : (
-                            <p className="text-center py-4 text-xs font-bold text-slate-400">Rest day! No classes scheduled.</p>
-                        )}
                     </div>
+                ) : (
+                    <div className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No Active Sessions</p>
+                    </div>
+                )}
+
+                <div className="space-y-4">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Timeline</p>
+                    {sessions.length > 0 ? sessions.map((slot, idx) => (
+                        <div key={idx} className={cn(
+                            "flex items-center gap-4 p-3 rounded-2xl transition-colors",
+                            slot.isNext ? "bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/30"
+                        )}>
+                            <div className="text-[10px] font-black text-slate-500 w-16 text-right leading-none uppercase tracking-tighter">
+                                {slot.time.split(' - ')[0]}
+                            </div>
+                            <div className={cn(
+                                "w-1.5 h-8 rounded-full",
+                                slot.isNext ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"
+                            )} />
+                            <div className="flex-1 overflow-hidden">
+                                <p className="text-xs font-black text-slate-800 dark:text-slate-100 truncate">{slot.subject}</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{slot.type}</p>
+                            </div>
+                        </div>
+                    )) : (
+                        <p className="text-center py-4 text-xs font-bold text-slate-400">Rest day! No classes scheduled.</p>
+                    )}
                 </div>
-            </BentoCard>
-        </div>
+            </div>
+        </BentoCard>
     );
 };
 
 const AssignmentList = ({ assignments, count, navigate }) => (
-    <BentoCard title="Pending Tasks" icon={FileText} className="lg:col-span-1" delay={0.3}>
+    <BentoCard
+        title="Pending Tasks"
+        icon={FileText}
+        className="lg:col-span-1"
+        delay={0.3}
+        onClick={() => navigate('/student/assignments')}
+    >
         <div className="space-y-4">
             <div className="flex items-end justify-between px-2 mb-2">
                 <p className="text-4xl font-black text-slate-800 dark:text-white tracking-tighter">{count}</p>
@@ -231,7 +249,10 @@ const AssignmentList = ({ assignments, count, navigate }) => (
             </div>
 
             <button
-                onClick={() => navigate('/student/assignments')}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/student/assignments');
+                }}
                 className="w-full mt-2 py-4 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-slate-900/10 active:scale-95 transition"
             >
                 View Workspace
@@ -241,7 +262,12 @@ const AssignmentList = ({ assignments, count, navigate }) => (
 );
 
 const LeaveStatusWidget = ({ stats, navigate }) => (
-    <BentoCard title="Absence Status" icon={Briefcase} delay={0.6}>
+    <BentoCard
+        title="Absence Status"
+        icon={Briefcase}
+        delay={0.6}
+        onClick={() => navigate('/student/leave')}
+    >
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-3">
                 <div className="flex items-center justify-between p-4 rounded-3xl bg-amber-500/5 border border-amber-500/10">
@@ -265,7 +291,10 @@ const LeaveStatusWidget = ({ stats, navigate }) => (
             </div>
 
             <button
-                onClick={() => navigate('/student/leave')}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/student/leave');
+                }}
                 className="w-full py-4 rounded-[2rem] bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-slate-900/10 active:scale-95 transition"
             >
                 Management Hub
@@ -274,16 +303,25 @@ const LeaveStatusWidget = ({ stats, navigate }) => (
     </BentoCard>
 );
 
-const FeesStatusWidget = ({ navigate }) => (
-    <BentoCard title="Fees & Payments" icon={CreditCard} className="lg:col-span-1" delay={0.65}>
+const FeesStatusWidget = ({ stats, navigate }) => (
+    <BentoCard
+        title="Fees & Payments"
+        icon={CreditCard}
+        className="lg:col-span-1"
+        delay={0.65}
+        onClick={() => navigate('/student/fees')}
+    >
         <div className="space-y-4">
             <div className="p-4 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 text-center py-6">
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Outstanding</p>
-                <p className="text-2xl font-black text-slate-800 dark:text-white">$2,500</p>
+                <p className="text-2xl font-black text-slate-800 dark:text-white">₹{(stats.totalFees || 0).toLocaleString()}</p>
             </div>
 
             <button
-                onClick={() => navigate('/student/fees')}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/student/fees');
+                }}
                 className="w-full py-4 rounded-[2rem] bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-indigo-500/20 active:scale-95 transition"
             >
                 Pay Now
@@ -299,6 +337,7 @@ const DashboardPage = () => {
         enrolledCourses: 0,
         attendance: 0,
         cgpa: 0,
+        totalFees: 0,
         pendingAssignmentsCount: 0,
         pendingAssignments: [],
         leaveStats: { pending: 0, approved: 0, rejected: 0 }
@@ -358,7 +397,7 @@ const DashboardPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-1 gap-6">
 
                     {/* Hero Section */}
-                    <MeshGradientHero name={studentName} stats={stats} />
+                    <MeshGradientHero name={studentName} stats={stats} navigate={navigate} />
 
                     {/* Today's Schedule (Spotlight + Timeline) */}
                     <TimetableWidget sessions={timetable} navigate={navigate} />
@@ -377,7 +416,13 @@ const DashboardPage = () => {
 
 
                     {/* Attendance Detail Bento */}
-                    <BentoCard title="Attendance Insights" icon={TrendingUp} className="md:col-span-2" delay={0.4}>
+                    <BentoCard
+                        title="Attendance Insights"
+                        icon={TrendingUp}
+                        className="md:col-span-2"
+                        delay={0.4}
+                        onClick={() => navigate('/student/attendance')}
+                    >
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2">
                             {attendanceOverview.slice(0, 4).map((item, idx) => {
                                 const percent = item.total > 0 ? Math.round((item.attended / item.total) * 100) : 0;
@@ -414,7 +459,12 @@ const DashboardPage = () => {
                     </BentoCard>
 
                     {/* Quick Grades Bento */}
-                    <BentoCard title="Latest Grades" icon={Award} delay={0.5}>
+                    <BentoCard
+                        title="Latest Grades"
+                        icon={Award}
+                        delay={0.5}
+                        onClick={() => navigate('/student/results')}
+                    >
                         <div className="space-y-3">
                             {grades.length > 0 ? grades.map((grade, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100/50 dark:border-slate-800/50">
@@ -457,7 +507,13 @@ const DashboardPage = () => {
                 {/* Layer 3 - Wide News & Features */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Announcements Ticker Style */}
-                    <BentoCard title="Announcements" icon={Bell} className="lg:col-span-2" delay={0.6}>
+                    <BentoCard
+                        title="Announcements"
+                        icon={Bell}
+                        className="lg:col-span-2"
+                        delay={0.6}
+                        onClick={() => navigate('/student/notifications')}
+                    >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                             {announcements.slice(0, 2).map((notice, idx) => (
                                 <div key={idx} className="p-6 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex flex-col justify-between group/ann">
@@ -489,7 +545,7 @@ const DashboardPage = () => {
                     </BentoCard>
 
                     {/* Fees Widget */}
-                    <FeesStatusWidget navigate={navigate} />
+                    <FeesStatusWidget stats={stats} navigate={navigate} />
 
                     {/* Support Button Integrated */}
                     <div className="lg:col-span-1">

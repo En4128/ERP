@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import Layout from '../../components/Layout';
@@ -28,6 +28,7 @@ const Chat = () => {
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+    const location = useLocation();
     const currentUser = JSON.parse(localStorage.getItem('user')) || { _id: '', name: '', role: '' };
 
     useEffect(() => {
@@ -56,13 +57,24 @@ const Chat = () => {
             fetchConversations();
         });
 
+        // Check for contactUser in location state (from FacultyInfo)
+        if (location.state && location.state.contactUser) {
+            console.log("Found contact user in state:", location.state.contactUser);
+            // Ensure we don't re-select if already selected to avoid loops, though strict mode might trigger twice
+            handleSelectUser(location.state.contactUser);
+
+            // Clear state so a refresh doesn't re-select if we navigate away (optional, but good practice)
+            // But replacing state might be tricky here, so we just let it be. 
+            // Better: just verify we handle it once.
+        }
+
         fetchConversations();
         fetchRecommendedUsers();
 
         return () => {
             socket.current.disconnect();
         };
-    }, [selectedUser]);
+    }, [selectedUser]); // Removed location.state from deps to avoid re-triggering, handled on mount basically
 
     useEffect(() => {
         scrollToBottom();

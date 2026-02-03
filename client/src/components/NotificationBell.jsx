@@ -40,12 +40,8 @@ const NotificationBell = ({ role }) => {
 
             const endpoint = role === 'student' ? '/api/student/notifications' : '/api/faculty/notifications';
 
-            // Mark all as read logically in frontend first for speed
             setNotifications(notifications.map(n => ({ ...n, read: true })));
 
-            // API calls to mark specific unread ones (or we could have a "mark all" endpoint, but usually loop)
-            // For now, let's just assume viewing them marks them or we hit them one by one.
-            // Actually, the UI has "Mark all read". Let's update all unread ones.
             const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
             await Promise.all(unreadIds.map(id =>
                 axios.post(`http://localhost:5000${endpoint}/${id}/read`, {}, {
@@ -54,6 +50,24 @@ const NotificationBell = ({ role }) => {
             ));
         } catch (error) {
             console.error("Error marking notifications as read:", error);
+        }
+    };
+
+    const clearAll = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token || !role) return;
+
+            const endpoint = role === 'student' ? '/api/student/notifications' : '/api/faculty/notifications';
+
+            await axios.delete(`http://localhost:5000${endpoint}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setNotifications([]);
+            setIsOpen(false);
+        } catch (error) {
+            console.error("Error clearing notifications:", error);
         }
     };
 
@@ -143,12 +157,21 @@ const NotificationBell = ({ role }) => {
                         >
                             <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
                                 <h3 className="font-bold text-slate-800 dark:text-white text-sm">Notifications</h3>
-                                <button
-                                    onClick={markAsRead}
-                                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 uppercase tracking-wider"
-                                >
-                                    Mark all read
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={markAsRead}
+                                        className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 uppercase tracking-wider"
+                                    >
+                                        Mark all read
+                                    </button>
+                                    <span className="text-slate-300">|</span>
+                                    <button
+                                        onClick={clearAll}
+                                        className="text-xs font-bold text-rose-500 hover:text-rose-600 uppercase tracking-wider"
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
                             </div>
                             <div className="max-h-[300px] overflow-y-auto">
                                 {notifications.length === 0 ? (

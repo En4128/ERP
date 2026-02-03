@@ -11,7 +11,8 @@ import {
     Filter,
     Clock,
     MapPin,
-    QrCode
+    QrCode,
+    TrendingUp
 } from 'lucide-react';
 import axios from 'axios';
 import { Bar, Line } from 'react-chartjs-2';
@@ -29,6 +30,7 @@ import {
 } from 'chart.js';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { motion, AnimatePresence } from 'framer-motion';
 import QRScanner from '../../components/QRScanner';
 
 ChartJS.register(
@@ -108,6 +110,11 @@ export default function AttendancePage() {
     const [stats, setStats] = useState({ averageAttendance: 0, safeZone: { safe: 0, warning: 0, critical: 0 } });
     const [heatmapData, setHeatmapData] = useState([]);
 
+    // Filter states
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [showFilter, setShowFilter] = useState(false);
+
     useEffect(() => {
         const fetchAttendanceData = async () => {
             try {
@@ -162,6 +169,28 @@ export default function AttendancePage() {
             pdf.save('attendance_report.pdf');
         });
     };
+
+    const filteredHistory = history.filter((record) => {
+        if (!startDate && !endDate) return true;
+        try {
+            // Assuming record.date is "YYYY-MM-DD" or similar parseable format
+            const recordDate = new Date(record.date);
+            const start = startDate ? new Date(startDate) : null;
+            const end = endDate ? new Date(endDate) : null;
+
+            if (start) {
+                start.setHours(0, 0, 0, 0);
+                if (recordDate < start) return false;
+            }
+            if (end) {
+                end.setHours(23, 59, 59, 999);
+                if (recordDate > end) return false;
+            }
+            return true;
+        } catch (e) {
+            return true;
+        }
+    });
 
     // Chart Options
     const chartOptions = {
@@ -346,10 +375,60 @@ export default function AttendancePage() {
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Detailed Attendance Report</h3>
                                 <p className="text-sm text-slate-600 dark:text-slate-400">View history and export data.</p>
                             </div>
-                            <div className="flex items-center space-x-3">
-                                <button className="flex items-center px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-white dark:hover:bg-slate-700 transition-colors">
-                                    <Filter size={16} className="mr-2" /> Filter Date
+                            <div className="flex items-center space-x-3 relative">
+                                <button
+                                    onClick={() => setShowFilter(!showFilter)}
+                                    className={`flex items-center px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${showFilter ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30' : 'border-slate-200 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-700'}`}
+                                >
+                                    <Filter size={16} className="mr-2" /> {(startDate || endDate) ? 'Filtered' : 'Filter Date'}
                                 </button>
+
+                                <AnimatePresence>
+                                    {showFilter && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute top-full right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-4 z-50 w-72"
+                                        >
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Start Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={startDate}
+                                                        onChange={(e) => setStartDate(e.target.value)}
+                                                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">End Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={endDate}
+                                                        onChange={(e) => setEndDate(e.target.value)}
+                                                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white"
+                                                    />
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => { setStartDate(''); setEndDate(''); }}
+                                                        className="flex-1 px-3 py-2 text-xs font-bold text-slate-500 hover:text-rose-500 transition-colors"
+                                                    >
+                                                        Clear
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowFilter(false)}
+                                                        className="flex-1 bg-indigo-600 text-white rounded-lg px-3 py-2 text-xs font-bold hover:bg-indigo-700 transition-colors"
+                                                    >
+                                                        Apply
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 <button onClick={exportPDF} className="flex items-center px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 shadow-md shadow-amber-200 dark:shadow-none transition-colors">
                                     <Download size={16} className="mr-2" /> Export PDF
                                 </button>
@@ -368,7 +447,7 @@ export default function AttendancePage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
-                                    {history.map((record) => (
+                                    {filteredHistory.map((record) => (
                                         <tr key={record.id} className="hover:bg-white dark:hover:bg-slate-700/50 transition-colors">
                                             <td className="py-4 px-4 text-sm text-slate-900 dark:text-slate-200">{record.date}</td>
                                             <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{record.time}</td>
@@ -484,7 +563,3 @@ export default function AttendancePage() {
         </Layout>
     );
 };
-
-// --- Icons for Charts ---
-import { TrendingUp as TrendingUpIcon } from 'lucide-react';
-const TrendingUp = TrendingUpIcon; // Fix name conflict if any

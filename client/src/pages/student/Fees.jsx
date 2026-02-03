@@ -43,7 +43,7 @@ const Fees = () => {
                         </div>
                         <div className="relative z-10">
                             <p className="opacity-80 font-black uppercase text-[10px] tracking-widest">Total Outstanding</p>
-                            <h3 className="text-5xl font-black mt-2 tracking-tighter">${totalOutstanding.toLocaleString()}</h3>
+                            <h3 className="text-5xl font-black mt-2 tracking-tighter">₹{totalOutstanding.toLocaleString()}</h3>
                             <button className="mt-8 px-6 py-3 bg-white text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:scale-105 transition active:scale-95">Pay Now</button>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ const Fees = () => {
                                     <tr key={fee._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                                         <td className="p-6 text-sm text-slate-900 dark:text-white font-black">{fee.title}</td>
                                         <td className="p-6 text-xs text-slate-500 dark:text-slate-400 max-w-xs truncate">{fee.description || 'University Fee'}</td>
-                                        <td className="p-6 text-sm text-slate-900 dark:text-white font-black">${fee.amount.toLocaleString()}</td>
+                                        <td className="p-6 text-sm text-slate-900 dark:text-white font-black">₹{fee.amount.toLocaleString()}</td>
                                         <td className="p-6 text-xs font-bold text-slate-600 dark:text-slate-400">{new Date(fee.dueDate).toLocaleDateString()}</td>
                                         <td className="p-6">
                                             <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest">Pending</span>

@@ -338,7 +338,7 @@ exports.createFee = async (req, res) => {
         const notifications = students.map(student => ({
             recipient: student.user,
             title: 'New Fee Added',
-            message: `A new fee "${fee.title}" of $${fee.amount} has been added. Due date: ${new Date(fee.dueDate).toLocaleDateString()}.`,
+            message: `A new fee "${fee.title}" of ₹${fee.amount} has been added. Due date: ${new Date(fee.dueDate).toLocaleDateString()}.`,
             type: 'alert'
         }));
 

@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { cn } from '../../lib/utils';
-import { User, Mail, Phone, Lock, Camera, CheckCircle, Shield } from 'lucide-react';
+import { User, Mail, Phone, Lock, Camera, CheckCircle, Shield, Trash2, Loader2, BookOpen, MapPin, Users } from 'lucide-react';
 
 const Profile = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState(null);
     const [formData, setFormData] = useState({});
+    const fileInputRef = React.useRef(null);
+    const [uploading, setUploading] = useState(false);
 
     // Fetch Profile Data
     useEffect(() => {
@@ -54,7 +56,52 @@ const Profile = () => {
             // Optionally add toast success here
         } catch (error) {
             console.error("Error updating profile:", error);
-            // Optionally add toast error here
+        }
+    };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            setUploading(true);
+            const token = localStorage.getItem('token');
+            const res = await axios.post('http://localhost:5000/api/student/profile/image', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            setProfile(prev => ({
+                ...prev,
+                user: { ...prev.user, profileImage: res.data.profileImage }
+            }));
+        } catch (error) {
+            console.error("Error uploading image:", error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleRemoveImage = async () => {
+        if (!window.confirm("Are you sure you want to remove your profile photo?")) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete('http://localhost:5000/api/student/profile/image', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setProfile(prev => ({
+                ...prev,
+                user: { ...prev.user, profileImage: "" }
+            }));
+        } catch (error) {
+            console.error("Error removing image:", error);
         }
     };
 
@@ -82,11 +129,41 @@ const Profile = () => {
                     {/* Profile Header Card */}
                     <div className="absolute top-24 left-6 right-6 bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 flex flex-col md:flex-row items-center md:items-end gap-6 border border-slate-100 dark:border-slate-700 backdrop-blur-sm">
                         <div className="relative group">
-                            <div className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-md overflow-hidden bg-slate-100">
+                            <div className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-md overflow-hidden bg-slate-100 relative group">
                                 <img
-                                    src={profile.user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.user.name)}&background=random`}
+                                    src={profile.user.profileImage ? `http://localhost:5000${profile.user.profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.user.name)}&background=random`}
                                     alt="Profile"
                                     className="w-full h-full object-cover"
+                                />
+                                {uploading && (
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <button
+                                        onClick={() => fileInputRef.current.click()}
+                                        className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-sm transition-all"
+                                        title="Upload Photo"
+                                    >
+                                        <Camera size={18} />
+                                    </button>
+                                    {profile.user.profileImage && (
+                                        <button
+                                            onClick={handleRemoveImage}
+                                            className="p-2 bg-rose-500/80 hover:bg-rose-600/90 rounded-full text-white backdrop-blur-sm transition-all"
+                                            title="Remove Photo"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
                                 />
                             </div>
                         </div>
@@ -115,33 +192,51 @@ const Profile = () => {
                 </div>
 
                 <div className="pt-32 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Left Column: Personal Info */}
+                    {/* Left Column: Main Forms */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Bio Section */}
-                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
-                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <User size={16} /> About Me
-                            </h3>
-                            {isEditing ? (
-                                <textarea
-                                    value={formData.bio}
-                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                    className="w-full p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-teal-500 outline-none min-h-[120px]"
-                                    placeholder="Write a short bio..."
-                                />
-                            ) : (
-                                <p className="text-slate-600 dark:text-slate-300 leading-relaxed italic">
-                                    {formData.bio || "No bio added yet."}
-                                </p>
-                            )}
-                        </div>
 
-                        {/* Personal Details Form */}
+                        {/* 1. General Details */}
                         <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
                             <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-2">
-                                <Shield size={16} /> Personal Details
+                                <BookOpen size={16} /> General Details
                             </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Admission Number</label>
+                                    <p className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-500 dark:text-slate-400">{profile.admissionNumber}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Department</label>
+                                    <p className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-500 dark:text-slate-400">{profile.department}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Batch</label>
+                                    <input
+                                        type="text"
+                                        value={formData.batch}
+                                        disabled={!isEditing}
+                                        onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
+                                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Current Semester</label>
+                                    <p className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-500 dark:text-slate-400">{profile.sem}</p>
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Official Email</label>
+                                    <p className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                        <Mail size={14} /> {formData.email}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
+                        {/* 2. Personal Details */}
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
+                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-2">
+                                <User size={16} /> Personal Details
+                            </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
@@ -150,25 +245,6 @@ const Profile = () => {
                                         value={formData.name}
                                         disabled
                                         className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
-                                    <input
-                                        type="text"
-                                        value={formData.email}
-                                        disabled
-                                        className="w-full p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl font-bold text-slate-500 dark:text-slate-400 cursor-not-allowed"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.phone}
-                                        disabled={!isEditing}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -181,23 +257,47 @@ const Profile = () => {
                                         className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100"
                                     />
                                 </div>
-                                <div className="space-y-2 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Address</label>
-                                    <input
-                                        type="text"
-                                        value={formData.address}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Gender</label>
+                                    <select
+                                        value={formData.gender}
                                         disabled={!isEditing}
-                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                                         className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100"
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Personal Phone</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.phone}
+                                        disabled={!isEditing}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100"
+                                    />
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bio / About</label>
+                                    <textarea
+                                        value={formData.bio}
+                                        disabled={!isEditing}
+                                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100 min-h-[100px]"
+                                        placeholder="Write something about yourself..."
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Guardian Info */}
+                        {/* 3. Parent Details */}
                         <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
                             <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-2">
-                                <User size={16} /> Guardian Information
+                                <Users size={16} /> Parent / Guardian Details
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                 <div className="space-y-2">
@@ -222,39 +322,28 @@ const Profile = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* 4. Address for Communication */}
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
+                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-2">
+                                <MapPin size={16} /> Address for Communication
+                            </h3>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Permanent Address</label>
+                                <textarea
+                                    value={formData.address}
+                                    disabled={!isEditing}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-100 min-h-[100px]"
+                                    placeholder="Enter complete address..."
+                                />
+                            </div>
+                        </div>
+
                     </div>
 
                     {/* Right Column: Meta Info */}
                     <div className="space-y-8">
-                        {/* Batches and Dept */}
-                        <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-xl shadow-slate-900/10 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-full -mr-10 -mt-10" />
-                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 relative z-10">Academic Info</h3>
-                            <div className="space-y-6 relative z-10">
-                                <div>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Batch</p>
-                                    {isEditing ? (
-                                        <input
-                                            type="text"
-                                            value={formData.batch}
-                                            onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
-                                            className="w-full bg-slate-800 border-none rounded-lg px-3 py-2 text-white font-bold focus:ring-1 focus:ring-teal-500"
-                                            placeholder="e.g. 2023-2027"
-                                        />
-                                    ) : (
-                                        <p className="text-2xl font-black text-white">{formData.batch || "Not Set"}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Department</p>
-                                    <p className="text-xl font-bold text-white">{profile.department}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Current Semester</p>
-                                    <p className="text-xl font-bold text-white">{profile.sem}</p>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Social Links */}
                         <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
@@ -278,7 +367,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-        </Layout>
+        </Layout >
     );
 };
 

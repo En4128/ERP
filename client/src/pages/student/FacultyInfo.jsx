@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Mail, Phone, BookOpen, Search, Filter, Users, Award, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
-const FacultyInfoCard = ({ faculty }) => {
+const FacultyInfoCard = ({ faculty, onContact }) => {
     // Generate a consistent HSL color based on department
     const getThemeColor = (dept) => {
         const hash = dept.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -95,7 +96,10 @@ const FacultyInfoCard = ({ faculty }) => {
                         ))}
                     </div>
 
-                    <div className="mt-8 flex items-center justify-between bg-white text-slate-900 rounded-2xl px-5 py-4 transition-all duration-300 transform group-hover:-translate-y-1 shadow-lg cursor-pointer">
+                    <div
+                        onClick={() => onContact && onContact(faculty)}
+                        className="mt-8 flex items-center justify-between bg-white text-slate-900 rounded-2xl px-5 py-4 transition-all duration-300 transform group-hover:-translate-y-1 shadow-lg cursor-pointer hover:bg-slate-50 active:scale-95"
+                    >
                         <div className="flex flex-col">
                             <span className="text-[10px] font-black uppercase tracking-tighter text-slate-400">Contact Faculty</span>
                             <span className="text-sm font-black truncate max-w-[150px]">{faculty.email}</span>
@@ -111,10 +115,27 @@ const FacultyInfoCard = ({ faculty }) => {
 };
 
 const FacultyInfo = () => {
+    const navigate = useNavigate();
     const [facultyList, setFacultyList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterDept, setFilterDept] = useState('All');
+
+    const handleContact = (faculty) => {
+        // Navigate to chat with the faculty details
+        // We pass the faculty object as the contactUser
+        // The chat page expects a user object with _id, name, and role
+        navigate('/student/chat', {
+            state: {
+                contactUser: {
+                    _id: faculty._id || faculty.id || faculty.userId,
+                    name: faculty.name,
+                    role: 'faculty',
+                    email: faculty.email
+                }
+            }
+        });
+    };
 
     useEffect(() => {
         fetchFaculty();
@@ -194,7 +215,11 @@ const FacultyInfo = () => {
                 {filteredFaculty.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-8">
                         {filteredFaculty.map(faculty => (
-                            <FacultyInfoCard key={faculty.id} faculty={faculty} />
+                            <FacultyInfoCard
+                                key={faculty.id || faculty._id}
+                                faculty={faculty}
+                                onContact={handleContact}
+                            />
                         ))}
                     </div>
                 ) : (

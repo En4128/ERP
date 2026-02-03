@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { BookOpen, Users, Clock, ChevronRight, CheckCircle, GraduationCap, Search, X, Filter, FileText, Download, ExternalLink, Award } from 'lucide-react';
@@ -14,7 +14,7 @@ const StudentCourses = () => {
     const [activeTab, setActiveTab] = useState('enrolled');
 
     // Filter states
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [departmentFilter, setDepartmentFilter] = useState('all');
     const [creditsFilter, setCreditsFilter] = useState('all');
     const [selectedCourse, setSelectedCourse] = useState(null);
@@ -85,31 +85,48 @@ const StudentCourses = () => {
         }
     };
 
-    const filterCourses = (courses) => {
+    const filterCourses = useCallback((courses) => {
+        if (!Array.isArray(courses)) return [];
+
+        const query = (searchTerm || '').trim().toLowerCase();
+        const dept = (departmentFilter || 'all').toLowerCase();
+        const credits = (creditsFilter || 'all').toString();
+
         return courses.filter(course => {
-            const matchesSearch =
-                course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (course.assignedFaculty?.user?.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+            if (!course) return false;
 
-            const matchesDepartment =
-                departmentFilter === 'all' ||
-                course.department?.toLowerCase() === departmentFilter.toLowerCase();
+            // Search matches
+            const courseName = (course.name || '').toLowerCase();
+            const courseCode = (course.code || '').toLowerCase();
+            const facultyName = (
+                course.assignedFaculty?.user?.name ||
+                course.assignedFaculty?.name ||
+                ''
+            ).toLowerCase();
 
-            const matchesCredits =
-                creditsFilter === 'all' ||
-                course.credits.toString() === creditsFilter;
+            const matchesSearch = !query ||
+                courseName.includes(query) ||
+                courseCode.includes(query) ||
+                facultyName.includes(query);
+
+            // Department matches
+            const matchesDepartment = dept === 'all' ||
+                (course.department || '').toLowerCase() === dept;
+
+            // Credits matches
+            const matchesCredits = credits === 'all' ||
+                (course.credits || '').toString() === credits;
 
             return matchesSearch && matchesDepartment && matchesCredits;
         });
-    };
+    }, [searchTerm, departmentFilter, creditsFilter]);
 
-    const filteredEnrolled = useMemo(() => filterCourses(enrolledCourses), [enrolledCourses, searchQuery, departmentFilter, creditsFilter]);
-    const filteredAvailable = useMemo(() => filterCourses(availableCourses), [availableCourses, searchQuery, departmentFilter, creditsFilter]);
-    const filteredCompleted = useMemo(() => filterCourses(completedCourses), [completedCourses, searchQuery, departmentFilter, creditsFilter]);
+    const filteredEnrolled = useMemo(() => filterCourses(enrolledCourses), [enrolledCourses, filterCourses]);
+    const filteredAvailable = useMemo(() => filterCourses(availableCourses), [availableCourses, filterCourses]);
+    const filteredCompleted = useMemo(() => filterCourses(completedCourses), [completedCourses, filterCourses]);
 
     const clearFilters = () => {
-        setSearchQuery('');
+        setSearchTerm('');
         setDepartmentFilter('all');
         setCreditsFilter('all');
     };
@@ -185,13 +202,13 @@ const StudentCourses = () => {
                 <div className="bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] border border-indigo-100/50 dark:border-slate-800/50 p-6 shadow-xl shadow-indigo-100/50 dark:shadow-none">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition-colors" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition-colors pointer-events-none" />
                             <input
                                 type="text"
                                 placeholder="Find a course, faculty member, or code..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-12 w-full p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-white/80 dark:bg-slate-950/70 dark:text-white focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/30 focus:outline-none text-slate-900 transition-all font-medium placeholder:text-slate-400 shadow-sm"
                             />
                         </div>
@@ -221,7 +238,7 @@ const StudentCourses = () => {
                                 ))}
                             </select>
 
-                            {(searchQuery || departmentFilter !== 'all' || creditsFilter !== 'all') && (
+                            {(searchTerm || departmentFilter !== 'all' || creditsFilter !== 'all') && (
                                 <button
                                     onClick={clearFilters}
                                     className="p-4 rounded-2xl bg-rose-100/50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-200/50 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center aspect-square shadow-sm"

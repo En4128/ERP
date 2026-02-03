@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ChatbotWidget from './ChatbotWidget';
 import NotificationBell from './NotificationBell';
-import { Search, Menu, Moon, Sun, Settings, LogOut, User } from 'lucide-react';
+import { Menu, Moon, Sun, Settings, LogOut, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
@@ -67,6 +67,7 @@ const Layout = ({ children, role }) => {
         fetchProfile();
     }, [role]);
 
+
     const user = { name: userName, role: role || 'Student' };
 
     return (
@@ -85,14 +86,6 @@ const Layout = ({ children, role }) => {
                     </div>
 
                     <div className="flex items-center space-x-6">
-                        <div className="relative hidden md:block group">
-                            <Search className="absolute left-3 top-2.5 text-gray-400 dark:text-slate-500 group-focus-within:text-teal-500 dark:group-focus-within:text-cyan-400 transition-colors" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search courses, docs..."
-                                className="pl-10 pr-4 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-full text-sm w-64 focus:ring-2 focus:ring-teal-500 dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all duration-300 placeholder-gray-400 dark:placeholder-slate-500 text-slate-900 dark:text-slate-200"
-                            />
-                        </div>
 
                         <div className="w-px h-8 bg-gray-200 dark:bg-slate-800 mx-2"></div>
 

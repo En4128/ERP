@@ -231,6 +231,16 @@ exports.getDashboardStats = async (req, res) => {
             rejected: await Leave.countDocuments({ student: student._id, status: 'Rejected' })
         };
 
+        // 7. Dynamic Fee Calculation
+        const fees = await Fee.find({
+            status: 'active',
+            $and: [
+                { $or: [{ semester: student.sem }, { semester: 0 }] },
+                { $or: [{ department: student.department }, { department: 'All' }] }
+            ]
+        });
+        const totalFees = fees.reduce((sum, f) => sum + f.amount, 0);
+
         res.json({
             studentName: req.user.name,
             stats: {
@@ -239,7 +249,8 @@ exports.getDashboardStats = async (req, res) => {
                 cgpa: cgpa,
                 pendingAssignmentsCount: formattedAssignments.length,
                 pendingAssignments: formattedAssignments,
-                leaveStats
+                leaveStats,
+                totalFees
             },
             timetable: formattedTimetable,
             announcements: combinedAnnouncements,
@@ -567,6 +578,36 @@ exports.markAsRead = async (req, res) => {
     }
 };
 
+
+exports.clearNotifications = async (req, res) => {
+    try {
+        // 1. Delete all direct notifications
+        await Notification.deleteMany({ recipient: req.user._id });
+
+        // 2. Mark all notices as read for this user
+        const notices = await Notice.find({
+            targetAudience: { $in: ['all', 'student'] },
+            isPublished: true
+        });
+
+        const readOperations = notices.map(notice => ({
+            updateOne: {
+                filter: { noticeId: notice._id, userId: req.user._id },
+                update: { noticeId: notice._id, userId: req.user._id },
+                upsert: true
+            }
+        }));
+
+        if (readOperations.length > 0) {
+            await NoticeRead.bulkWrite(readOperations);
+        }
+
+        res.json({ message: 'Notifications cleared successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.getStudentResults = async (req, res) => {
     try {
         const student = await Student.findOne({ user: req.user.id }).populate('enrolledCourses');
@@ -738,6 +779,41 @@ exports.getStudentFees = async (req, res) => {
 
         res.json(fees);
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.uploadProfileImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const profileImageUrl = `/uploads/profile/${req.file.filename}`;
+
+        await require('../models/User').findByIdAndUpdate(req.user.id, {
+            profileImage: profileImageUrl
+        });
+
+        res.json({
+            message: 'Profile image updated successfully',
+            profileImage: profileImageUrl
+        });
+    } catch (error) {
+        console.error('Upload Profile Image Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.removeProfileImage = async (req, res) => {
+    try {
+        await require('../models/User').findByIdAndUpdate(req.user.id, {
+            $unset: { profileImage: "" }
+        });
+
+        res.json({ message: 'Profile image removed successfully' });
+    } catch (error) {
+        console.error('Remove Profile Image Error:', error);
         res.status(500).json({ message: error.message });
     }
 };

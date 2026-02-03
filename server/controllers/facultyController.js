@@ -543,6 +543,19 @@ exports.uploadProfileImage = async (req, res) => {
     }
 };
 
+exports.removeProfileImage = async (req, res) => {
+    try {
+        await require('../models/User').findByIdAndUpdate(req.user.id, {
+            $unset: { profileImage: "" }
+        });
+
+        res.json({ message: 'Profile image removed successfully' });
+    } catch (error) {
+        console.error('Remove Profile Image Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 
 // @desc    Search all students in the system (for enrollment)
@@ -865,6 +878,35 @@ exports.clearMarks = async (req, res) => {
 
         await Mark.deleteMany({ course: courseId, examType });
         res.json({ message: 'Marks cleared successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.clearNotifications = async (req, res) => {
+    try {
+        // 1. Delete all direct notifications
+        await Notification.deleteMany({ recipient: req.user._id });
+
+        // 2. Mark all notices as read for this user
+        const notices = await Notice.find({
+            targetAudience: { $in: ['all', 'faculty'] },
+            isPublished: true
+        });
+
+        const readOperations = notices.map(notice => ({
+            updateOne: {
+                filter: { noticeId: notice._id, userId: req.user._id },
+                update: { noticeId: notice._id, userId: req.user._id },
+                upsert: true
+            }
+        }));
+
+        if (readOperations.length > 0) {
+            await NoticeRead.bulkWrite(readOperations);
+        }
+
+        res.json({ message: 'Notifications cleared successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

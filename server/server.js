@@ -46,6 +46,7 @@ app.use('/api/timetable', require('./routes/timetableRoutes'));
 app.use('/api/assignments', require('./routes/assignmentRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
+app.use('/api/search', require('./routes/searchRoutes'));
 
 
 app.get('/', (req, res) => {

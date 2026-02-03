@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Award, FileText, ChevronDown, ChevronUp, Download, PieChart, TrendingUp } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const Results = () => {
     const [resultsData, setResultsData] = useState(null);
@@ -34,6 +36,23 @@ const Results = () => {
 
     const toggleSem = (sem) => {
         setExpandedSem(expandedSem === sem ? null : sem);
+    };
+
+    const downloadGradeSheet = (sem) => {
+        const input = document.getElementById(`grade-sheet-${sem}`);
+        if (!input) return;
+
+        html2canvas(input, { scale: 2 }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            // Add some padding and header info in PDF if needed, 
+            // but for now, we'll just export the table area
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`grade_sheet_sem_${sem}.pdf`);
+        });
     };
 
     if (loading) {
@@ -135,8 +154,14 @@ const Results = () => {
                             </div>
 
                             {expandedSem === semData.semester && (
-                                <div className="px-6 pb-6 border-t border-gray-100 dark:border-slate-700 animate-fadeIn">
-                                    <div className="overflow-x-auto mt-4">
+                                <div id={`grade-sheet-${semData.semester}`} className="px-6 pb-6 border-t border-gray-100 dark:border-slate-700 animate-fadeIn bg-white dark:bg-slate-800">
+                                    <div className="flex justify-between items-center mt-6 mb-2">
+                                        <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">Semester Detail Report</h4>
+                                        <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded">
+                                            SGPA: {semData.sgpa}
+                                        </div>
+                                    </div>
+                                    <div className="overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
                                             <thead>
                                                 <tr className="text-xs uppercase text-gray-400 border-b border-gray-100 dark:border-slate-700">
@@ -170,8 +195,11 @@ const Results = () => {
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div className="mt-6 flex justify-end">
-                                        <button className="flex items-center gap-2 text-sm text-blue-700 hover:text-indigo-800 font-medium transition-colors">
+                                    <div className="mt-6 flex justify-end no-print">
+                                        <button
+                                            onClick={() => downloadGradeSheet(semData.semester)}
+                                            className="flex items-center gap-2 text-sm text-blue-700 hover:text-indigo-800 font-medium transition-colors bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg"
+                                        >
                                             <Download size={16} />
                                             Download Grade Sheet
                                         </button>

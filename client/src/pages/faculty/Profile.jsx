@@ -21,7 +21,8 @@ import {
     ShieldCheck,
     ArrowRight,
     BookOpen,
-    Binary
+    Binary,
+    Trash2
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -169,6 +170,26 @@ const FacultyProfile = () => {
         }
     };
 
+    const handleRemoveImage = async () => {
+        if (!window.confirm("Are you sure you want to remove your profile photo?")) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete('http://localhost:5000/api/faculty/profile/image', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setProfile(prev => ({
+                ...prev,
+                user: { ...prev.user, profileImage: "" }
+            }));
+            alert("Profile image removed!");
+        } catch (error) {
+            console.error("Error removing image:", error);
+            alert("Failed to remove image");
+        }
+    };
+
 
     if (loading) {
         return (
@@ -254,10 +275,18 @@ const FacultyProfile = () => {
                                 />
                                 <button
                                     onClick={() => fileInputRef.current.click()}
-                                    className="absolute bottom-2 right-2 p-3.5 bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-indigo-600 shadow-xl hover:scale-110 active:scale-95 transition-all"
+                                    className="absolute bottom-2 right-2 p-3.5 bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-indigo-600 shadow-xl hover:scale-110 active:scale-95 transition-all z-10"
                                 >
                                     <Camera size={18} />
                                 </button>
+                                {profile.user.profileImage && (
+                                    <button
+                                        onClick={handleRemoveImage}
+                                        className="absolute bottom-2 left-2 p-3.5 bg-rose-500 border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-white shadow-xl hover:scale-110 active:scale-95 transition-all z-10"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
                             </div>
 
 

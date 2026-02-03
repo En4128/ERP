@@ -46,6 +46,7 @@ router.get('/courses/:courseId/history', getAttendanceHistory);
 router.get('/profile', getFacultyProfile);
 router.put('/profile', updateFacultyProfile);
 router.post('/profile/image', upload.single('image'), uploadProfileImage);
+router.delete('/profile/image', require('../controllers/facultyController').removeProfileImage);
 router.get('/all-students', getAllFacultyStudents);
 
 router.get('/students/:studentId', getStudentDetail);
@@ -57,6 +58,7 @@ router.get('/attendance', getAttendance);
 router.post('/marks', uploadMarks);
 router.post('/notices', createNotice);
 router.get('/notifications', getNotifications);
+router.delete('/notifications', require('../controllers/facultyController').clearNotifications);
 router.post('/notifications/:id/read', markAsRead);
 router.get('/leave-requests', getLeaveRequests);
 router.put('/leave-requests/:id', updateLeaveStatus);
