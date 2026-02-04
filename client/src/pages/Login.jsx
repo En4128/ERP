@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import { Mail, Lock, ChevronRight, Loader2, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ChevronRight, Loader2, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 // --- Background Components ---
@@ -91,7 +91,9 @@ const UpwardParticles = () => {
 
 const AdvancedInput = ({ label, icon: Icon, type, value, onChange, placeholder, required }) => {
     const [isFocused, setIsFocused] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const id = label.toLowerCase().replace(/\s+/g, '-');
+    const isPassword = type === 'password';
 
     return (
         <div className="relative pt-6 group">
@@ -103,7 +105,7 @@ const AdvancedInput = ({ label, icon: Icon, type, value, onChange, placeholder, 
                     y: (isFocused || value) ? -28 : 12,
                     x: (isFocused || value) ? -44 : 0,
                     scale: (isFocused || value) ? 0.85 : 1,
-                    color: (isFocused || value) ? '#818cf8' : 'rgba(255,255,255,0.3)',
+                    color: (isFocused || value) ? '#0066CC' : '#718096',
                     opacity: (isFocused || value) ? 1 : 0.6
                 }}
             >
@@ -111,20 +113,30 @@ const AdvancedInput = ({ label, icon: Icon, type, value, onChange, placeholder, 
             </motion.label>
 
             <div className="relative flex items-center">
-                <div className={`absolute left-4 transition-colors duration-300 ${isFocused ? 'text-indigo-400' : 'text-white/20'}`}>
+                <div className={`absolute left-4 transition-colors duration-300 ${isFocused ? 'text-indigo-400' : 'text-slate-500'}`}>
                     <Icon size={18} />
                 </div>
 
                 <input
                     id={id}
-                    type={type}
+                    type={isPassword ? (showPassword ? 'text' : 'password') : type}
                     value={value}
                     onChange={onChange}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     required={required}
-                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-transparent focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white/[0.05] transition-all duration-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-12 py-4 text-slate-900 placeholder-transparent focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:bg-white focus:border-[#0066CC] transition-all duration-500"
                 />
+
+                {isPassword && (
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 text-slate-400 hover:text-indigo-400 transition-colors focus:outline-none"
+                    >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                )}
 
                 {/* Underline Animation */}
                 <motion.div
@@ -158,9 +170,9 @@ const RippleButton = ({ children, isLoading, isSuccess, isError }) => {
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
             className={`relative w-full overflow-hidden py-4 rounded-2xl font-bold text-lg text-white shadow-2xl transition-all duration-500 flex items-center justify-center gap-2 group
-                ${isSuccess ? 'bg-green-600 shadow-green-600/20' :
-                    isError ? 'bg-red-600 shadow-red-600/20' :
-                        'bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-800 bg-[length:200%_auto] hover:bg-right'}`}
+                ${isSuccess ? 'bg-emerald-600 shadow-emerald-500/20' :
+                    isError ? 'bg-rose-600 shadow-rose-500/20' :
+                        'bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-600 bg-[length:200%_auto] hover:bg-right'}`}
         >
             {/* Ripple Effects */}
             {ripples.map(ripple => (
@@ -250,16 +262,15 @@ const Login = () => {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#020617] font-sans selection:bg-indigo-500/30">
-            {/* Multi-layered Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617]" />
-            <BokehNebula />
+        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-950 font-sans selection:bg-indigo-500/30">
+            {/* Immersive Background */}
             <Stars />
+            <BokehNebula />
             <UpwardParticles />
 
             {/* Animated Glow Border (Levitating under the card) */}
             <motion.div
-                animate={{ y: [20, 5, 20], opacity: [0.1, 0.3, 0.1], scale: [0.9, 1, 0.9] }}
+                animate={{ y: [20, 5, 20], opacity: [0.1, 0.2, 0.1], scale: [0.9, 1, 0.9] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute w-[500px] h-[600px] rounded-full bg-indigo-500/10 blur-[100px] z-0"
             />
@@ -276,7 +287,7 @@ const Login = () => {
                     animate={controls}
                     style={{ y: 0 }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative w-full bg-white/[0.02] backdrop-blur-[30px] border border-white/10 rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] p-12 overflow-hidden group"
+                    className="relative w-full bg-slate-900/40 backdrop-blur-3xl border border-white/10 rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] p-12 overflow-hidden group"
                 >
                     {/* Floating Decorative Elements inside card */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl -translate-y-16 translate-x-16 rounded-full group-hover:bg-indigo-500/10 transition-all duration-700" />
@@ -293,15 +304,15 @@ const Login = () => {
                         {/* Header */}
                         <motion.div variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="text-center mb-12">
                             <motion.div
-                                whileHover={{ rotate: 15, scale: 1.1 }}
-                                className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-indigo-500/10 border border-indigo-400/20 mb-8 shadow-inner"
+                                whileHover={{ scale: 1.05 }}
+                                className="inline-flex items-center justify-center w-24 h-24 mb-8"
                             >
-                                <Sparkles className="w-10 h-10 text-indigo-300 drop-shadow-[0_0_10px_rgba(129,140,248,0.5)]" />
+                                <img src="/logo-dark2.png" alt="Logo" className="w-full h-full object-contain" />
                             </motion.div>
                             <h2 className="text-4xl font-extrabold text-white tracking-tight mb-4 tracking-tighter">
                                 SIGN IN
                             </h2>
-                            <p className="text-white/20 text-sm font-medium tracking-[0.2em] uppercase">
+                            <p className="text-slate-400 text-sm font-medium tracking-[0.2em] uppercase">
                                 ERP Portal Access
                             </p>
                         </motion.div>
@@ -346,7 +357,7 @@ const Login = () => {
                             variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
                             className="mt-12 text-center"
                         >
-                            <a href="#" className="relative inline-block text-white/20 hover:text-white/50 text-[10px] font-bold tracking-[0.3em] uppercase transition-colors group">
+                            <a href="#" className="relative inline-block text-slate-500 hover:text-indigo-400 text-[10px] font-bold tracking-[0.3em] uppercase transition-colors group">
                                 Forgot Password?
                                 <span className="absolute bottom-[-6px] left-0 w-full h-[1px] bg-indigo-400/40 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
                             </a>
@@ -356,9 +367,9 @@ const Login = () => {
 
                 {/* Perspective Guide Lines (Subtle) */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] pointer-events-none opacity-[0.05]">
-                    <div className="absolute top-0 left-0 w-full h-full border border-indigo-500/20 rounded-full scale-[0.3]" />
-                    <div className="absolute top-0 left-0 w-full h-full border border-indigo-500/20 rounded-full scale-[0.6]" />
-                    <div className="absolute top-0 left-0 w-full h-full border border-indigo-500/20 rounded-full scale-[0.9]" />
+                    <div className="absolute top-0 left-0 w-full h-full border border-blue-500/20 rounded-full scale-[0.3]" />
+                    <div className="absolute top-0 left-0 w-full h-full border border-blue-500/20 rounded-full scale-[0.6]" />
+                    <div className="absolute top-0 left-0 w-full h-full border border-blue-500/20 rounded-full scale-[0.9]" />
                 </div>
             </motion.div>
         </div>

@@ -31,6 +31,7 @@ import { cn } from '../../lib/utils';
 import QRGenerator from '../../components/QRGenerator';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { toast } from 'sonner';
 
 // --- Premium UI Components ---
 
@@ -40,7 +41,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -207,14 +208,14 @@ const FacultyAttendance = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            alert('Attendance saved successfully!');
+            toast.success('Attendance saved successfully!');
             clearDirty();
             fetchCourseSpecificData();
 
 
         } catch (error) {
             console.error("Error saving attendance:", error);
-            alert('Failed to save attendance.');
+            toast.error('Failed to save attendance.');
         } finally {
             setSaving(false);
         }
@@ -223,7 +224,7 @@ const FacultyAttendance = () => {
 
     const exportPDF = () => {
         if (!history || history.length === 0) {
-            alert("No archive records to export.");
+            toast.info("No archive records to export.");
             return;
         }
 
@@ -291,8 +292,8 @@ const FacultyAttendance = () => {
                         <div className="w-24 h-24 rounded-[3rem] bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
                             <Sparkles size={40} />
                         </div>
-                        <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">Start Your Journey</h2>
-                        <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-10 font-bold leading-relaxed">
+                        <h2 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter mb-4">Start Your Journey</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] max-w-md mx-auto mb-10 font-bold leading-relaxed">
                             You haven't joined any courses yet. Once you join a course unit, you'll be able to mark attendance and manage your students here.
                         </p>
                         <button
@@ -313,11 +314,11 @@ const FacultyAttendance = () => {
                                     className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
                                 >
                                     <Sparkles size={14} className="text-indigo-500" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Attendance Portal</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Attendance Portal</span>
                                 </motion.div>
-                                <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
+                                <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-tight">
                                     Session <br />
-                                    <span className="text-indigo-600 dark:text-indigo-400">Management</span>
+                                    <span className="text-indigo-400">Management</span>
                                 </h1>
                             </div>
 
@@ -327,7 +328,7 @@ const FacultyAttendance = () => {
                                     <select
                                         value={selectedCourseId}
                                         onChange={(e) => setSelectedCourseId(e.target.value)}
-                                        className="w-full sm:w-72 pl-6 pr-12 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-black shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white appearance-none transition-all cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-800 uppercase tracking-wider"
+                                        className="w-full sm:w-72 pl-6 pr-12 py-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-2xl text-xs font-black shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white appearance-none transition-all cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-800 uppercase tracking-wider"
                                     >
                                         {courses.map(course => (
                                             <option key={course._id} value={course._id}>{course.code} • {course.name}</option>
@@ -344,7 +345,7 @@ const FacultyAttendance = () => {
                                         type="date"
                                         value={date}
                                         onChange={(e) => setDate(e.target.value)}
-                                        className="w-full sm:w-48 pl-6 pr-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-black shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all uppercase tracking-wider"
+                                        className="w-full sm:w-48 pl-6 pr-6 py-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-2xl text-xs font-black shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all uppercase tracking-wider"
                                     />
                                 </div>
                             </div>
@@ -369,7 +370,7 @@ const FacultyAttendance = () => {
                                             <stat.icon size={20} />
                                         </div>
                                     </div>
-                                    <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{stat.value}</p>
+                                    <p className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none">{stat.value}</p>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">{stat.label}</p>
                                 </GlassCard>
                             ))}
@@ -390,8 +391,8 @@ const FacultyAttendance = () => {
                                         className={cn(
                                             "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2 border",
                                             activeTab === tab.id
-                                                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-lg shadow-indigo-500/10"
-                                                : "bg-white dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-500"
+                                                ? "bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] border-slate-900 dark:border-white shadow-lg shadow-indigo-500/10"
+                                                : "bg-[#F3F4F6] dark:bg-[#1A1F2E] text-slate-400 dark:text-[#64748B] dark:text-[#868D9D] border-[#E2E5E9] dark:border-[#3D4556] hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-500"
                                         )}
                                     >
                                         <tab.icon size={14} />
@@ -411,26 +412,26 @@ const FacultyAttendance = () => {
                                         className="space-y-6"
                                     >
                                         <GlassCard className="p-0">
-                                            <div className="p-6 md:p-10 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                            <div className="p-6 md:p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex flex-col md:flex-row md:items-center justify-between gap-6">
                                                 <div className="relative flex-1 max-w-xl group">
                                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
                                                     <input
                                                         placeholder="Search student by name or ID..."
                                                         value={searchQuery}
                                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                                        className="w-full pl-12 pr-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-3xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all shadow-inner"
+                                                        className="w-full pl-12 pr-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] rounded-3xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all shadow-inner"
                                                     />
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <button
                                                         onClick={() => markAll('Present')}
-                                                        className="px-6 py-4 rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all flex items-center gap-2"
+                                                        className="px-6 py-4 rounded-3xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all flex items-center gap-2"
                                                     >
                                                         <CheckCircle2 size={16} /> All Present
                                                     </button>
                                                     <button
                                                         onClick={() => markAll('Absent')}
-                                                        className="px-6 py-4 rounded-3xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2"
+                                                        className="px-6 py-4 rounded-3xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2"
                                                     >
                                                         <X size={16} /> All Absent
                                                     </button>
@@ -440,7 +441,7 @@ const FacultyAttendance = () => {
                                             <div className="overflow-x-auto">
                                                 <table className="w-full text-left">
                                                     <thead>
-                                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] border-b border-slate-100 dark:border-slate-800">
+                                                        <tr className="bg-[#F3F4F6]/50 dark:bg-[#1A1F2E]/50 text-[10px] font-black text-slate-400 dark:text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.3em] border-b border-[#E2E5E9] dark:border-[#3D4556]">
                                                             <th className="px-10 py-6">Identity</th>
                                                             <th className="px-10 py-6">ID Number</th>
                                                             <th className="px-10 py-6 text-center">Current Status</th>
@@ -456,7 +457,7 @@ const FacultyAttendance = () => {
                                                                 transition={{ delay: idx * 0.03 }}
                                                                 className={cn(
                                                                     "group transition-colors",
-                                                                    attendanceData[std._id] === 'Absent' ? "bg-rose-500/[0.02] dark:bg-rose-500/[0.05]" : "hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+                                                                    attendanceData[std._id] === 'Absent' ? "bg-rose-500/[0.02] dark:bg-rose-500/[0.05]" : "hover:bg-slate-50/50 hover:bg-[#F1F3F7] dark:bg-[#2D3548]"
                                                                 )}
                                                             >
                                                                 <td className="px-10 py-6">
@@ -469,12 +470,12 @@ const FacultyAttendance = () => {
                                                                             />
                                                                         </div>
                                                                         <div>
-                                                                            <p className="font-black text-slate-900 dark:text-white text-sm">{std.user.name}</p>
+                                                                            <p className="font-black text-[#0F1419] dark:text-[#E8EAED] text-sm">{std.user.name}</p>
                                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{std.user.email}</p>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-10 py-6 font-black text-slate-500 dark:text-slate-400 text-xs tracking-widest">{std.admissionNumber}</td>
+                                                                <td className="px-10 py-6 font-black text-[#64748B] dark:text-[#868D9D] text-xs tracking-widest">{std.admissionNumber}</td>
                                                                 <td className="px-10 py-6 text-center">
                                                                     <div className="flex flex-col items-center gap-1">
                                                                         <span className={cn(
@@ -506,7 +507,7 @@ const FacultyAttendance = () => {
                                                                                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all border",
                                                                                 attendanceData[std._id] === 'Present'
                                                                                     ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
-                                                                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-200 dark:border-slate-800 hover:border-emerald-500 hover:text-emerald-500",
+                                                                                    : "bg-[#F3F4F6] dark:bg-[#1A1F2E] text-slate-400 dark:text-slate-600 border-[#E2E5E9] dark:border-[#3D4556] hover:border-emerald-500 hover:text-emerald-500",
                                                                                 markedViaData[std._id] === 'QR' && "opacity-50 cursor-not-allowed"
                                                                             )}
                                                                         >
@@ -523,7 +524,7 @@ const FacultyAttendance = () => {
                                                                                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all border",
                                                                                 attendanceData[std._id] === 'Absent'
                                                                                     ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
-                                                                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-200 dark:border-slate-800 hover:border-rose-500 hover:text-rose-500",
+                                                                                    : "bg-[#F3F4F6] dark:bg-[#1A1F2E] text-slate-400 dark:text-slate-600 border-[#E2E5E9] dark:border-[#3D4556] hover:border-rose-500 hover:text-rose-500",
                                                                                 markedViaData[std._id] === 'QR' && "opacity-50 cursor-not-allowed"
                                                                             )}
                                                                         >
@@ -538,7 +539,7 @@ const FacultyAttendance = () => {
                                                 </table>
                                             </div>
 
-                                            <div className="p-10 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                                            <div className="p-10 border-t border-[#E2E5E9] dark:border-[#3D4556] flex justify-end">
                                                 <button
                                                     onClick={handleSave}
                                                     disabled={saving}
@@ -571,18 +572,18 @@ const FacultyAttendance = () => {
                                         exit={{ opacity: 0, scale: 0.98 }}
                                     >
                                         <GlassCard className="p-0">
-                                            <div className="p-8 md:p-10 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                                <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter flex items-center gap-3">
+                                            <div className="p-8 md:p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex items-center justify-between">
+                                                <h3 className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED] uppercase tracking-tighter flex items-center gap-3">
                                                     <BarChart3 size={24} className="text-indigo-600" /> Archive Records
                                                 </h3>
-                                                <button onClick={exportPDF} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                                <button onClick={exportPDF} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#F1F3F7] dark:bg-[#2D3548] text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-[#868D9D] hover:bg-slate-100 hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition">
                                                     <Download size={14} /> Export PDF
                                                 </button>
                                             </div>
                                             <div className="overflow-x-auto">
                                                 <table className="w-full text-left">
                                                     <thead>
-                                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] border-b border-slate-100 dark:border-slate-800">
+                                                        <tr className="bg-[#F3F4F6]/50 dark:bg-[#1A1F2E]/50 text-[10px] font-black text-slate-400 dark:text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.3em] border-b border-[#E2E5E9] dark:border-[#3D4556]">
                                                             <th className="px-10 py-6">Session Date</th>
                                                             <th className="px-10 py-6">Engagement</th>
                                                             <th className="px-10 py-6 text-center">Compliance</th>
@@ -590,8 +591,8 @@ const FacultyAttendance = () => {
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
                                                         {history.length > 0 ? history.map((record) => (
-                                                            <tr key={record.date} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                                                <td className="px-10 py-6 font-black text-slate-800 dark:text-white text-sm">
+                                                            <tr key={record.date} className="hover:bg-slate-50/50 hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition-colors">
+                                                                <td className="px-10 py-6 font-black text-[#0F1419] dark:text-[#E8EAED] text-sm">
                                                                     {new Date(record.date).toLocaleDateString(undefined, { dateStyle: 'long' })}
                                                                 </td>
                                                                 <td className="px-10 py-6">

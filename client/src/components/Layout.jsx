@@ -76,7 +76,7 @@ const Layout = ({ children, role }) => {
     const user = { name: userName, role: role || 'Student' };
 
     return (
-        <div className="flex flex-col md:flex-row bg-gray-50 dark:bg-slate-950 min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300 overflow-hidden">
+        <div className="flex flex-col md:flex-row bg-[#F5F7FA] dark:bg-slate-950 min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300 overflow-hidden">
             <Sidebar role={role} />
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
                 {/* Header */}
@@ -84,7 +84,7 @@ const Layout = ({ children, role }) => {
                     <div className="flex items-center space-x-4">
                         <div>
                             <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-50 dark:to-slate-300">
-                                Welcome Back, <span className="text-indigo-600 dark:text-indigo-400 drop-shadow-sm">{user.name}</span>
+                                Welcome Back, <span className="text-[#0066CC] dark:text-blue-400 drop-shadow-sm">{user.name}</span>
                             </h2>
                             <p className="text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider">Have a productive day!</p>
                         </div>

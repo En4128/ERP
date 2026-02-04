@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { toast } from 'sonner';
 
 const ManageExams = () => {
     const [exams, setExams] = useState([]);
@@ -92,15 +93,15 @@ const ManageExams = () => {
                 courseId: '', title: '', date: '', time: '', duration: '3 hrs',
                 venue: '', type: 'midterm', department: 'Computer Science', semester: 3
             });
-            alert('Exam scheduled successfully!');
+            toast.success('Exam scheduled successfully!');
         } catch (error) {
-            alert(error.response?.data?.message || 'Error scheduling exam');
+            toast.error(error.response?.data?.message || 'Error scheduling exam');
         }
     };
 
     const handleGenerateHallTickets = async () => {
         if (selectedDept === 'all' || selectedSem === 'all') {
-            alert('Please select a specific Department and Semester to generate hall tickets.');
+            toast.error('Please select a specific Department and Semester to generate hall tickets.');
             return;
         }
 
@@ -114,12 +115,12 @@ const ManageExams = () => {
             const { students, exams } = res.data;
 
             if (students.length === 0) {
-                alert('No students found for the selected department and semester.');
+                toast.error('No students found for the selected department and semester.');
                 return;
             }
 
             if (exams.length === 0) {
-                alert('No exams scheduled for the selected filters.');
+                toast.error('No exams scheduled for the selected filters.');
                 return;
             }
 
@@ -184,7 +185,7 @@ const ManageExams = () => {
         } catch (error) {
             console.error("Error generating hall tickets:", error);
             const errorMessage = error.response?.data?.message || error.message || 'Unknown error occurred';
-            alert(`Error generating hall tickets: ${errorMessage}`);
+            toast.error(`Error generating hall tickets: ${errorMessage}`);
         } finally {
             setGenerating(false);
         }

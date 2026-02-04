@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
 
 // --- Premium UI Components ---
 
@@ -35,7 +36,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -156,10 +157,10 @@ const FacultyMarks = () => {
                 resetData[s._id] = '';
             });
             setMarksData(resetData);
-            alert('Academic records cleared successfully.');
+            toast.success('Academic records cleared successfully.');
         } catch (error) {
             console.error("Error clearing marks:", error);
-            alert('Failed to clear academic records.');
+            toast.error('Failed to clear academic records.');
         } finally {
             setSaving(false);
         }
@@ -183,11 +184,11 @@ const FacultyMarks = () => {
             });
 
             await Promise.all(promises);
-            alert('Academic performance synchronized successfully!');
+            toast.success('Academic performance synchronized successfully!');
             setMarksMode(false);
         } catch (error) {
             console.error("Error saving marks:", error);
-            alert('Failed to save academic records.');
+            toast.error('Failed to save academic records.');
         } finally {
             setSaving(false);
         }
@@ -198,8 +199,8 @@ const FacultyMarks = () => {
             <Layout role="faculty">
                 <div className="flex justify-center items-center h-screen">
                     <div className="relative">
-                        <div className="w-20 h-20 border-4 border-indigo-600/20 rounded-full animate-ping" />
-                        <div className="absolute inset-0 w-20 h-20 border-t-4 border-indigo-600 rounded-full animate-spin" />
+                        <div className="w-20 h-20 border-4 border-[#2563EB]/20 dark:border-[#60A5FA]/20 rounded-full animate-ping" />
+                        <div className="absolute inset-0 w-20 h-20 border-t-4 border-[#2563EB] dark:border-[#60A5FA] rounded-full animate-spin" />
                     </div>
                 </div>
             </Layout>
@@ -212,16 +213,16 @@ const FacultyMarks = () => {
 
                 {courses.length === 0 ? (
                     <GlassCard className="p-20 flex flex-col items-center justify-center text-center min-h-[600px] border-dashed">
-                        <div className="w-24 h-24 rounded-[3rem] bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
+                        <div className="w-24 h-24 rounded-[3rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
                             <Sparkles size={40} />
                         </div>
-                        <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">Foundation Required</h2>
-                        <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-10 font-bold leading-relaxed">
+                        <h2 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter mb-4">Foundation Required</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] max-w-md mx-auto mb-10 font-bold leading-relaxed">
                             To manage student grades and academic performance, you first need to join the course units you are instructing.
                         </p>
                         <button
                             onClick={() => navigate('/faculty/courses')}
-                            className="px-10 py-5 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-3"
+                            className="px-10 py-5 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-600/20 active:scale-95 transition-all flex items-center gap-3"
                         >
                             <Trophy size={16} /> Discover Courses
                         </button>
@@ -234,14 +235,14 @@ const FacultyMarks = () => {
                                 <motion.div
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
-                                    className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
+                                    className="flex items-center gap-2 bg-blue-500/10 dark:bg-blue-400/10 px-4 py-1.5 rounded-full border border-blue-200/50 dark:border-blue-800/50 w-fit"
                                 >
-                                    <Sparkles size={14} className="text-indigo-500" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Academic Records</span>
+                                    <Sparkles size={14} className="text-[#2563EB] dark:text-[#60A5FA]" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">Academic Records</span>
                                 </motion.div>
-                                <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
+                                <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
                                     Performance <br />
-                                    <span className="text-indigo-600 dark:text-indigo-400">Management</span>
+                                    <span className="text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">Management</span>
                                 </h1>
                             </div>
                         </div>
@@ -256,26 +257,26 @@ const FacultyMarks = () => {
                                 >
                                     <div
                                         onClick={() => handleSelectCourse(course)}
-                                        className="p-8 rounded-[2rem] bg-white dark:bg-slate-900 border border-transparent hover:border-indigo-500/20 transition-all h-full flex flex-col justify-between"
+                                        className="p-8 rounded-[2rem] bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-transparent hover:border-[#2563EB]/20 dark:border-[#60A5FA]/20 transition-all h-full flex flex-col justify-between"
                                     >
                                         <div>
                                             <div className="flex justify-between items-start mb-8">
-                                                <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 border border-indigo-100 dark:border-indigo-800 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
+                                                <div className="p-4 rounded-2xl bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] border border-blue-500/20 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all shadow-sm">
                                                     <Trophy size={28} />
                                                 </div>
-                                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-colors">
+                                                <div className="w-10 h-10 rounded-full bg-[#F1F3F7] dark:bg-[#2D3548] flex items-center justify-center text-slate-300 group-hover:text-[#2563EB] dark:text-[#60A5FA] transition-colors">
                                                     <ArrowRight size={18} />
                                                 </div>
                                             </div>
-                                            <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{course.code}</p>
-                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-4">{course.name}</h3>
+                                            <p className="text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] uppercase tracking-widest mb-1">{course.code}</p>
+                                            <h3 className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight leading-tight mb-4">{course.name}</h3>
                                         </div>
-                                        <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                                        <div className="pt-6 border-t border-[#E2E5E9] dark:border-[#3D4556] flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Users size={14} className="text-slate-400" />
                                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Roster</span>
                                             </div>
-                                            <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Enter Records</span>
+                                            <span className="text-[10px] font-black text-[#0F1419] dark:text-[#E8EAED] uppercase tracking-widest bg-[#E5E7EB] dark:bg-[#242B3D] px-3 py-1 rounded-full">Enter Records</span>
                                         </div>
                                     </div>
                                 </GlassCard>
@@ -293,27 +294,27 @@ const FacultyMarks = () => {
                             <div className="flex items-start gap-6">
                                 <button
                                     onClick={() => setMarksMode(false)}
-                                    className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-500 hover:border-indigo-500 transition-all shadow-sm"
+                                    className="p-4 rounded-2xl bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] text-slate-400 hover:text-[#2563EB] dark:text-[#60A5FA] hover:border-[#2563EB] dark:border-[#60A5FA] transition-all shadow-sm"
                                 >
                                     <ArrowLeft size={24} />
                                 </button>
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <GraduationCap size={16} className="text-indigo-500" />
-                                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{selectedCourse?.code} UNIT</span>
+                                        <GraduationCap size={16} className="text-[#2563EB] dark:text-[#60A5FA]" />
+                                        <span className="text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] uppercase tracking-widest">{selectedCourse?.code} UNIT</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedCourse?.name}</h2>
+                                    <h2 className="text-4xl md:text-5xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none">{selectedCourse?.name}</h2>
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Biometric Grade Assessment</p>
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-[2.5rem] border border-slate-200/50 dark:border-slate-800/50 shadow-sm">
+                            <div className="flex flex-wrap items-center gap-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] p-4 rounded-[2.5rem] border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 shadow-sm">
                                 <div className="relative group min-w-[180px]">
                                     <p className="absolute -top-10 left-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">Assessment Type</p>
                                     <select
                                         value={examType}
                                         onChange={(e) => setExamType(e.target.value)}
-                                        className="w-full pl-6 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full pl-6 pr-10 py-3 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#0F1419] dark:text-[#E8EAED] appearance-none cursor-pointer focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="CIA-1">CIA-I Midterm</option>
                                         <option value="CIA-2">CIA-II Progress</option>
@@ -332,7 +333,7 @@ const FacultyMarks = () => {
                                         type="number"
                                         value={maxMarks}
                                         onChange={(e) => setMaxMarks(e.target.value)}
-                                        className="w-full px-6 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white text-center focus:ring-2 focus:ring-indigo-500 shadow-inner"
+                                        className="w-full px-6 py-3 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#0F1419] dark:text-[#E8EAED] text-center focus:ring-2 focus:ring-blue-500 shadow-inner"
                                     />
                                 </div>
 
@@ -347,7 +348,7 @@ const FacultyMarks = () => {
                                 <button
                                     onClick={handleSubmitMarks}
                                     disabled={saving}
-                                    className="px-8 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2"
+                                    className="px-8 py-4 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2"
                                 >
                                     {saving ? 'Syncing...' : <><Save size={14} /> Commit Records</>}
                                 </button>
@@ -359,14 +360,14 @@ const FacultyMarks = () => {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
-                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] border-b border-slate-100 dark:border-slate-800">
+                                        <tr className="bg-[#F9FAFB] dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.3em] border-b border-[#E2E5E9] dark:border-[#3D4556]">
                                             <th className="px-10 py-6">Identity Parameter</th>
                                             <th className="px-10 py-6 text-center">Efficiency Score</th>
                                             <th className="px-10 py-6 text-center">Projected Grade</th>
                                             <th className="px-10 py-6 text-right">Verification Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                                    <tbody className="bg-white dark:bg-transparent divide-y divide-slate-100 dark:divide-slate-800/50">
                                         {students.map((student, idx) => {
                                             const score = Number(marksData[student._id]);
                                             const percent = (score / maxMarks) * 100;
@@ -384,15 +385,15 @@ const FacultyMarks = () => {
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
                                                     transition={{ delay: idx * 0.02 }}
-                                                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group"
+                                                    className={`${idx % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} dark:bg-transparent hover:bg-blue-50/50 hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition-colors group`}
                                                 >
                                                     <td className="px-10 py-6">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-indigo-500 border border-slate-200 dark:border-slate-700">
+                                                            <div className="w-12 h-12 rounded-2xl bg-[#F1F3F7] dark:bg-[#2D3548] flex items-center justify-center text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] border border-[#E2E5E9] dark:border-[#3D4556]">
                                                                 {student.user.name.split(' ').map(n => n[0]).join('')}
                                                             </div>
                                                             <div>
-                                                                <p className="font-black text-slate-900 dark:text-white text-sm tracking-tight">{student.user.name}</p>
+                                                                <p className="font-black text-[#0F1419] dark:text-[#E8EAED] text-sm tracking-tight">{student.user.name}</p>
                                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{student.admissionNumber}</p>
                                                             </div>
                                                         </div>
@@ -403,7 +404,7 @@ const FacultyMarks = () => {
                                                                 type="number"
                                                                 value={marksData[student._id]}
                                                                 onChange={(e) => handleMarkChange(student._id, e.target.value)}
-                                                                className="w-24 text-center py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs font-black text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 shadow-inner"
+                                                                className="w-24 text-center py-3 bg-[#E5E7EB] dark:bg-[#242B3D] border-none rounded-xl text-xs font-black text-[#0F1419] dark:text-[#E8EAED] focus:ring-2 focus:ring-blue-500 shadow-inner"
                                                                 placeholder="00"
                                                             />
                                                             <span className="text-[10px] font-black text-slate-300">/ {maxMarks}</span>
@@ -413,7 +414,7 @@ const FacultyMarks = () => {
                                                         <span className={cn(
                                                             "px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border",
                                                             {
-                                                                "bg-indigo-500/10 text-indigo-600 border-indigo-500/20": color === 'indigo',
+                                                                "bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] border-[#2563EB]/20 dark:border-[#60A5FA]/20": color === 'indigo',
                                                                 "bg-emerald-500/10 text-emerald-600 border-emerald-500/20": color === 'emerald',
                                                                 "bg-amber-500/10 text-amber-600 border-amber-500/20": color === 'amber',
                                                                 "bg-rose-500/10 text-rose-600 border-rose-500/20": color === 'rose',
@@ -430,7 +431,7 @@ const FacultyMarks = () => {
                                                                     <CheckCircle2 size={16} />
                                                                 </div>
                                                             ) : (
-                                                                <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-300">
+                                                                <div className="p-2 rounded-xl bg-[#E5E7EB] dark:bg-[#242B3D] text-slate-300">
                                                                     <AlertCircle size={16} />
                                                                 </div>
                                                             )}

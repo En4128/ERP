@@ -6,6 +6,7 @@ import {
     ChevronRight, CheckCircle, Search, Filter, Volume2, ShieldAlert
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 const AdminNotifications = () => {
     const [notices, setNotices] = useState([]);
@@ -43,7 +44,7 @@ const AdminNotifications = () => {
     };
 
     const handleCreate = async () => {
-        if (!formData.title || !formData.content) return alert("Fill all fields");
+        if (!formData.title || !formData.content) return toast.error("Fill all fields");
         try {
             const token = localStorage.getItem('token');
             if (isEditing) {
@@ -126,7 +127,7 @@ const AdminNotifications = () => {
             utterance.onend = () => setIsSpeaking(false);
             window.speechSynthesis.speak(utterance);
         } else {
-            alert("Speech synthesis not supported in this browser.");
+            toast.info("Speech synthesis not supported in this browser.");
         }
     };
 

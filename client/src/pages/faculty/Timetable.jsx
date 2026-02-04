@@ -29,7 +29,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -80,8 +80,8 @@ const FacultyTimetable = () => {
             <Layout role="faculty">
                 <div className="flex justify-center items-center h-screen">
                     <div className="relative">
-                        <div className="w-20 h-20 border-4 border-indigo-600/20 rounded-full animate-ping" />
-                        <div className="absolute inset-0 w-20 h-20 border-t-4 border-indigo-600 rounded-full animate-spin" />
+                        <div className="w-20 h-20 border-4 border-[#2563EB]/20 dark:border-[#60A5FA]/20 rounded-full animate-ping" />
+                        <div className="absolute inset-0 w-20 h-20 border-t-4 border-[#2563EB] dark:border-[#60A5FA] rounded-full animate-spin" />
                     </div>
                 </div>
             </Layout>
@@ -91,7 +91,7 @@ const FacultyTimetable = () => {
     if (error) {
         return (
             <Layout role="faculty">
-                <div className="flex flex-col items-center justify-center h-screen text-slate-500">
+                <div className="flex flex-col items-center justify-center h-screen text-[#64748B] dark:text-[#868D9D]">
                     <AlertCircle size={48} className="mb-4 text-rose-500 opacity-50" />
                     <p className="font-black uppercase tracking-widest text-xs">{error}</p>
                 </div>
@@ -109,14 +109,14 @@ const FacultyTimetable = () => {
                         <motion.div
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
+                            className="flex items-center gap-2 bg-blue-500/10 dark:bg-blue-400/10 px-4 py-1.5 rounded-full border border-blue-200/50 dark:border-blue-800/50 w-fit"
                         >
-                            <Sparkles size={14} className="text-indigo-500" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Academic Schedule</span>
+                            <Sparkles size={14} className="text-[#2563EB] dark:text-[#60A5FA]" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">Academic Schedule</span>
                         </motion.div>
-                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
+                        <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
                             Teaching <br />
-                            <span className="text-indigo-600 dark:text-indigo-400">Timeline</span>
+                            <span className="text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">Timeline</span>
                         </h1>
                     </div>
 
@@ -133,8 +133,8 @@ const FacultyTimetable = () => {
                             className={cn(
                                 "px-10 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border",
                                 currentDay === day
-                                    ? "bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-600/20"
-                                    : "bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-600 border-slate-100 dark:border-slate-800 hover:border-indigo-500 hover:text-indigo-500"
+                                    ? "bg-[#2563EB] dark:bg-[#60A5FA] text-white border-[#2563EB] dark:border-[#60A5FA] shadow-xl shadow-blue-600/20"
+                                    : "bg-[#F3F4F6] dark:bg-[#1A1F2E] text-slate-400 dark:text-slate-600 border-[#E2E5E9] dark:border-[#3D4556] hover:border-[#2563EB] dark:border-[#60A5FA] hover:text-[#2563EB] dark:text-[#60A5FA]"
                             )}
                         >
                             {day}
@@ -150,41 +150,41 @@ const FacultyTimetable = () => {
                         <GlassCard className="p-8">
                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Day Overview</h3>
                             <div className="space-y-6">
-                                <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                                    <div className="p-3 rounded-2xl bg-indigo-500 text-white shadow-lg shadow-indigo-500/20">
+                                <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556]">
+                                    <div className="p-3 rounded-2xl bg-blue-500 text-white shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
                                         <BookOpen size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-black text-slate-900 dark:text-white">{dayTimetable.length}</p>
+                                        <p className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">{dayTimetable.length}</p>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Planned Units</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                                    <div className="p-3 rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+                                <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556]">
+                                    <div className="p-3 rounded-2xl bg-blue-500 text-white shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
                                         <Zap size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-black text-slate-900 dark:text-white">Active</p>
+                                        <p className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">Active</p>
                                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Next Class</p>
                                     </div>
                                 </div>
                             </div>
                         </GlassCard>
 
-                        <GlassCard className="p-8 bg-slate-900 text-white border-none shadow-2xl shadow-indigo-900/20 overflow-hidden relative">
-                            <div className="absolute top-[-20%] right-[-20%] w-[100px] h-[100px] bg-indigo-500/20 rounded-full blur-[40px]" />
-                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6 relative z-10">Room Allocation</h3>
+                        <GlassCard className="p-8 bg-slate-900 text-white border-none shadow-2xl shadow-blue-900/20 overflow-hidden relative">
+                            <div className="absolute top-[-20%] right-[-20%] w-[100px] h-[100px] bg-blue-500/20 rounded-full blur-[40px]" />
+                            <h3 className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest mb-6 relative z-10">Room Allocation</h3>
                             <div className="space-y-4 relative z-10">
                                 {[...new Set(dayTimetable.map(s => s.room))].map((room, i) => (
-                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 hover:bg-white/10 transition-colors">
                                         <div className="flex items-center gap-3">
-                                            <MapPin size={14} className="text-indigo-400" />
+                                            <MapPin size={14} className="text-blue-400" />
                                             <span className="text-xs font-black tracking-widest uppercase">{room}</span>
                                         </div>
                                         <ArrowRight size={12} className="opacity-40" />
                                     </div>
                                 ))}
-                                {dayTimetable.length === 0 && <p className="text-xs font-bold text-slate-500 italic">No rooms assigned.</p>}
+                                {dayTimetable.length === 0 && <p className="text-xs font-bold text-[#64748B] dark:text-[#868D9D] italic">No rooms assigned.</p>}
                             </div>
                         </GlassCard>
                     </div>
@@ -211,30 +211,30 @@ const FacultyTimetable = () => {
                                                 className="relative group"
                                             >
                                                 {/* Node Circle */}
-                                                <div className="absolute -left-[30px] top-8 w-4 h-4 rounded-full bg-white dark:bg-slate-900 border-2 border-indigo-500 z-10 shadow-sm group-hover:scale-125 transition-transform" />
+                                                <div className="absolute -left-[30px] top-8 w-4 h-4 rounded-full bg-[#E5E7EB] dark:bg-[#1A1F2E] border-2 border-[#2563EB] dark:border-[#60A5FA] z-10 shadow-sm group-hover:scale-125 transition-transform" />
 
                                                 {/* Content Component */}
-                                                <GlassCard className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 group-hover:border-indigo-500/50 transition-all">
+                                                <GlassCard className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 group-hover:border-[#2563EB]/50 dark:border-[#60A5FA]/50 transition-all">
                                                     <div className="flex items-center gap-6">
-                                                        <div className="p-5 rounded-[2rem] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 border border-indigo-100 dark:border-indigo-800 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                                        <div className="p-5 rounded-[2rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] border border-blue-500/20 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all shadow-sm">
                                                             <BookOpen size={28} />
                                                         </div>
                                                         <div>
-                                                            <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-1">Session {idx + 1}</p>
-                                                            <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-3">{slot.courseName}</h4>
+                                                            <p className="text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] uppercase tracking-[0.2em] mb-1">Session {idx + 1}</p>
+                                                            <h4 className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight leading-none mb-3">{slot.courseName}</h4>
                                                             <div className="flex flex-wrap items-center gap-4">
-                                                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-slate-100 dark:border-slate-800 px-3 py-1 rounded-full bg-slate-50/50 dark:bg-slate-800/20">
+                                                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-[#E2E5E9] dark:border-[#3D4556] px-3 py-1 rounded-full bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50">
                                                                     <Clock size={12} /> {slot.startTime} - {slot.endTime}
                                                                 </div>
-                                                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-slate-100 dark:border-slate-800 px-3 py-1 rounded-full bg-slate-50/50 dark:bg-slate-800/20">
+                                                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-[#E2E5E9] dark:border-[#3D4556] px-3 py-1 rounded-full bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50">
                                                                     <MapPin size={12} /> Room {slot.room}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex flex-col items-end gap-3 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800 pt-6 md:pt-0 md:pl-10">
-                                                        <span className="px-4 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black uppercase tracking-widest">
+                                                    <div className="flex flex-col items-end gap-3 border-t md:border-t-0 md:border-l border-[#E2E5E9] dark:border-[#3D4556] pt-6 md:pt-0 md:pl-10">
+                                                        <span className="px-4 py-1.5 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] text-[10px] font-black uppercase tracking-widest">
                                                             {slot.type} Class
                                                         </span>
                                                         <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ const FacultyTimetable = () => {
                                     </div>
                                 ) : (
                                     <div className="py-32 flex flex-col items-center justify-center text-center">
-                                        <div className="w-24 h-24 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8 border border-slate-100 dark:border-slate-800">
+                                        <div className="w-24 h-24 rounded-[2.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8 border border-[#E2E5E9] dark:border-[#3D4556]">
                                             <CalendarIcon size={40} />
                                         </div>
                                         <h4 className="text-2xl font-black text-slate-300 dark:text-slate-700 uppercase tracking-tight">Open Horizon</h4>

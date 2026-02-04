@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
 
 // --- Premium UI Components ---
 
@@ -18,7 +19,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -78,7 +79,7 @@ const FacultyNotifications = () => {
             utterance.onend = () => setIsSpeaking(false);
             window.speechSynthesis.speak(utterance);
         } else {
-            alert("Speech synthesis not supported in this browser.");
+            toast.info("Speech synthesis not supported in this browser.");
         }
     };
 
@@ -99,11 +100,11 @@ const FacultyNotifications = () => {
             setNotices([res.data, ...notices]);
             setShowCreate(false);
             setNewNotice({ title: '', content: '', targetAudience: 'student' });
-            alert('Notice broadcasted successfully!');
+            toast.success('Notice broadcasted successfully!');
             fetchNotices();
         } catch (error) {
             console.error("Error creating notice:", error);
-            alert('Failed to send notice.');
+            toast.error('Failed to send notice.');
         } finally {
             setSaving(false);
         }
@@ -135,9 +136,9 @@ const FacultyNotifications = () => {
                             className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
                         >
                             <Sparkles size={14} className="text-indigo-500" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Communication Hub</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Communication Hub</span>
                         </motion.div>
-                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
+                        <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
                             Broadcast <br />
                         </h1>
                     </div>
@@ -145,7 +146,7 @@ const FacultyNotifications = () => {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setShowCreate(true)}
-                            className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-3"
+                            className="px-8 py-4 bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-3"
                         >
                             <PlusCircle size={16} /> New Broadcast
                         </button>
@@ -159,16 +160,16 @@ const FacultyNotifications = () => {
                         <GlassCard className="p-10 min-h-[600px]">
                             <div className="flex items-center justify-between mb-10">
                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1.5 flex items-center gap-3">
+                                    <h3 className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight leading-none mb-1.5 flex items-center gap-3">
                                         <Bell className="text-indigo-600" size={28} /> Notification Stream
                                     </h3>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Real-time academic relays</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-indigo-500 transition-colors">
+                                    <button className="p-3 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-xl text-slate-400 hover:text-indigo-500 transition-colors">
                                         <Search size={18} />
                                     </button>
-                                    <button className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-indigo-500 transition-colors">
+                                    <button className="p-3 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-xl text-slate-400 hover:text-indigo-500 transition-colors">
                                         <Filter size={18} />
                                     </button>
                                 </div>
@@ -185,8 +186,8 @@ const FacultyNotifications = () => {
                                         className={cn(
                                             "group p-8 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden",
                                             notice.read
-                                                ? "bg-slate-50/50 dark:bg-slate-800/20 border-slate-100 dark:border-slate-800/50 opacity-60"
-                                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 hover:shadow-xl"
+                                                ? "bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50 border-[#E2E5E9]/50 dark:border-[#3D4556]/50 opacity-60"
+                                                : "bg-[#F3F4F6] dark:bg-[#1A1F2E] border-[#E2E5E9] dark:border-[#3D4556] hover:border-indigo-500/50 hover:shadow-xl"
                                         )}
                                     >
                                         {!notice.read && (
@@ -197,12 +198,12 @@ const FacultyNotifications = () => {
                                             <div className="flex items-center gap-4">
                                                 <div className={cn(
                                                     "p-4 rounded-2xl flex items-center justify-center transition-all shadow-sm",
-                                                    notice.read ? "bg-slate-100 dark:bg-slate-800 text-slate-400" : "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white"
+                                                    notice.read ? "bg-[#E5E7EB] dark:bg-[#242B3D] text-slate-400" : "bg-indigo-500/10 text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white"
                                                 )}>
                                                     <Send size={24} />
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-black text-lg tracking-tight leading-none mb-1.5 text-slate-900 dark:text-white">{notice.title}</h4>
+                                                    <h4 className="font-black text-lg tracking-tight leading-none mb-1.5 text-[#0F1419] dark:text-[#E8EAED]">{notice.title}</h4>
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/10">
                                                             {notice.targetAudience?.includes('all') ? 'Global' : 'Cohorts'}
@@ -214,11 +215,11 @@ const FacultyNotifications = () => {
                                             <ArrowRight size={18} className="text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                                         </div>
 
-                                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2 px-1">
+                                        <p className="text-sm font-medium text-[#64748B] dark:text-[#868D9D] leading-relaxed line-clamp-2 px-1">
                                             {notice.content}
                                         </p>
 
-                                        <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                                        <div className="mt-8 pt-6 border-t border-[#E2E5E9] dark:border-[#3D4556] flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-6 h-6 rounded-lg bg-indigo-500 flex items-center justify-center text-[8px] font-black text-white">ID</div>
                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Signed: {notice.author}</span>
@@ -230,7 +231,7 @@ const FacultyNotifications = () => {
                                     </motion.div>
                                 )) : (
                                     <div className="py-24 flex flex-col items-center justify-center text-center">
-                                        <div className="w-24 h-24 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8 border border-slate-100 dark:border-slate-800 border-dashed">
+                                        <div className="w-24 h-24 rounded-[2.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8 border border-[#E2E5E9] dark:border-[#3D4556] border-dashed">
                                             <Megaphone size={40} />
                                         </div>
                                         <h4 className="text-2xl font-black text-slate-300 dark:text-slate-700 uppercase tracking-tight">Silent Orbit</h4>
@@ -250,10 +251,10 @@ const FacultyNotifications = () => {
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-indigo-500/20 shadow-2xl shadow-indigo-500/10 space-y-8"
+                                    className="bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[2.5rem] p-8 border border-indigo-500/20 shadow-2xl shadow-indigo-500/10 space-y-8"
                                 >
                                     <div>
-                                        <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-1.5">New Broadcast</h3>
+                                        <h3 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none mb-1.5">New Broadcast</h3>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Compose systemic relay</p>
                                     </div>
 
@@ -265,7 +266,7 @@ const FacultyNotifications = () => {
                                                 value={newNotice.title}
                                                 onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
                                                 placeholder="Objective line..."
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 text-sm font-black focus:ring-2 focus:ring-indigo-500 dark:text-white shadow-inner"
+                                                className="w-full bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl py-4 px-6 text-sm font-black focus:ring-2 focus:ring-indigo-500 dark:text-white shadow-inner"
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -273,7 +274,7 @@ const FacultyNotifications = () => {
                                             <select
                                                 value={newNotice.targetAudience}
                                                 onChange={(e) => setNewNotice({ ...newNotice, targetAudience: e.target.value })}
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-500 dark:text-white appearance-none cursor-pointer"
+                                                className="w-full bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl py-4 px-6 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-500 dark:text-white appearance-none cursor-pointer"
                                             >
                                                 <option value="student">Students</option>
                                                 <option value="faculty">Faculty</option>
@@ -287,7 +288,7 @@ const FacultyNotifications = () => {
                                                 value={newNotice.content}
                                                 onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
                                                 placeholder="Type systemic relay detail..."
-                                                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-4 px-6 text-sm font-black focus:ring-2 focus:ring-indigo-500 dark:text-white shadow-inner resize-none"
+                                                className="w-full bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl py-4 px-6 text-sm font-black focus:ring-2 focus:ring-indigo-500 dark:text-white shadow-inner resize-none"
                                             />
                                         </div>
 
@@ -295,7 +296,7 @@ const FacultyNotifications = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowCreate(false)}
-                                                className="flex-1 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-200 transition-all"
+                                                className="flex-1 py-4 rounded-2xl bg-[#E5E7EB] dark:bg-[#242B3D] text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-200 transition-all"
                                             >
                                                 Cancel
                                             </button>
@@ -353,13 +354,13 @@ const FacultyNotifications = () => {
                                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                                className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-200/50 dark:border-slate-800/50"
+                                className="bg-[#E5E7EB] dark:bg-[#1A1F2E] w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9]/50 dark:border-[#3D4556]/50"
                             >
                                 <div className="h-2 w-full bg-indigo-600" />
 
                                 <div className="p-10">
                                     <div className="flex justify-between items-start mb-8">
-                                        <div className="p-5 rounded-3xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 border border-indigo-100 dark:border-indigo-800">
+                                        <div className="p-5 rounded-3xl bg-indigo-500/10 text-indigo-600 border border-indigo-500/30">
                                             <Megaphone size={32} />
                                         </div>
                                         <button
@@ -372,8 +373,8 @@ const FacultyNotifications = () => {
 
                                     <div className="space-y-8">
                                         <div className="space-y-3">
-                                            <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{selectedNotice.title}</h2>
-                                            <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest pt-4 border-t border-slate-50 dark:border-slate-800">
+                                            <h2 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none">{selectedNotice.title}</h2>
+                                            <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest pt-4 border-t border-[#E2E5E9] dark:border-[#3D4556]">
                                                 <div className="flex items-center gap-2">
                                                     <Clock size={14} className="text-indigo-500" />
                                                     {new Date(selectedNotice.date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -385,8 +386,8 @@ const FacultyNotifications = () => {
                                             </div>
                                         </div>
 
-                                        <div className="relative group p-10 bg-slate-50 dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-700/50 shadow-inner">
-                                            <p className="text-slate-700 dark:text-slate-300 text-lg font-bold leading-relaxed whitespace-pre-wrap pr-16 italic">
+                                        <div className="relative group p-10 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-[2.5rem] border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 shadow-inner">
+                                            <p className="text-[#475569] dark:text-[#B8BDC6] text-lg font-bold leading-relaxed whitespace-pre-wrap pr-16 italic">
                                                 {selectedNotice.content}
                                             </p>
 
@@ -394,7 +395,7 @@ const FacultyNotifications = () => {
                                                 onClick={(e) => { e.stopPropagation(); isSpeaking ? stopSpeaking() : handleSpeak(selectedNotice.title, selectedNotice.content); }}
                                                 className={cn(
                                                     "absolute right-6 top-6 p-6 rounded-[2rem] shadow-2xl transition-all transform hover:scale-110 active:scale-95",
-                                                    isSpeaking ? "bg-indigo-600 text-white animate-pulse" : "bg-white dark:bg-slate-900 text-indigo-600"
+                                                    isSpeaking ? "bg-indigo-600 text-white animate-pulse" : "bg-[#F3F4F6] dark:bg-[#1A1F2E] text-indigo-600"
                                                 )}
                                             >
                                                 {isSpeaking ? <VolumeX size={32} /> : <Volume2 size={32} />}
@@ -403,7 +404,7 @@ const FacultyNotifications = () => {
 
                                         <button
                                             onClick={() => handleMarkAsRead(selectedNotice.id)}
-                                            className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-black/20 active:scale-95 mb-10 transition-all flex items-center justify-center gap-3"
+                                            className="w-full py-5 bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-black/20 active:scale-95 mb-10 transition-all flex items-center justify-center gap-3"
                                         >
                                             <CheckCircle size={20} /> Acknowledge Relay
                                         </button>

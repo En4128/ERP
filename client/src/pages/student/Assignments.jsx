@@ -27,7 +27,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -130,20 +130,20 @@ const StudentAssignments = () => {
                             className="flex items-center gap-2 bg-teal-500/10 dark:bg-teal-400/10 px-4 py-1.5 rounded-full border border-teal-200/50 dark:border-teal-800/50 w-fit"
                         >
                             <Sparkles size={14} className="text-teal-600" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">Student Portal</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-400">Student Portal</span>
                         </motion.div>
-                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
+                        <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-tight">
                             Your <br />
-                            <span className="text-teal-600 dark:text-teal-400">Assignments</span>
+                            <span className="text-teal-400">Assignments</span>
                         </h1>
                     </div>
 
-                    <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50">
+                    <div className="flex gap-2 p-1.5 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-3xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
                         <button
                             onClick={() => setActiveTab('pending')}
                             className={cn(
                                 "px-8 py-3 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all",
-                                activeTab === 'pending' ? "bg-white dark:bg-slate-800 text-teal-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                activeTab === 'pending' ? "bg-[#E5E7EB] dark:bg-[#242B3D] text-teal-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
                             )}
                         >
                             Pending ({pendingAssignments.length})
@@ -152,7 +152,7 @@ const StudentAssignments = () => {
                             onClick={() => setActiveTab('completed')}
                             className={cn(
                                 "px-8 py-3 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all",
-                                activeTab === 'completed' ? "bg-white dark:bg-slate-800 text-teal-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                activeTab === 'completed' ? "bg-[#E5E7EB] dark:bg-[#242B3D] text-teal-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
                             )}
                         >
                             Completed ({completedAssignments.length})
@@ -179,14 +179,14 @@ const StudentAssignments = () => {
                                                     setSelectedAssignment(assignment);
                                                     setViewAssignmentModal(true);
                                                 }}
-                                                className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-teal-600 transition-all"
+                                                className="p-4 rounded-2xl bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D] hover:text-teal-600 transition-all"
                                                 title="View Instructions"
                                             >
                                                 <Eye size={20} />
                                             </button>
                                         </div>
                                         <div className="text-right">
-                                            <div className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                            <div className="px-3 py-1.5 rounded-full bg-[#E5E7EB] dark:bg-[#242B3D] text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-[#868D9D]">
                                                 {assignment.course.code}
                                             </div>
                                             {assignment.submission?.status === 'graded' && (
@@ -198,8 +198,8 @@ const StudentAssignments = () => {
                                         </div>
                                     </div>
 
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">{assignment.title}</h3>
-                                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 line-clamp-2">{assignment.description}</p>
+                                    <h3 className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED] mb-2">{assignment.title}</h3>
+                                    <p className="text-[#64748B] dark:text-[#868D9D] text-sm mb-6 line-clamp-2">{assignment.description}</p>
 
                                     <div className="space-y-3 mb-8">
                                         <div className="flex items-center gap-3 text-slate-400">
@@ -230,7 +230,7 @@ const StudentAssignments = () => {
                                         <a
                                             href={`http://localhost:5000${assignment.submission.fileUrl}`}
                                             target="_blank"
-                                            className="w-full py-4 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                            className="w-full py-4 bg-[#F1F3F7] dark:bg-[#2D3548] text-[#475569] dark:text-[#B8BDC6] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800"
                                         >
                                             <Eye size={16} /> View Submission
                                         </a>
@@ -239,7 +239,7 @@ const StudentAssignments = () => {
                                                 <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-1 flex items-center gap-1">
                                                     <MessageSquare size={10} /> Faculty Feedback
                                                 </p>
-                                                <p className="text-xs text-slate-600 dark:text-slate-400 italic">"{assignment.submission.feedback}"</p>
+                                                <p className="text-xs text-[#64748B] dark:text-[#868D9D] italic">"{assignment.submission.feedback}"</p>
                                             </div>
                                         )}
                                     </div>
@@ -248,7 +248,7 @@ const StudentAssignments = () => {
                         ))
                     ) : (
                         <div className="col-span-full py-20 text-center">
-                            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-900 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                            <div className="w-20 h-20 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[2rem] flex items-center justify-center mx-auto mb-6">
                                 <AlertCircle size={32} className="text-slate-300" />
                             </div>
                             <p className="text-slate-400 font-black uppercase tracking-[0.2em]">No {activeTab} assignments</p>
@@ -271,17 +271,17 @@ const StudentAssignments = () => {
                                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                                className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden"
+                                className="relative w-full max-w-lg bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[3rem] shadow-2xl overflow-hidden"
                             >
                                 <div className="p-10">
-                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase mb-2">Submit Assignment</h2>
+                                    <h2 className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter uppercase mb-2">Submit Assignment</h2>
                                     <p className="text-xs text-slate-400 font-bold mb-8 uppercase tracking-widest">{selectedAssignment?.title}</p>
 
                                     <form onSubmit={handleSubmitAssignment} className="space-y-8">
                                         <div
                                             className={cn(
                                                 "relative border-2 border-dashed rounded-[2rem] p-10 text-center transition-all",
-                                                file ? "border-teal-500 bg-teal-500/5" : "border-slate-200 dark:border-slate-800 hover:border-teal-500/50"
+                                                file ? "border-teal-500 bg-teal-500/5" : "border-[#E2E5E9] dark:border-[#3D4556] hover:border-teal-500/50"
                                             )}
                                         >
                                             <input
@@ -292,11 +292,11 @@ const StudentAssignments = () => {
                                             <div className="flex flex-col items-center gap-3">
                                                 <div className={cn(
                                                     "p-5 rounded-2xl bg-opacity-10 mb-2",
-                                                    file ? "bg-teal-500 text-teal-600" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                                                    file ? "bg-teal-500 text-teal-600" : "bg-[#E5E7EB] dark:bg-[#242B3D] text-slate-400"
                                                 )}>
                                                     {file ? <CheckCircle2 size={32} /> : <Upload size={32} />}
                                                 </div>
-                                                <p className="text-sm font-black text-slate-900 dark:text-white">
+                                                <p className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">
                                                     {file ? file.name : "Choose file to upload"}
                                                 </p>
                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -309,7 +309,7 @@ const StudentAssignments = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setSubmissionModal(false)}
-                                                className="flex-1 py-5 bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest rounded-3xl"
+                                                className="flex-1 py-5 bg-[#E5E7EB] dark:bg-[#242B3D] text-[10px] font-black uppercase tracking-widest rounded-3xl"
                                             >
                                                 Cancel
                                             </button>
@@ -343,12 +343,12 @@ const StudentAssignments = () => {
                                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                                className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden"
+                                className="relative w-full max-w-2xl bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[3rem] shadow-2xl overflow-hidden"
                             >
                                 <div className="p-10">
                                     <div className="flex justify-between items-center mb-8">
-                                        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Assignment Instructions</h2>
-                                        <button onClick={() => setViewAssignmentModal(false)} className="p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl text-slate-500 hover:text-rose-500 transition-colors">
+                                        <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter uppercase">Assignment Instructions</h2>
+                                        <button onClick={() => setViewAssignmentModal(false)} className="p-3 bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl text-[#64748B] dark:text-[#868D9D] hover:text-rose-500 transition-colors">
                                             <X size={20} />
                                         </button>
                                     </div>
@@ -356,20 +356,20 @@ const StudentAssignments = () => {
                                     <div className="space-y-6">
                                         <div className="space-y-1">
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Title</p>
-                                            <p className="text-xl font-black text-slate-900 dark:text-white">{selectedAssignment?.title}</p>
+                                            <p className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED]">{selectedAssignment?.title}</p>
                                         </div>
                                         <div className="space-y-1">
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</p>
-                                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">{selectedAssignment?.description}</p>
+                                            <p className="text-sm text-[#64748B] dark:text-[#868D9D] leading-relaxed whitespace-pre-wrap">{selectedAssignment?.description}</p>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+                                            <div className="p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl">
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Due Date</p>
-                                                <p className="text-sm font-bold text-slate-900 dark:text-white">{new Date(selectedAssignment?.dueDate).toLocaleString()}</p>
+                                                <p className="text-sm font-bold text-[#0F1419] dark:text-[#E8EAED]">{new Date(selectedAssignment?.dueDate).toLocaleString()}</p>
                                             </div>
-                                            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+                                            <div className="p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl">
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Max Points</p>
-                                                <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedAssignment?.points}</p>
+                                                <p className="text-sm font-bold text-[#0F1419] dark:text-[#E8EAED]">{selectedAssignment?.points}</p>
                                             </div>
                                         </div>
                                         {selectedAssignment?.fileUrl && (
@@ -378,7 +378,7 @@ const StudentAssignments = () => {
                                                 <a
                                                     href={`http://localhost:5000${selectedAssignment.fileUrl}`}
                                                     target="_blank"
-                                                    className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600/10 text-teal-600 dark:text-teal-400 border border-teal-200/50 dark:border-teal-800/50 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all"
+                                                    className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600/10 text-teal-400 border border-teal-200/50 dark:border-teal-800/50 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all"
                                                 >
                                                     <Download size={14} /> Download Instructions
                                                 </a>

@@ -85,14 +85,14 @@ const Leave = () => {
         <Layout role="student">
             <div className="max-w-4xl mx-auto space-y-8">
                 <div>
-                    <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Leave Management</h2>
-                    <p className="text-slate-600 dark:text-gray-400 mt-1">Apply for leave and track your application status</p>
+                    <h2 className="text-3xl font-extrabold text-[#0F1419] dark:text-[#E8EAED]">Leave Management</h2>
+                    <p className="text-slate-600 dark:text-[#64748B] dark:text-[#868D9D] mt-1">Apply for leave and track your application status</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Application Form */}
-                    <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 h-fit">
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                    <div className="bg-[#E5E7EB] dark:bg-[#242B3D] p-8 rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] h-fit">
+                        <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-6 flex items-center gap-2">
                             <Send size={20} className="text-blue-700" /> Apply for Leave
                         </h3>
 
@@ -105,11 +105,11 @@ const Leave = () => {
                         <form className="space-y-5" onSubmit={handleSubmit}>
                             {/* Faculty Selection */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Faculty</label>
+                                <label className="block text-sm font-medium text-[#475569] dark:text-[#B8BDC6] mb-2">Select Faculty</label>
                                 <div className="relative">
                                     <select
                                         required
-                                        className="w-full p-3 pl-10 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none appearance-none"
+                                        className="w-full p-3 pl-10 rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] bg-[#E5E7EB] dark:bg-[#1A1F2E] dark:text-white focus:ring-2 focus:ring-teal-500 outline-none appearance-none"
                                         value={formData.facultyId}
                                         onChange={(e) => setFormData({ ...formData, facultyId: e.target.value })}
                                     >
@@ -122,14 +122,14 @@ const Leave = () => {
                                             <option key={f.id || f._id} value={f._id || f.id}>{f.name} ({f.department})</option>
                                         ))}
                                     </select>
-                                    <User className="absolute left-3 top-3.5 text-gray-400" size={18} />
+                                    <User className="absolute left-3 top-3.5 text-[#64748B] dark:text-[#868D9D]" size={18} />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Leave Type</label>
+                                <label className="block text-sm font-medium text-[#475569] dark:text-[#B8BDC6] mb-2">Leave Type</label>
                                 <select
-                                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                    className="w-full p-3 rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] bg-[#E5E7EB] dark:bg-[#1A1F2E] dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
                                     value={formData.type}
                                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                 >
@@ -142,21 +142,21 @@ const Leave = () => {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">From</label>
+                                    <label className="block text-sm font-medium text-[#475569] dark:text-[#B8BDC6] mb-2">From</label>
                                     <input
                                         required
                                         type="date"
-                                        className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                        className="w-full p-3 rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] bg-[#E5E7EB] dark:bg-[#1A1F2E] dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
                                         value={formData.from}
                                         onChange={(e) => setFormData({ ...formData, from: e.target.value })}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">To</label>
+                                    <label className="block text-sm font-medium text-[#475569] dark:text-[#B8BDC6] mb-2">To</label>
                                     <input
                                         required
                                         type="date"
-                                        className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                                        className="w-full p-3 rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] bg-[#E5E7EB] dark:bg-[#1A1F2E] dark:text-white focus:ring-2 focus:ring-teal-500 outline-none"
                                         value={formData.to}
                                         onChange={(e) => setFormData({ ...formData, to: e.target.value })}
                                     />
@@ -164,11 +164,11 @@ const Leave = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Reason</label>
+                                <label className="block text-sm font-medium text-[#475569] dark:text-[#B8BDC6] mb-2">Reason</label>
                                 <textarea
                                     required
                                     rows="4"
-                                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none resize-none"
+                                    className="w-full p-3 rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] bg-[#E5E7EB] dark:bg-[#1A1F2E] dark:text-white focus:ring-2 focus:ring-teal-500 outline-none resize-none"
                                     placeholder="Please explain the reason..."
                                     value={formData.reason}
                                     onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
@@ -186,23 +186,23 @@ const Leave = () => {
 
                     {/* History */}
                     <div className="space-y-6">
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] flex items-center gap-2">
                             <History size={20} className="text-purple-600" /> Application History
                         </h3>
 
                         {loading ? (
                             <div className="text-center py-10">Loading...</div>
                         ) : leaveHistory.length === 0 ? (
-                            <div className="bg-white dark:bg-slate-800 p-8 rounded-xl text-center text-slate-600 border border-dashed border-gray-300">
+                            <div className="bg-[#E5E7EB] dark:bg-[#242B3D] p-8 rounded-xl text-center text-slate-600 border border-dashed border-[#E2E5E9] dark:border-[#3D4556]">
                                 No leave applications found.
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {leaveHistory.map(leave => (
-                                    <div key={leave._id} className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                                    <div key={leave._id} className="bg-[#E5E7EB] dark:bg-[#242B3D] p-5 rounded-xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] hover:shadow-md transition-shadow">
                                         <div className="flex justify-between items-start mb-3">
                                             <div>
-                                                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{leave.type}</span>
+                                                <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B] dark:text-[#868D9D]">{leave.type}</span>
                                                 <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">
                                                     To: {leave.faculty?.user?.name || 'Unknown Faculty'}
                                                 </div>
@@ -212,23 +212,23 @@ const Leave = () => {
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center gap-2 text-sm text-slate-900 dark:text-white font-semibold mb-3">
+                                        <div className="flex items-center gap-2 text-sm text-[#0F1419] dark:text-[#E8EAED] font-semibold mb-3">
                                             <Calendar size={16} className="text-blue-700" />
                                             {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
                                         </div>
 
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-slate-900 p-3 rounded-lg mb-2">
+                                        <p className="text-sm text-gray-600 dark:text-[#64748B] dark:text-[#868D9D] bg-[#E5E7EB] dark:bg-[#1A1F2E] p-3 rounded-lg mb-2">
                                             "{leave.reason}"
                                         </p>
 
                                         {leave.facultyComment && (
-                                            <div className="text-sm mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                                            <div className="text-sm mt-3 pt-3 border-t border-[#E2E5E9] dark:border-[#3D4556]">
                                                 <span className="font-semibold text-slate-700 dark:text-gray-300">Faculty Response:</span>
-                                                <p className="text-gray-600 dark:text-gray-400 italic mt-1">{leave.facultyComment}</p>
+                                                <p className="text-gray-600 dark:text-[#64748B] dark:text-[#868D9D] italic mt-1">{leave.facultyComment}</p>
                                             </div>
                                         )}
 
-                                        <div className="text-xs text-gray-400 text-right mt-2">
+                                        <div className="text-xs text-[#64748B] dark:text-[#868D9D] text-right mt-2">
                                             Applied on {new Date(leave.createdAt).toLocaleDateString()}
                                         </div>
                                     </div>

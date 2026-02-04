@@ -53,7 +53,7 @@ const ProgressBar = ({ value, total }) => {
     else if (percentage < 75) colorClass = 'bg-amber-500';
 
     return (
-        <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2.5 mt-2">
+        <div className="w-full bg-[#F1F3F7] dark:bg-[#2D3548] rounded-full h-2.5 mt-2">
             <div
                 className={`h-2.5 rounded-full transition-all duration-500 ${colorClass}`}
                 style={{ width: `${percentage}%` }}
@@ -67,11 +67,11 @@ const AttendanceCard = ({ subject }) => {
     const classesNeeded = Math.max(0, Math.ceil((0.75 * subject.total - subject.attended) / 0.25));
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+        <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl p-6 shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white">{subject.name}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{subject.faculty}</p>
+                    <h3 className="font-bold text-lg text-[#0F1419] dark:text-[#E8EAED]">{subject.name}</h3>
+                    <p className="text-sm text-[#64748B] dark:text-[#868D9D]">{subject.faculty}</p>
                 </div>
                 <div className={`text-xl font-bold ${percentage < 75 ? 'text-rose-500' : 'text-emerald-500'}`}>
                     {percentage}%
@@ -80,14 +80,14 @@ const AttendanceCard = ({ subject }) => {
 
             <div className="flex justify-between text-sm text-gray-600 dark:text-slate-300 mb-2">
                 <span className="flex items-center"><CheckCircle size={14} className="mr-1 text-emerald-500" /> {subject.attended} Attended</span>
-                <span className="text-gray-400">/</span>
+                <span className="text-[#64748B] dark:text-[#868D9D]">/</span>
                 <span className="flex items-center">{subject.total} Total</span>
             </div>
 
             <ProgressBar value={subject.attended} total={subject.total} />
 
             {percentage < 75 && (
-                <div className="mt-4 flex items-center p-3 bg-rose-50 dark:bg-red-900/20 rounded-lg text-rose-700 dark:text-red-300 text-xs font-medium border border-rose-100 dark:border-rose-800/50">
+                <div className="mt-4 flex items-center p-3 bg-rose-50 dark:bg-red-900/20 rounded-lg text-rose-700 dark:text-red-300 text-xs font-medium border border-rose-500/20">
                     <AlertTriangle size={16} className="mr-2 flex-shrink-0" />
                     You need to attend {classesNeeded} more classes to reach 75%.
                 </div>
@@ -214,7 +214,7 @@ export default function AttendancePage() {
             body: tableRows,
             startY: 40,
             theme: 'grid',
-            headStyles: { fillColor: [79, 70, 229] },
+            headStyles: { fillColor: [0, 102, 204] },
             alternateRowStyles: { fillColor: [249, 250, 251] }
         });
 
@@ -258,7 +258,7 @@ export default function AttendancePage() {
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="text-center">
                         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
-                        <p className="mt-4 text-slate-600 dark:text-slate-400">Loading attendance data...</p>
+                        <p className="mt-4 text-[#64748B] dark:text-[#868D9D]">Loading attendance data...</p>
                     </div>
                 </div>
             </Layout>
@@ -271,19 +271,19 @@ export default function AttendancePage() {
             <Layout role="student">
                 <div className="animate-fade-in-up space-y-6">
                     <div>
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Attendance</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">Track your daily progress and maintain eligibility.</p>
+                        <h2 className="text-3xl font-extrabold text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Attendance</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] mt-1">Track your daily progress and maintain eligibility.</p>
                     </div>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-red-200 dark:border-red-800 p-12">
+                    <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl shadow-sm border border-red-200 dark:border-red-800 p-12">
                         <div className="text-center">
                             <AlertTriangle className="mx-auto h-16 w-16 text-red-500 dark:text-red-400 mb-4" />
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Error Loading Attendance</h3>
-                            <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-6">
+                            <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-2">Error Loading Attendance</h3>
+                            <p className="text-[#64748B] dark:text-[#868D9D] max-w-md mx-auto mb-6">
                                 {error}
                             </p>
                             <button
                                 onClick={() => window.location.reload()}
-                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                                className="px-6 py-2 bg-[#2563EB] dark:bg-[#60A5FA] hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                             >
                                 Retry
                             </button>
@@ -300,14 +300,14 @@ export default function AttendancePage() {
             <Layout role="student">
                 <div className="animate-fade-in-up space-y-6">
                     <div>
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Attendance</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">Track your daily progress and maintain eligibility.</p>
+                        <h2 className="text-3xl font-extrabold text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Attendance</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] mt-1">Track your daily progress and maintain eligibility.</p>
                     </div>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-12">
+                    <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] p-12">
                         <div className="text-center">
-                            <Calendar className="mx-auto h-16 w-16 text-gray-400 dark:text-slate-600 mb-4" />
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Attendance Records Found</h3>
-                            <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+                            <Calendar className="mx-auto h-16 w-16 text-[#64748B] dark:text-[#868D9D] dark:text-slate-600 mb-4" />
+                            <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-2">No Attendance Records Found</h3>
+                            <p className="text-[#64748B] dark:text-[#868D9D] max-w-md mx-auto">
                                 There are no attendance records available yet. Your attendance will appear here once your faculty starts marking attendance for your courses.
                             </p>
                         </div>
@@ -324,17 +324,17 @@ export default function AttendancePage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Attendance</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">Track your daily progress and maintain eligibility.</p>
+                        <h2 className="text-3xl font-extrabold text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Attendance</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] mt-1">Track your daily progress and maintain eligibility.</p>
                     </div>
-                    <div className="flex space-x-2 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl">
+                    <div className="flex space-x-2 bg-[#E5E7EB] dark:bg-[#242B3D] p-1 rounded-xl">
                         {['overview', 'scan', 'reports', 'heatmap'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab
                                     ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-400 shadow-sm'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                    : 'text-[#64748B] dark:text-[#868D9D] hover:text-slate-700 dark:hover:text-slate-200'
                                     } capitalize`}
                             >
                                 {tab}
@@ -348,37 +348,37 @@ export default function AttendancePage() {
                     <div className="space-y-6">
                         {/* Summary Stats */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
-                                <h3 className="font-bold text-slate-900 dark:text-white mb-6">Attendance Overview</h3>
+                            <div className="lg:col-span-2 bg-[#E5E7EB] dark:bg-[#242B3D] p-6 rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556]">
+                                <h3 className="font-bold text-[#0F1419] dark:text-[#E8EAED] mb-6">Attendance Overview</h3>
                                 <div className="h-64">
                                     <Bar options={chartOptions} data={chartData} />
                                 </div>
                             </div>
                             <div className="space-y-6">
-                                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+                                <div className="bg-gradient-to-br from-[#2563EB] dark:from-[#60A5FA] to-blue-700 rounded-2xl p-6 text-white shadow-lg">
                                     <h4 className="opacity-80 font-medium">Average Attendance</h4>
                                     <div className="text-4xl font-bold mt-2">{stats.averageAttendance}%</div>
                                     <div className="mt-4 text-sm bg-white/20 inline-block px-3 py-1 rounded-full">
                                         <TrendingUp className="inline w-4 h-4 mr-1" /> +2.5% vs last month
                                     </div>
                                 </div>
-                                <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
-                                    <h4 className="font-bold text-slate-900 dark:text-white mb-4">Safe Zone Status</h4>
+                                <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl p-6 shadow-sm border border-[#E2E5E9] dark:border-[#3D4556]">
+                                    <h4 className="font-bold text-[#0F1419] dark:text-[#E8EAED] mb-4">Safe Zone Status</h4>
                                     <div className="space-y-4">
                                         <div className="flex items-center text-sm">
                                             <div className="w-3 h-3 rounded-full bg-emerald-500 mr-3"></div>
                                             <span className="flex-1 text-gray-600 dark:text-slate-300">Safe (&gt;75%)</span>
-                                            <span className="font-bold text-slate-900 dark:text-white">{stats.safeZone.safe} Subjects</span>
+                                            <span className="font-bold text-[#0F1419] dark:text-[#E8EAED]">{stats.safeZone.safe} Subjects</span>
                                         </div>
                                         <div className="flex items-center text-sm">
                                             <div className="w-3 h-3 rounded-full bg-amber-500 mr-3"></div>
                                             <span className="flex-1 text-gray-600 dark:text-slate-300">Warning (65-75%)</span>
-                                            <span className="font-bold text-slate-900 dark:text-white">{stats.safeZone.warning} Subject</span>
+                                            <span className="font-bold text-[#0F1419] dark:text-[#E8EAED]">{stats.safeZone.warning} Subject</span>
                                         </div>
                                         <div className="flex items-center text-sm">
                                             <div className="w-3 h-3 rounded-full bg-rose-500 mr-3"></div>
                                             <span className="flex-1 text-gray-600 dark:text-slate-300">Critical (&lt;65%)</span>
-                                            <span className="font-bold text-slate-900 dark:text-white">{stats.safeZone.critical} Subject</span>
+                                            <span className="font-bold text-[#0F1419] dark:text-[#E8EAED]">{stats.safeZone.critical} Subject</span>
                                         </div>
                                     </div>
                                 </div>
@@ -403,16 +403,16 @@ export default function AttendancePage() {
 
                 {/* --- REPORTS TAB --- */}
                 {activeTab === 'reports' && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-6" id="attendance-report">
+                    <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] p-6" id="attendance-report">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Detailed Attendance Report</h3>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">View history and export data.</p>
+                                <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED]">Detailed Attendance Report</h3>
+                                <p className="text-sm text-[#64748B] dark:text-[#868D9D]">View history and export data.</p>
                             </div>
                             <div className="flex items-center space-x-3 relative">
                                 <button
                                     onClick={() => setShowFilter(!showFilter)}
-                                    className={`flex items-center px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${showFilter ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30' : 'border-slate-200 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-700'}`}
+                                    className={`flex items-center px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${showFilter ? 'bg-blue-50 border-blue-200 text-[#2563EB] dark:text-[#60A5FA] dark:bg-blue-900/30' : 'border-[#E2E5E9] dark:border-[#3D4556] hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548]'}`}
                                 >
                                     <Filter size={16} className="mr-2" /> {(startDate || endDate) ? 'Filtered' : 'Filter Date'}
                                 </button>
@@ -423,7 +423,7 @@ export default function AttendancePage() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute top-full right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-4 z-50 w-72"
+                                            className="absolute top-full right-0 mt-2 bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-xl shadow-xl p-4 z-50 w-72"
                                         >
                                             <div className="space-y-4">
                                                 <div>
@@ -432,7 +432,7 @@ export default function AttendancePage() {
                                                         type="date"
                                                         value={startDate}
                                                         onChange={(e) => setStartDate(e.target.value)}
-                                                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white"
+                                                        className="w-full bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                                                     />
                                                 </div>
                                                 <div>
@@ -441,19 +441,19 @@ export default function AttendancePage() {
                                                         type="date"
                                                         value={endDate}
                                                         onChange={(e) => setEndDate(e.target.value)}
-                                                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white"
+                                                        className="w-full bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                                                     />
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => { setStartDate(''); setEndDate(''); }}
-                                                        className="flex-1 px-3 py-2 text-xs font-bold text-slate-500 hover:text-rose-500 transition-colors"
+                                                        className="flex-1 px-3 py-2 text-xs font-bold text-[#64748B] dark:text-[#868D9D] hover:text-rose-500 transition-colors"
                                                     >
                                                         Clear
                                                     </button>
                                                     <button
                                                         onClick={() => setShowFilter(false)}
-                                                        className="flex-1 bg-indigo-600 text-white rounded-lg px-3 py-2 text-xs font-bold hover:bg-indigo-700 transition-colors"
+                                                        className="flex-1 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-lg px-3 py-2 text-xs font-bold hover:bg-blue-700 transition-colors"
                                                     >
                                                         Apply
                                                     </button>
@@ -472,20 +472,20 @@ export default function AttendancePage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="border-b border-gray-100 dark:border-slate-700">
-                                        <th className="py-4 px-4 font-semibold text-gray-600 dark:text-slate-300">Date</th>
-                                        <th className="py-4 px-4 font-semibold text-gray-600 dark:text-slate-300">Time</th>
-                                        <th className="py-4 px-4 font-semibold text-gray-600 dark:text-slate-300">Subject</th>
-                                        <th className="py-4 px-4 font-semibold text-gray-600 dark:text-slate-300">Status</th>
-                                        <th className="py-4 px-4 font-semibold text-gray-600 dark:text-slate-300">Mode</th>
+                                    <tr className="bg-[#F9FAFB] dark:bg-slate-800/50 border-b border-[#E2E5E9] dark:border-[#3D4556] text-[11px] uppercase tracking-wider">
+                                        <th className="py-4 px-6 font-bold text-[#4A5568] dark:text-slate-300">Date</th>
+                                        <th className="py-4 px-6 font-bold text-[#4A5568] dark:text-slate-300">Time</th>
+                                        <th className="py-4 px-6 font-bold text-[#4A5568] dark:text-slate-300">Subject</th>
+                                        <th className="py-4 px-6 font-bold text-[#4A5568] dark:text-slate-300">Status</th>
+                                        <th className="py-4 px-6 font-bold text-[#4A5568] dark:text-slate-300">Mode</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
-                                    {filteredHistory.map((record) => (
-                                        <tr key={record.id} className="hover:bg-white dark:hover:bg-slate-700/50 transition-colors">
+                                <tbody className="bg-white dark:bg-transparent divide-y divide-slate-100 dark:divide-slate-800">
+                                    {filteredHistory.map((record, idx) => (
+                                        <tr key={record.id} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} dark:bg-transparent hover:bg-blue-50/50 hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition-colors`}>
                                             <td className="py-4 px-4 text-sm text-slate-900 dark:text-slate-200">{record.date}</td>
-                                            <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{record.time}</td>
-                                            <td className="py-4 px-4 text-sm font-medium text-slate-900 dark:text-white">{record.subject}</td>
+                                            <td className="py-4 px-4 text-sm text-[#64748B] dark:text-[#868D9D]">{record.time}</td>
+                                            <td className="py-4 px-4 text-sm font-medium text-[#0F1419] dark:text-[#E8EAED]">{record.subject}</td>
                                             <td className="py-4 px-4">
                                                 <span className={`px-2 py-1 rounded text-xs font-semibold ${record.status === 'Present'
                                                     ? 'bg-emerald-100 text-emerald-700 dark:bg-green-900/30 dark:text-green-300'
@@ -494,7 +494,7 @@ export default function AttendancePage() {
                                                     {record.status}
                                                 </span>
                                             </td>
-                                            <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">
+                                            <td className="py-4 px-4 text-sm text-[#64748B] dark:text-[#868D9D]">
                                                 <span className="flex items-center">
                                                     {record.mode === 'QR Scan' && <QrCode size={14} className="mr-1" />}
                                                     {record.mode === 'Geo-Fence' && <MapPin size={14} className="mr-1" />}
@@ -512,25 +512,25 @@ export default function AttendancePage() {
 
                 {/* --- HEATMAP TAB --- */}
                 {activeTab === 'heatmap' && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-8">
+                    <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] p-8">
                         <div className="mb-8">
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Attendance Heatmap</h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">Click on a day to view detailed class attendance.</p>
+                            <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED]">Attendance Heatmap</h3>
+                            <p className="text-sm text-[#64748B] dark:text-[#868D9D]">Click on a day to view detailed class attendance.</p>
                         </div>
 
                         <div className="grid grid-cols-7 gap-3 max-w-2xl mx-auto mb-8">
                             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                <div key={day} className="text-center text-sm font-medium text-gray-400 py-2">{day}</div>
+                                <div key={day} className="text-center text-sm font-medium text-[#64748B] dark:text-[#868D9D] py-2">{day}</div>
                             ))}
                             {heatmapData.map((day, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => setSelectedDate(day)}
-                                    className={`aspect-square rounded-xl flex items-center justify-center text-sm font-semibold transition-all hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:outline-none ${selectedDate?.date === day.date ? 'ring-2 ring-teal-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-800 z-10 scale-110' : ''
+                                    className={`aspect-square rounded-xl flex items-center justify-center text-sm font-semibold transition-all hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:outline-none ${selectedDate?.date === day.date ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-800 z-10 scale-110' : ''
                                         } ${day.status === 'present' ? 'bg-emerald-500 text-white shadow-emerald-200 dark:shadow-none' :
                                             day.status === 'absent' ? 'bg-rose-500 text-white shadow-rose-200 dark:shadow-none' :
                                                 day.status === 'partial' ? 'bg-amber-400 text-white shadow-amber-200 dark:shadow-none' :
-                                                    'bg-gray-100 dark:bg-slate-700 text-gray-400'
+                                                    'bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D]'
                                         } shadow-sm`}
                                 >
                                     {new Date(day.date).getDate()}
@@ -538,32 +538,32 @@ export default function AttendancePage() {
                             ))}
                         </div>
 
-                        <div className="flex justify-center space-x-6 pb-8 border-b border-gray-100 dark:border-slate-700">
+                        <div className="flex justify-center space-x-6 pb-8 border-b border-[#E2E5E9] dark:border-[#3D4556]">
                             <div className="flex items-center"><div className="w-3 h-3 bg-emerald-500 rounded mr-2"></div><span className="text-sm text-gray-600 dark:text-slate-300">Present</span></div>
                             <div className="flex items-center"><div className="w-3 h-3 bg-rose-500 rounded mr-2"></div><span className="text-sm text-gray-600 dark:text-slate-300">Absent</span></div>
                             <div className="flex items-center"><div className="w-3 h-3 bg-amber-400 rounded mr-2"></div><span className="text-sm text-gray-600 dark:text-slate-300">Partial</span></div>
-                            <div className="flex items-center"><div className="w-3 h-3 bg-gray-100 dark:bg-slate-700 rounded mr-2"></div><span className="text-sm text-gray-600 dark:text-slate-300">Holiday</span></div>
+                            <div className="flex items-center"><div className="w-3 h-3 bg-[#F1F3F7] dark:bg-[#2D3548] rounded mr-2"></div><span className="text-sm text-gray-600 dark:text-slate-300">Holiday</span></div>
                         </div>
 
                         {/* Selected Day Details */}
                         <div className="mt-8 transition-all duration-300">
                             {selectedDate ? (
                                 <div className="animate-fade-in-up md:p-4 rounded-xl">
-                                    <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                                        <Calendar size={20} className="mr-2 text-blue-700" />
+                                    <h4 className="text-lg font-bold text-[#0F1419] dark:text-[#E8EAED] mb-4 flex items-center">
+                                        <Calendar size={20} className="mr-2 text-[#2563EB] dark:text-[#60A5FA]" />
                                         Details for {new Date(selectedDate.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                                     </h4>
 
                                     {selectedDate.status === 'holiday' ? (
-                                        <div className="p-4 bg-white dark:bg-slate-700/50 rounded-lg text-center text-slate-600 dark:text-slate-400 italic">
+                                        <div className="p-4 bg-white dark:bg-slate-700/50 rounded-lg text-center text-[#64748B] dark:text-[#868D9D] italic">
                                             No classes scheduled (Holiday / Weekend)
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {selectedDate.classes.map((cls, i) => (
                                                 <div key={i} className={`p-4 rounded-xl border flex justify-between items-center ${cls.status === 'Present'
-                                                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800'
-                                                    : 'bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-800'
+                                                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500/20'
+                                                    : 'bg-rose-50 dark:bg-rose-900/20 border-rose-500/20'
                                                     }`}>
                                                     <div>
                                                         <p className={`font-bold ${cls.status === 'Present' ? 'text-emerald-900 dark:text-emerald-100' : 'text-rose-900 dark:text-rose-100'}`}>
@@ -585,7 +585,7 @@ export default function AttendancePage() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center text-gray-400 py-8">
+                                <div className="text-center text-[#64748B] dark:text-[#868D9D] py-8">
                                     Select a date from the calendar to view class details.
                                 </div>
                             )}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Trash2, Search, Plus, Edit2, X, AlertCircle, Building, Calendar, DollarSign, TrendingUp, CheckCircle, Users, FileText, Eye, XCircle, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ManagePlacements = () => {
     const [drives, setDrives] = useState([]);
@@ -143,7 +144,7 @@ const ManagePlacements = () => {
             setDrives(drives.filter(d => d._id !== id));
         } catch (error) {
             console.error('Error deleting drive:', error);
-            alert('Failed to delete drive');
+            toast.error('Failed to delete drive');
         }
     };
 
@@ -156,10 +157,10 @@ const ManagePlacements = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             await fetchData();
-            alert(`Application ${status}!`);
+            toast.info(`Application ${status}!`);
         } catch (error) {
             console.error('Error updating application:', error);
-            alert('Failed to update application');
+            toast.error('Failed to update application');
         }
     };
 

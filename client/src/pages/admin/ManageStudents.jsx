@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, Search, UserPlus, Edit2, X, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ManageStudents = () => {
     const [students, setStudents] = useState([]);
@@ -105,7 +106,7 @@ const ManageStudents = () => {
             setStudents(students.filter(student => student._id !== id));
         } catch (error) {
             console.error('Error deleting student:', error);
-            alert('Failed to delete student');
+            toast.error('Failed to delete student');
         }
     };
 

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
 
 // --- Premium UI Components ---
 
@@ -17,7 +18,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -57,7 +58,7 @@ const FacultyLeaveRequests = () => {
 
     const submitAction = async () => {
         if (!comment.trim()) {
-            alert("Please provide a reason or comment.");
+            toast.info("Please provide a reason or comment.");
             return;
         }
 
@@ -76,7 +77,7 @@ const FacultyLeaveRequests = () => {
             ));
             setActiveAction({ id: null, type: null });
         } catch (error) {
-            alert(error.response?.data?.message || "Failed to update status");
+            toast.error(error.response?.data?.message || "Failed to update status");
         } finally {
             setActionLoading(null);
         }
@@ -116,11 +117,11 @@ const FacultyLeaveRequests = () => {
                             className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
                         >
                             <Sparkles size={14} className="text-indigo-500" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Personnel Logistics</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Personnel Logistics</span>
                         </motion.div>
-                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
+                        <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
                             Absence <br />
-                            <span className="text-indigo-600 dark:text-indigo-400">Adjudication</span>
+                            <span className="text-indigo-400">Adjudication</span>
                         </h1>
                     </div>
 
@@ -131,7 +132,7 @@ const FacultyLeaveRequests = () => {
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Queue Status</p>
-                                <p className="text-sm font-black text-slate-900 dark:text-white leading-none tracking-tight">{requests.filter(r => r.status === 'Pending').length} Pending Requests</p>
+                                <p className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED] leading-none tracking-tight">{requests.filter(r => r.status === 'Pending').length} Pending Requests</p>
                             </div>
                         </GlassCard>
                     </div>
@@ -139,7 +140,7 @@ const FacultyLeaveRequests = () => {
 
                 {requests.length === 0 ? (
                     <GlassCard className="p-24 flex flex-col items-center justify-center text-center">
-                        <div className="w-24 h-24 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8 border border-slate-100 dark:border-slate-800 border-dashed">
+                        <div className="w-24 h-24 rounded-[2.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] flex items-center justify-center text-slate-200 dark:text-slate-700 mb-8 border border-[#E2E5E9] dark:border-[#3D4556] border-dashed">
                             <Clock size={40} />
                         </div>
                         <h4 className="text-3xl font-black text-slate-300 dark:text-slate-700 uppercase tracking-tight">Zero Latency</h4>
@@ -152,11 +153,11 @@ const FacultyLeaveRequests = () => {
                                 <div className="flex flex-col md:flex-row">
                                     {/* Sidebar of card */}
                                     <div className={cn(
-                                        "md:w-32 flex md:flex-col items-center justify-center p-6 gap-4 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50",
+                                        "md:w-32 flex md:flex-col items-center justify-center p-6 gap-4 border-b md:border-b-0 md:border-r border-[#E2E5E9] dark:border-[#3D4556] bg-[#F3F4F6]/50 dark:bg-[#1A1F2E]/50",
                                         request.status === 'Approved' && "bg-emerald-500/[0.05]",
                                         request.status === 'Rejected' && "bg-rose-500/[0.05]"
                                     )}>
-                                        <div className="w-16 h-16 rounded-[1.5rem] bg-white dark:bg-slate-800 flex items-center justify-center text-indigo-600 font-black text-xl shadow-lg border border-slate-100 dark:border-slate-700">
+                                        <div className="w-16 h-16 rounded-[1.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] flex items-center justify-center text-indigo-600 font-black text-xl shadow-lg border border-[#E2E5E9] dark:border-[#3D4556]">
                                             {request.student?.user?.name?.charAt(0) || 'S'}
                                         </div>
                                         <div className={cn(
@@ -170,13 +171,13 @@ const FacultyLeaveRequests = () => {
                                         <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-10">
                                             <div className="space-y-2">
                                                 <div className="flex items-center gap-3">
-                                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">{request.student?.user?.name}</h3>
+                                                    <h3 className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none">{request.student?.user?.name}</h3>
                                                     <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/10">ID: {request.student?.admissionNumber}</span>
                                                 </div>
                                                 <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                                     <span className="flex items-center gap-1.5"><Calendar size={12} className="text-indigo-500" /> {new Date(request.startDate).toLocaleDateString()} - {new Date(request.endDate).toLocaleDateString()}</span>
-                                                    <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-                                                    <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">{request.type}</span>
+                                                    <span className="w-1 h-1 rounded-full bg-[#F1F3F7] dark:bg-[#2D3548]" />
+                                                    <span className="px-2 py-0.5 rounded-lg bg-[#E5E7EB] dark:bg-[#242B3D] text-[#64748B] dark:text-[#868D9D]">{request.type}</span>
                                                 </div>
                                             </div>
 
@@ -189,10 +190,10 @@ const FacultyLeaveRequests = () => {
                                             </div>
                                         </div>
 
-                                        <div className="relative group p-8 bg-slate-50/50 dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 mb-8 overflow-hidden">
+                                        <div className="relative group p-8 bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50 rounded-[2.5rem] border border-[#E2E5E9] dark:border-[#3D4556] mb-8 overflow-hidden">
                                             <MessageSquare size={80} className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12" />
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Absence Rationale</p>
-                                            <p className="text-lg font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-relaxed italic">"{request.reason}"</p>
+                                            <p className="text-lg font-bold text-[#475569] dark:text-[#B8BDC6] tracking-tight leading-relaxed italic">"{request.reason}"</p>
                                         </div>
 
                                         {/* Action Engine */}
@@ -201,14 +202,14 @@ const FacultyLeaveRequests = () => {
                                                 <motion.div
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    className="pt-8 border-t border-slate-50 dark:border-slate-800"
+                                                    className="pt-8 border-t border-[#E2E5E9] dark:border-[#3D4556]"
                                                 >
                                                     {activeAction.id === request._id ? (
                                                         <div className="space-y-6 animate-fade-in">
                                                             <div className="space-y-3">
                                                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Decision Context <span className="text-rose-500">*</span></label>
                                                                 <textarea
-                                                                    className="w-full p-6 rounded-[2rem] bg-white dark:bg-slate-900 border-2 border-indigo-500/20 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-bold dark:text-white shadow-inner resize-none"
+                                                                    className="w-full p-6 rounded-[2rem] bg-[#E5E7EB] dark:bg-[#1A1F2E] border-2 border-indigo-500/20 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-bold dark:text-white shadow-inner resize-none"
                                                                     rows="3"
                                                                     placeholder={`Synthesis for ${activeAction.type.toLowerCase()} decision...`}
                                                                     value={comment}
@@ -218,7 +219,7 @@ const FacultyLeaveRequests = () => {
                                                             <div className="flex justify-end gap-3">
                                                                 <button
                                                                     onClick={() => setActiveAction({ id: null, type: null })}
-                                                                    className="px-8 py-4 bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-200 rounded-[1.5rem] transition-all"
+                                                                    className="px-8 py-4 bg-[#E5E7EB] dark:bg-[#242B3D] text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-200 rounded-[1.5rem] transition-all"
                                                                 >
                                                                     Abort
                                                                 </button>
@@ -238,13 +239,13 @@ const FacultyLeaveRequests = () => {
                                                         <div className="flex gap-4 justify-end">
                                                             <button
                                                                 onClick={() => handleActionClick(request._id, 'Rejected')}
-                                                                className="px-8 py-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center gap-2"
+                                                                className="px-8 py-4 rounded-2xl bg-[#E5E7EB] dark:bg-[#242B3D] border-2 border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-all duration-300 flex items-center gap-2"
                                                             >
                                                                 <UserX size={16} /> Veto Application
                                                             </button>
                                                             <button
                                                                 onClick={() => handleActionClick(request._id, 'Approved')}
-                                                                className="px-8 py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-indigo-600 hover:text-white transition-all duration-300 flex items-center gap-2"
+                                                                className="px-8 py-4 rounded-2xl bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] font-black text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-indigo-600 hover:text-white transition-all duration-300 flex items-center gap-2"
                                                             >
                                                                 <UserCheck size={16} /> Authorize Absence
                                                             </button>
@@ -252,13 +253,13 @@ const FacultyLeaveRequests = () => {
                                                     )}
                                                 </motion.div>
                                             ) : (
-                                                <div className="pt-8 border-t border-slate-50 dark:border-slate-800 flex items-start gap-4">
-                                                    <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400">
+                                                <div className="pt-8 border-t border-[#E2E5E9] dark:border-[#3D4556] flex items-start gap-4">
+                                                    <div className="p-3 bg-[#E5E7EB] dark:bg-[#242B3D] rounded-xl text-slate-400">
                                                         <ShieldCheck size={18} />
                                                     </div>
                                                     <div>
                                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Authorization Feedback</p>
-                                                        <p className="text-sm font-bold text-slate-600 dark:text-slate-400 italic">"{request.facultyComment}"</p>
+                                                        <p className="text-sm font-bold text-[#64748B] dark:text-[#868D9D] italic">"{request.facultyComment}"</p>
                                                     </div>
                                                 </div>
                                             )}

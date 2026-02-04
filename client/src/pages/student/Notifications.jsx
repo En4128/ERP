@@ -3,6 +3,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Bell, AlertTriangle, Clock, CheckCircle, Info, Megaphone, Volume2, X, ChevronRight, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 const Notifications = () => {
     const [activeTab, setActiveTab] = useState('all');
@@ -56,7 +57,7 @@ const Notifications = () => {
             utterance.onend = () => setIsSpeaking(false);
             window.speechSynthesis.speak(utterance);
         } else {
-            alert("Speech synthesis not supported in this browser.");
+            toast.info("Speech synthesis not supported in this browser.");
         }
     };
 
@@ -89,7 +90,7 @@ const Notifications = () => {
             case 'holiday': return 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/20';
             case 'event': return 'bg-amber-50 dark:bg-amber-900/10 border-amber-100 dark:border-amber-900/20';
             case 'alert': return 'bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/20';
-            default: return 'bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700';
+            default: return 'bg-[#E5E7EB] dark:bg-[#242B3D] border-[#E2E5E9] dark:border-[#3D4556]';
         }
     };
 
@@ -117,20 +118,20 @@ const Notifications = () => {
             <div className="animate-fade-in-up max-w-4xl mx-auto space-y-8 pb-10">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Broadcasting Hub</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1 font-medium italic">Stay updated with the latest campus announcements.</p>
+                        <h2 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Broadcasting Hub</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] mt-1 font-medium italic">Stay updated with the latest campus announcements.</p>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex space-x-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-1.5 rounded-2xl border border-gray-100 dark:border-slate-700 w-fit shadow-sm">
+                <div className="flex space-x-2 bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50 backdrop-blur-sm p-1.5 rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556] w-fit shadow-sm">
                     {['all', 'unread', 'urgent'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab
                                 ? 'bg-amber-500 text-white shadow-lg'
-                                : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700'
+                                : 'text-[#64748B] dark:text-[#868D9D] hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548]'
                                 }`}
                         >
                             {tab}
@@ -149,17 +150,17 @@ const Notifications = () => {
                                 onClick={() => setSelectedNotice(notif)}
                                 className={`p-6 rounded-3xl border flex items-start space-x-5 transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer active:scale-[0.98] ${getBgColor(notif.type)}`}
                             >
-                                <div className="p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm flex-shrink-0">
+                                <div className="p-3 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-2xl shadow-sm flex-shrink-0">
                                     {getIcon(notif.type)}
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <h3 className={`font-black text-lg ${notif.read ? 'text-slate-700 dark:text-slate-300' : 'text-gray-900 dark:text-white'}`}>
+                                            <h3 className={`font-black text-lg ${notif.read ? 'text-[#475569] dark:text-[#B8BDC6]' : 'text-gray-900 dark:text-white'}`}>
                                                 {notif.title}
                                             </h3>
                                             <div className="flex items-center gap-3 mt-1">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                                                <span className="text-[10px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest flex items-center gap-1">
                                                     <Clock size={12} /> {formatTime(notif.date)}
                                                 </span>
                                                 <span className="text-[10px] font-bold text-blue-700 bg-blue-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full uppercase tracking-widest">
@@ -178,12 +179,12 @@ const Notifications = () => {
                             </motion.div>
                         ))
                     ) : (
-                        <div className="text-center py-24 bg-white dark:bg-slate-800 rounded-[2rem] border-2 border-dashed border-gray-100 dark:border-slate-700">
-                            <div className="w-20 h-20 bg-white dark:bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400">
+                        <div className="text-center py-24 bg-[#E5E7EB] dark:bg-[#242B3D] rounded-[2rem] border-2 border-dashed border-[#E2E5E9] dark:border-[#3D4556]">
+                            <div className="w-20 h-20 bg-white dark:bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6 text-[#64748B] dark:text-[#868D9D]">
                                 <Megaphone size={38} />
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white">All Caught Up!</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm mt-2 max-w-xs mx-auto">No notifications found in this category. Check back later for campus updates.</p>
+                            <h3 className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED]">All Caught Up!</h3>
+                            <p className="text-[#64748B] dark:text-[#868D9D] text-sm mt-2 max-w-xs mx-auto">No notifications found in this category. Check back later for campus updates.</p>
                         </div>
                     )}
                 </div>
@@ -204,29 +205,29 @@ const Notifications = () => {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden relative z-10 border border-gray-100 dark:border-slate-700"
+                            className="bg-[#E5E7EB] dark:bg-[#242B3D] w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9] dark:border-[#3D4556]"
                         >
                             <div className={`h-2 w-full bg-gradient-to-r ${getBgColor(selectedNotice.type).includes('red') ? 'from-red-500 to-rose-600' : 'from-indigo-500 to-purple-600'}`}></div>
 
                             <div className="p-10">
                                 <div className="flex justify-between items-start mb-8">
-                                    <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-inner text-blue-700">
+                                    <div className="p-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-2xl shadow-inner text-blue-700">
                                         {getIcon(selectedNotice.type)}
                                     </div>
                                     <button
                                         onClick={() => { stopSpeaking(); setSelectedNotice(null); }}
-                                        className="p-3 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-2xl transition-all text-gray-400"
+                                        className="p-3 hover:bg-gray-100 hover:bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl transition-all text-[#64748B] dark:text-[#868D9D]"
                                     >
                                         <X size={24} />
                                     </button>
                                 </div>
 
                                 <div className="space-y-6">
-                                    <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                                    <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight">
                                         {selectedNotice.title}
                                     </h2>
 
-                                    <div className="flex items-center gap-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] py-4 border-y border-gray-50 dark:border-slate-700/50">
+                                    <div className="flex items-center gap-4 text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.2em] py-4 border-y border-[#E2E5E9] dark:border-[#3D4556]">
                                         <div className="flex items-center gap-2">
                                             <Clock size={14} />
                                             {new Date(selectedNotice.date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -237,7 +238,7 @@ const Notifications = () => {
                                         </div>
                                     </div>
 
-                                    <div className="relative group p-8 bg-white/50 dark:bg-slate-900/30 rounded-[2rem] border border-gray-100 dark:border-slate-700/50">
+                                    <div className="relative group p-8 bg-[#E5E7EB]/50 dark:bg-[#1A1F2E]/50 rounded-[2rem] border border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
                                         <p className="text-gray-600 dark:text-slate-300 text-lg leading-relaxed font-medium whitespace-pre-wrap pr-16">
                                             {selectedNotice.content}
                                         </p>

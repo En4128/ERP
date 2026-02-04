@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
 
 // --- Premium UI Components ---
 
@@ -35,7 +36,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
         className={cn(
-            "bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
+            "bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500",
             className
         )}
     >
@@ -125,7 +126,7 @@ const ManageStudents = () => {
     };
 
     const handleEnroll = async (studentId) => {
-        if (!enrollCourseId) return alert("Select a course first");
+        if (!enrollCourseId) return toast.error("Select a course first");
         setEnrolling(true);
         try {
             const token = localStorage.getItem('token');
@@ -135,20 +136,20 @@ const ManageStudents = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert("Student enrolled successfully!");
+            toast.success("Student enrolled successfully!");
             setIsEnrollModalOpen(false);
             setEnrollSearch('');
             setSearchResults([]);
             fetchStudents();
         } catch (error) {
-            alert(error.response?.data?.message || "Enrollment failed");
+            toast.error(error.response?.data?.message || "Enrollment failed");
         } finally {
             setEnrolling(false);
         }
     };
 
     const handleSendAlert = async () => {
-        if (!alertMessage.trim()) return alert("Please enter an alert message");
+        if (!alertMessage.trim()) return toast.info("Please enter an alert message");
         setSendingAlert(true);
         try {
             const token = localStorage.getItem('token');
@@ -158,11 +159,11 @@ const ManageStudents = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert("Alert sent to student successfully!");
+            toast.success("Alert sent to student successfully!");
             setAlertMessage('');
             setIsAlertModalOpen(false);
         } catch (error) {
-            alert(error.response?.data?.message || "Failed to send alert");
+            toast.error(error.response?.data?.message || "Failed to send alert");
         } finally {
             setSendingAlert(false);
         }
@@ -182,11 +183,11 @@ const ManageStudents = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert("Student unenrolled successfully!");
+            toast.success("Student unenrolled successfully!");
             setSelectedStudent(null);
             fetchStudents();
         } catch (error) {
-            alert("Unenrollment failed");
+            toast.error("Unenrollment failed");
         }
     };
 
@@ -223,18 +224,18 @@ const ManageStudents = () => {
                             className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
                         >
                             <Sparkles size={14} className="text-indigo-500" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Student Directory</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Student Directory</span>
                         </motion.div>
-                        <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9]">
+                        <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
                             Manage <br />
-                            <span className="text-indigo-600 dark:text-indigo-400">Cohorts</span>
+                            <span className="text-indigo-400">Cohorts</span>
                         </h1>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">
                         <button
                             onClick={() => setIsEnrollModalOpen(true)}
-                            className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-3"
+                            className="px-8 py-4 bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-3"
                         >
                             <UserPlus size={16} /> Enroll New Student
                         </button>
@@ -253,14 +254,14 @@ const ManageStudents = () => {
                                     placeholder="Search by name, ID or department..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-14 pr-6 py-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] text-sm font-bold shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all shadow-inner"
+                                    className="w-full pl-14 pr-6 py-5 bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-[2rem] text-sm font-bold shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all shadow-inner"
                                 />
                             </div>
                             <div className="relative group">
                                 <select
                                     value={filterCourse}
                                     onChange={(e) => setFilterCourse(e.target.value)}
-                                    className="h-full pl-6 pr-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white appearance-none cursor-pointer min-w-[180px]"
+                                    className="h-full pl-6 pr-12 bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white appearance-none cursor-pointer min-w-[180px]"
                                 >
                                     <option value="all">ALL STUDENTS</option>
                                     {facultyCourses.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
@@ -275,7 +276,7 @@ const ManageStudents = () => {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
-                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] border-b border-slate-100 dark:border-slate-800">
+                                        <tr className="bg-[#F3F4F6]/50 dark:bg-[#1A1F2E]/50 text-[10px] font-black text-slate-400 dark:text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.3em] border-b border-[#E2E5E9] dark:border-[#3D4556]">
                                             <th className="px-10 py-6">Student Identity</th>
                                             <th className="px-10 py-6 text-center">Engagement</th>
                                             <th className="px-10 py-6 text-center">Academy</th>
@@ -293,7 +294,7 @@ const ManageStudents = () => {
                                                     "group transition-colors cursor-pointer",
                                                     selectedStudent?.profile._id === std._id
                                                         ? "bg-indigo-500/[0.05] dark:bg-indigo-500/[0.1] border-l-4 border-l-indigo-500"
-                                                        : "hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+                                                        : "hover:bg-slate-50/50 hover:bg-[#F1F3F7] dark:bg-[#2D3548]"
                                                 )}
                                                 onClick={() => fetchStudentDetail(std._id)}
                                             >
@@ -303,15 +304,15 @@ const ManageStudents = () => {
                                                             <img
                                                                 src={`http://localhost:5000${std.user.profileImage}`}
                                                                 alt={std.user.name}
-                                                                className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 group-hover:scale-110 transition-transform"
+                                                                className="w-12 h-12 rounded-2xl object-cover border border-[#E2E5E9] dark:border-[#3D4556] group-hover:scale-110 transition-transform"
                                                             />
                                                         ) : (
-                                                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-indigo-500 border border-slate-200 dark:border-slate-700 group-hover:scale-110 transition-transform">
+                                                            <div className="w-12 h-12 rounded-2xl bg-[#E5E7EB] dark:bg-[#242B3D] flex items-center justify-center text-[10px] font-black text-indigo-500 border border-[#E2E5E9] dark:border-[#3D4556] group-hover:scale-110 transition-transform">
                                                                 {std.user.name.split(' ').map(n => n[0]).join('')}
                                                             </div>
                                                         )}
                                                         <div>
-                                                            <p className="font-black text-slate-900 dark:text-white text-sm tracking-tight">{std.user.name}</p>
+                                                            <p className="font-black text-[#0F1419] dark:text-[#E8EAED] text-sm tracking-tight">{std.user.name}</p>
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{std.admissionNumber}</p>
                                                         </div>
                                                     </div>
@@ -326,7 +327,7 @@ const ManageStudents = () => {
                                                         )}>
                                                             {std.summary.attendancePercentage}%
                                                         </span>
-                                                        <div className="w-12 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                        <div className="w-12 h-1 bg-[#E5E7EB] dark:bg-[#242B3D] rounded-full overflow-hidden">
                                                             <div
                                                                 className={cn("h-full", Number(std.summary.attendancePercentage) < 75 ? "bg-rose-500" : "bg-emerald-500")}
                                                                 style={{ width: `${std.summary.attendancePercentage}%` }}
@@ -341,7 +342,7 @@ const ManageStudents = () => {
                                                 </td>
                                                 <td className="px-10 py-6 text-right">
                                                     <div className="flex justify-end">
-                                                        <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-indigo-500 group-hover:bg-indigo-500/10 transition-all">
+                                                        <div className="w-10 h-10 rounded-2xl bg-[#E5E7EB] dark:bg-[#242B3D] flex items-center justify-center text-slate-400 group-hover:text-indigo-500 group-hover:bg-indigo-500/10 transition-all">
                                                             <ChevronRight size={18} />
                                                         </div>
                                                     </div>
@@ -383,15 +384,15 @@ const ManageStudents = () => {
                                             </div>
                                         )}
                                         <h3 className="text-4xl font-black text-white tracking-tighter mb-2 leading-none">{selectedStudent.profile.user.name}</h3>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">{selectedStudent.profile.admissionNumber}</p>
+                                        <p className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.3em]">{selectedStudent.profile.admissionNumber}</p>
 
                                         <div className="grid grid-cols-2 gap-4 mt-12">
                                             <div className="p-6 rounded-[2rem] bg-slate-900/50 border border-slate-800/50 text-left">
-                                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Department</p>
+                                                <p className="text-[9px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest mb-2">Department</p>
                                                 <p className="text-xs font-black text-white truncate">{selectedStudent.profile.department}</p>
                                             </div>
                                             <div className="p-6 rounded-[2rem] bg-slate-900/50 border border-slate-800/50 text-left">
-                                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Semester</p>
+                                                <p className="text-[9px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest mb-2">Semester</p>
                                                 <p className="text-xs font-black text-white">{selectedStudent.profile.semester}</p>
                                             </div>
                                         </div>
@@ -433,7 +434,7 @@ const ManageStudents = () => {
                                                                 className="h-full bg-[#6366f1]"
                                                             />
                                                         </div>
-                                                        <span className="text-[11px] font-black text-slate-500 tabular-nums">
+                                                        <span className="text-[11px] font-black text-[#64748B] dark:text-[#868D9D] tabular-nums">
                                                             {course.attendance.total > 0 ? Math.round((course.attendance.present / course.attendance.total) * 100) : 0}%
                                                         </span>
                                                     </div>
@@ -447,7 +448,7 @@ const ManageStudents = () => {
                                     <div className="w-24 h-24 rounded-[3rem] bg-slate-900/50 flex items-center justify-center text-slate-700 mb-8 border border-slate-800">
                                         <Users size={36} />
                                     </div>
-                                    <h4 className="text-2xl font-black text-slate-500 uppercase tracking-tight">Selective Focus</h4>
+                                    <h4 className="text-2xl font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-tight">Selective Focus</h4>
                                     <p className="text-xs font-bold text-slate-600 mt-4 leading-relaxed px-8">Choose a student identity to inspect <br />their scholarly trajectory and biometrics.</p>
                                 </GlassCard>
                             )}
@@ -469,11 +470,11 @@ const ManageStudents = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 40 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                            className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-200/50 dark:border-slate-800/50"
+                            className="bg-[#E5E7EB] dark:bg-[#1A1F2E] w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9]/50 dark:border-[#3D4556]/50"
                         >
-                            <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">Cohort Expansion</h2>
+                                    <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter">Cohort Expansion</h2>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5">Enroll new biological identities</p>
                                 </div>
                                 <button
@@ -491,7 +492,7 @@ const ManageStudents = () => {
                                         <select
                                             value={enrollCourseId}
                                             onChange={(e) => setEnrollCourseId(e.target.value)}
-                                            className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all appearance-none cursor-pointer"
+                                            className="w-full px-6 py-5 bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] rounded-3xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all appearance-none cursor-pointer"
                                         >
                                             {facultyCourses.map(c => <option key={c._id} value={c._id}>{c.name} ({c.code})</option>)}
                                         </select>
@@ -506,7 +507,7 @@ const ManageStudents = () => {
                                                 placeholder="Name or biometric ID..."
                                                 value={enrollSearch}
                                                 onChange={(e) => handleSearchStudents(e.target.value)}
-                                                className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all shadow-inner"
+                                                className="w-full pl-14 pr-6 py-5 bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] rounded-3xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white transition-all shadow-inner"
                                             />
                                         </div>
                                     </div>
@@ -520,7 +521,7 @@ const ManageStudents = () => {
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: i * 0.05 }}
-                                                className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[2rem] group hover:border-indigo-500 transition-all"
+                                                className="flex items-center justify-between p-6 bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] rounded-[2rem] group hover:border-indigo-500 transition-all"
                                             >
                                                 <div className="flex items-center gap-4">
                                                     {res.user.profileImage ? (
@@ -535,14 +536,14 @@ const ManageStudents = () => {
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <p className="font-black text-slate-900 dark:text-white text-sm">{res.user.name}</p>
+                                                        <p className="font-black text-[#0F1419] dark:text-[#E8EAED] text-sm">{res.user.name}</p>
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{res.admissionNumber}</p>
                                                     </div>
                                                 </div>
                                                 <button
                                                     onClick={() => handleEnroll(res._id)}
                                                     disabled={enrolling}
-                                                    className="w-12 h-12 bg-white dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-indigo-600 hover:text-white rounded-2xl shadow-sm transition-all flex items-center justify-center"
+                                                    className="w-12 h-12 bg-white dark:bg-slate-700 text-[#0F1419] dark:text-[#E8EAED] hover:bg-indigo-600 hover:text-white rounded-2xl shadow-sm transition-all flex items-center justify-center"
                                                 >
                                                     {enrolling ? <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent animate-spin rounded-full" /> : <Plus size={20} />}
                                                 </button>
@@ -583,11 +584,11 @@ const ManageStudents = () => {
                             <div className="flex justify-between items-start mb-8">
                                 <div>
                                     <h2 className="text-3xl font-black text-white tracking-tighter">Direct Alert</h2>
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Broadcast to specific identity</p>
+                                    <p className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.3em] mt-2">Broadcast to specific identity</p>
                                 </div>
                                 <button
                                     onClick={() => setIsAlertModalOpen(false)}
-                                    className="w-12 h-12 flex items-center justify-center hover:bg-slate-900 rounded-2xl transition-colors text-slate-500"
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-slate-900 rounded-2xl transition-colors text-[#64748B] dark:text-[#868D9D]"
                                 >
                                     <X size={24} />
                                 </button>
@@ -608,12 +609,12 @@ const ManageStudents = () => {
                                     )}
                                     <div>
                                         <p className="text-sm font-black text-white">{selectedStudent.profile.user.name}</p>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{selectedStudent.profile.admissionNumber}</p>
+                                        <p className="text-[10px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">{selectedStudent.profile.admissionNumber}</p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Message Payload</label>
+                                    <label className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest px-2">Message Payload</label>
                                     <textarea
                                         rows="4"
                                         placeholder="Type your alert message here..."

@@ -34,6 +34,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import StudentProfileModal from '../../components/StudentProfileModal';
+import { toast } from 'sonner';
 
 // --- Premium UI Components ---
 
@@ -58,7 +59,7 @@ const GlassCard = ({ children, className, delay = 0, noHover = false }) => (
         {/* Glow Effect */}
         <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500/20 to-teal-500/20 rounded-[2.5rem] blur opacity-0 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
 
-        <div className="relative bg-white/70 dark:bg-slate-900/60 backdrop-blur-3xl border border-white/20 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] h-full">
+        <div className="relative bg-[#E5E7EB]/70 dark:bg-[#1A1F2E]/70 backdrop-blur-3xl border border-white/20 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] h-full">
             {children}
         </div>
     </motion.div>
@@ -71,7 +72,7 @@ const DetailTab = ({ icon: Icon, label, active, onClick }) => (
             "flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all relative overflow-hidden",
             active
                 ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20"
-                : "bg-white/50 dark:bg-slate-800/50 text-slate-400 hover:text-indigo-500 border border-slate-100 dark:border-slate-800"
+                : "bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50 text-slate-400 hover:text-indigo-500 border border-[#E2E5E9] dark:border-[#3D4556]"
         )}
     >
         <Icon size={18} strokeWidth={2.5} />
@@ -195,12 +196,12 @@ const FacultyCourses = () => {
             await axios.post('http://localhost:5000/api/faculty/join-course', { courseId }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Successfully joined course!');
+            toast.success('Successfully joined course!');
             setIsDiscoverOpen(false);
             fetchCourses();
         } catch (error) {
             console.error("Error joining course:", error);
-            alert(error.response?.data?.message || 'Failed to join course');
+            toast.error(error.response?.data?.message || 'Failed to join course');
         } finally {
             setJoining(false);
         }
@@ -208,7 +209,7 @@ const FacultyCourses = () => {
 
     const handleUploadMaterial = async (e) => {
         e.preventDefault();
-        if (!materialFile) return alert('Please select a file');
+        if (!materialFile) return toast.error('Please select a file');
 
         setUploading(true);
         try {
@@ -230,10 +231,10 @@ const FacultyCourses = () => {
 
             setMaterialFile(null);
             setMaterialTitle('');
-            alert('Material uploaded successfully!');
+            toast.success('Material uploaded successfully!');
         } catch (error) {
             console.error("Error uploading material:", error);
-            alert('Failed to upload material');
+            toast.error('Failed to upload material');
         } finally {
             setUploading(false);
         }
@@ -253,7 +254,7 @@ const FacultyCourses = () => {
             setCourses(courses.map(c => c._id === selectedCourse._id ? { ...c, materials: updatedMaterials } : c));
         } catch (error) {
             console.error("Error deleting material:", error);
-            alert('Failed to delete material');
+            toast.error('Failed to delete material');
         }
     };
 
@@ -351,7 +352,7 @@ const FacultyCourses = () => {
                                     <motion.div
                                         initial={{ x: -30, opacity: 0 }}
                                         animate={{ x: 0, opacity: 1 }}
-                                        className="flex items-center gap-3 bg-white/5 backdrop-blur-2xl px-5 py-2 rounded-full border border-white/10 w-fit mx-auto md:mx-0 shadow-xl"
+                                        className="flex items-center gap-3 bg-white/5 backdrop-blur-2xl px-5 py-2 rounded-full border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 w-fit mx-auto md:mx-0 shadow-xl"
                                     >
                                         <div className="w-2 h-2 bg-indigo-400 rounded-full animate-ping" />
                                         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-200">Academic Courses</span>
@@ -512,7 +513,7 @@ const FacultyCourses = () => {
                                                 <div className="flex items-center gap-3">
                                                     <div className="flex -space-x-3">
                                                         {[1, 2, 3].map(i => (
-                                                            <div key={i} className="w-9 h-9 rounded-full ring-2 ring-slate-900 bg-gradient-to-br from-slate-700 to-slate-800 border border-white/10 flex items-center justify-center text-[9px] font-black text-white/30">
+                                                            <div key={i} className="w-9 h-9 rounded-full ring-2 ring-slate-900 bg-gradient-to-br from-slate-700 to-slate-800 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex items-center justify-center text-[9px] font-black text-white/30">
                                                                 {i}
                                                             </div>
                                                         ))}
@@ -545,7 +546,7 @@ const FacultyCourses = () => {
                             <div className="flex items-start gap-8">
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className="p-5 rounded-2xl bg-slate-900/50 dark:bg-white/5 border border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-all shadow-xl backdrop-blur-3xl group"
+                                    className="p-5 rounded-2xl bg-slate-900/50 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 text-white/50 hover:text-white hover:border-white/20 transition-all shadow-xl backdrop-blur-3xl group"
                                 >
                                     <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
                                 </button>
@@ -554,7 +555,7 @@ const FacultyCourses = () => {
                                         <GraduationCap size={16} className="text-indigo-400" />
                                         <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] font-mono">{selectedCourse.code} UNIT</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic">{selectedCourse.name}</h2>
+                                    <h2 className="text-4xl md:text-5xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none italic">{selectedCourse.name}</h2>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] italic opacity-60">Academic Management & Performance Intelligence</p>
                                 </div>
                             </div>
@@ -580,7 +581,7 @@ const FacultyCourses = () => {
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Verified Identities</p>
                             </div>
 
-                            <div className="relative group overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 shadow-xl">
+                            <div className="relative group overflow-hidden bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-[2rem] p-6 shadow-xl">
                                 <div className="flex justify-between items-start mb-8">
                                     <div className="p-3 bg-teal-500/10 text-teal-500 rounded-2xl">
                                         <Activity size={24} />
@@ -588,10 +589,10 @@ const FacultyCourses = () => {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Avg Engagement</span>
                                 </div>
                                 <div className="flex items-end gap-2 mb-1">
-                                    <p className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white">{stats.avgAttendance}</p>
+                                    <p className="text-4xl font-black tracking-tighter text-[#0F1419] dark:text-[#E8EAED]">{stats.avgAttendance}</p>
                                     <p className="text-2xl font-black text-teal-500 mb-2">%</p>
                                 </div>
-                                <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mt-4 overflow-hidden">
+                                <div className="w-full h-1.5 bg-[#E5E7EB] dark:bg-[#242B3D] rounded-full mt-4 overflow-hidden">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${stats.avgAttendance}%` }}
@@ -604,7 +605,7 @@ const FacultyCourses = () => {
                                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-transparent" />
                                 <div className="relative z-10 h-full flex flex-col justify-between">
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+                                        <div className="p-3 bg-white/5 rounded-2xl border border-[#E2E5E9]/20 dark:border-[#3D4556]/20">
                                             <FileText size={20} className="text-indigo-400" />
                                         </div>
                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Conceptual Framework</p>
@@ -617,7 +618,7 @@ const FacultyCourses = () => {
                         </div>
 
                         {/* Detail Tabs */}
-                        <div className="flex gap-4 p-2 bg-slate-900/50 dark:bg-white/5 border border-white/10 rounded-[1.5rem] w-fit mx-auto md:mx-0 backdrop-blur-xl mb-12 shadow-2xl">
+                        <div className="flex gap-4 p-2 bg-slate-900/50 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[1.5rem] w-fit mx-auto md:mx-0 backdrop-blur-xl mb-12 shadow-2xl">
                             <DetailTab
                                 icon={(props) => <User {...props} size={20} strokeWidth={2.5} />}
                                 label="Student Directory"
@@ -641,17 +642,17 @@ const FacultyCourses = () => {
                                     exit={{ opacity: 0, y: -20 }}
                                 >
                                     {/* Student Roster Table */}
-                                    <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                                        <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+                                    <div className="bg-[#E5E7EB]/50 dark:bg-[#1A1F2E]/50 backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                                        <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex flex-col md:flex-row justify-between items-center gap-6">
                                             <div>
-                                                <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter italic">Cohort Registry</h3>
+                                                <h3 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter italic">Cohort Registry</h3>
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5 italic">Authorized Performance Analytics</p>
                                             </div>
                                         </div>
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
-                                                    <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em] border-b border-slate-100 dark:border-slate-800/50">
+                                                    <tr className="bg-[#F3F4F6]/50 dark:bg-[#1A1F2E]/50 text-[10px] font-black text-slate-400 dark:text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.4em] border-b border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
                                                         <th className="px-8 py-5">Biometric Token</th>
                                                         <th className="px-8 py-5">Communication Channels</th>
                                                         <th className="px-8 py-5 text-right">Operational Logic</th>
@@ -672,7 +673,7 @@ const FacultyCourses = () => {
                                                                         {student.user.name.split(' ').map(n => n[0]).join('')}
                                                                     </div>
                                                                     <div className="text-left">
-                                                                        <p className="font-black text-slate-900 dark:text-white text-base tracking-tight mb-1.5">{student.user.name}</p>
+                                                                        <p className="font-black text-[#0F1419] dark:text-[#E8EAED] text-base tracking-tight mb-1.5">{student.user.name}</p>
                                                                         <div className="flex items-center gap-2">
                                                                             <div className="w-1.5 h-1.5 rounded-full bg-teal-500" />
                                                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{student.admissionNumber}</p>
@@ -682,10 +683,10 @@ const FacultyCourses = () => {
                                                             </td>
                                                             <td className="px-8 py-5">
                                                                 <div className="space-y-2.5">
-                                                                    <div className="flex items-center gap-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
+                                                                    <div className="flex items-center gap-3 text-[11px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">
                                                                         <Mail size={14} className="text-indigo-400" /> {student.user.email}
                                                                     </div>
-                                                                    <div className="flex items-center gap-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
+                                                                    <div className="flex items-center gap-3 text-[11px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">
                                                                         <Phone size={14} className="text-teal-400" /> VECTORS_SYNCHRONIZED
                                                                     </div>
                                                                 </div>
@@ -718,7 +719,7 @@ const FacultyCourses = () => {
                                     <div className="lg:col-span-2 space-y-10">
                                         <div className="relative group">
                                             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-indigo-500/5 blur-3xl opacity-50" />
-                                            <div className="relative bg-slate-800/80 dark:bg-white/5 border border-white/10 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl overflow-hidden min-h-[500px]">
+                                            <div className="relative bg-slate-800/80 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl overflow-hidden min-h-[500px]">
                                                 <div className="flex justify-between items-center mb-12">
                                                     <div className="text-left">
                                                         <h3 className="text-3xl font-black text-white tracking-tighter italic">Knowledge Repository</h3>
@@ -737,7 +738,7 @@ const FacultyCourses = () => {
                                                                 initial={{ opacity: 0, x: -20 }}
                                                                 animate={{ opacity: 1, x: 0 }}
                                                                 transition={{ delay: idx * 0.1 }}
-                                                                className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-between group hover:border-indigo-500/50 transition-all duration-500 hover:bg-white/10"
+                                                                className="p-8 rounded-[2.5rem] bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex items-center justify-between group hover:border-indigo-500/50 transition-all duration-500 hover:bg-white/10"
                                                             >
                                                                 <div className="flex items-center gap-6">
                                                                     <div className="p-5 rounded-[1.5rem] bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:scale-110">
@@ -785,7 +786,7 @@ const FacultyCourses = () => {
                                     <div className="space-y-10">
                                         <div className="relative group">
                                             <div className="absolute inset-0 bg-indigo-500/5 rounded-[3rem] blur-3xl opacity-50" />
-                                            <div className="relative bg-slate-800/60 dark:bg-white/5 border border-white/10 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl">
+                                            <div className="relative bg-slate-800/60 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl">
                                                 <h3 className="text-2xl font-black text-white mb-10 tracking-tighter text-left italic">Ingest New Data</h3>
                                                 <form onSubmit={handleUploadMaterial} className="space-y-10">
                                                     <div className="space-y-4">
@@ -795,7 +796,7 @@ const FacultyCourses = () => {
                                                             value={materialTitle}
                                                             onChange={(e) => setMaterialTitle(e.target.value)}
                                                             placeholder="e.g. Theoretical Framework - Phase 1"
-                                                            className="w-full px-10 py-6 bg-white/[0.03] border border-white/10 rounded-[2.5rem] text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white shadow-inner placeholder:text-white/10"
+                                                            className="w-full px-10 py-6 bg-white/[0.03] border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[2.5rem] text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white shadow-inner placeholder:text-white/10"
                                                             required
                                                         />
                                                     </div>
@@ -860,11 +861,11 @@ const FacultyCourses = () => {
                                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                                className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-200/50 dark:border-slate-800/50"
+                                className="bg-[#E5E7EB] dark:bg-[#1A1F2E] w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9]/50 dark:border-[#3D4556]/50"
                             >
-                                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex justify-between items-center">
                                     <div>
-                                        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">Parameter Shift</h2>
+                                        <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter">Parameter Shift</h2>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5">Modify curriculum biometrics</p>
                                     </div>
                                     <button
@@ -881,7 +882,7 @@ const FacultyCourses = () => {
                                         <input
                                             value={editForm?.schedule || ''}
                                             onChange={(e) => setEditForm({ ...editForm, schedule: e.target.value })}
-                                            className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                            className="w-full px-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
                                             placeholder="e.g. Mon, Wed 10:00 - 12:00"
                                         />
                                     </div>
@@ -890,7 +891,7 @@ const FacultyCourses = () => {
                                         <input
                                             value={editForm?.room || ''}
                                             onChange={(e) => setEditForm({ ...editForm, room: e.target.value })}
-                                            className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                            className="w-full px-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
                                             placeholder="e.g. Tech Annex 402"
                                         />
                                     </div>
@@ -900,7 +901,7 @@ const FacultyCourses = () => {
                                             rows="4"
                                             value={editForm?.description || ''}
                                             onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                                            className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner resize-none"
+                                            className="w-full px-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner resize-none"
                                             placeholder="Briefly synthesize the course objectives..."
                                         />
                                     </div>
@@ -930,11 +931,11 @@ const FacultyCourses = () => {
                                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                                className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-200/50 dark:border-slate-800/50"
+                                className="bg-[#E5E7EB] dark:bg-[#1A1F2E] w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9]/50 dark:border-[#3D4556]/50"
                             >
-                                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex justify-between items-center">
                                     <div>
-                                        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">Discover</h2>
+                                        <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter">Discover</h2>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5">Join new course units</p>
                                     </div>
                                     <button
@@ -953,7 +954,7 @@ const FacultyCourses = () => {
                                             value={searchAllQuery}
                                             onChange={(e) => setSearchAllQuery(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleSearchAll()}
-                                            className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                            className="w-full pl-14 pr-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
                                         />
                                         <button
                                             onClick={handleSearchAll}
@@ -965,9 +966,9 @@ const FacultyCourses = () => {
 
                                     <div className="max-h-[400px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
                                         {searchAllResults.map((course) => (
-                                            <div key={course._id} className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                            <div key={course._id} className="p-6 rounded-[2rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="font-black text-slate-900 dark:text-white text-sm">{course.name}</h4>
+                                                    <h4 className="font-black text-[#0F1419] dark:text-[#E8EAED] text-sm">{course.name}</h4>
                                                     <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{course.code} • {course.department}</p>
                                                     <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Faculty: {course.assignedFaculty?.user?.name || 'Unassigned'}</p>
                                                 </div>

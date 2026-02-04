@@ -8,7 +8,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { cn } from '../../lib/utils'; // Assuming this exists, based on other files. If not, I'll inline a joiner.
+import { cn } from '../../lib/utils';
+import { toast } from 'sonner'; // Assuming this exists, based on other files. If not, I'll inline a joiner.
 
 // Utility for class merging if cn doesn't exist (safe fallback)
 const classNames = (...classes) => classes.filter(Boolean).join(' ');
@@ -112,9 +113,9 @@ const DashboardOverview = () => {
             default:
                 return {
                     icon: Bell,
-                    gradient: 'from-indigo-400 to-violet-600',
-                    bg: 'bg-indigo-50 dark:bg-indigo-900/20',
-                    text: 'text-indigo-600 dark:text-indigo-400'
+                    gradient: 'from-blue-400 to-blue-600',
+                    bg: 'bg-blue-50 dark:bg-blue-900/20',
+                    text: 'text-[#0066CC] dark:text-blue-400'
                 };
         }
     };
@@ -143,7 +144,7 @@ const DashboardOverview = () => {
 
             setUsers(users.map(u => u._id === userId ? { ...u, isBlocked: res.data.isBlocked } : u));
         } catch (error) {
-            alert(error.response?.data?.message || 'Error toggling user block');
+            toast.error(error.response?.data?.message || 'Error toggling user block');
         }
     };
 
@@ -152,7 +153,7 @@ const DashboardOverview = () => {
 
         // Header
         doc.setFontSize(22);
-        doc.setTextColor(79, 70, 229); // Indigo theme
+        doc.setTextColor(0, 102, 204); // #0066CC
         doc.text('LearNex System Status Report', 14, 22);
 
         doc.setFontSize(10);
@@ -179,7 +180,7 @@ const DashboardOverview = () => {
                 head: [tableData[0]],
                 body: tableData.slice(1),
                 theme: 'grid',
-                headStyles: { fillColor: [79, 70, 229] },
+                headStyles: { fillColor: [0, 102, 204] },
                 alternateRowStyles: { fillColor: [249, 250, 251] }
             });
         } else {
@@ -197,7 +198,7 @@ const DashboardOverview = () => {
     ) : [];
 
     const statCards = [
-        { title: 'Total Students', value: stats.totalStudents, icon: Users, color: 'indigo', gradient: 'from-blue-500 to-indigo-600' },
+        { title: 'Total Students', value: stats.totalStudents, icon: Users, color: 'indigo', gradient: 'from-blue-500 to-[#0066CC]' },
         { title: 'Total Faculty', value: stats.totalFaculty, icon: UserCheck, color: 'teal', gradient: 'from-emerald-400 to-teal-500' },
         { title: 'Active Courses', value: stats.totalCourses, icon: BookOpen, color: 'amber', gradient: 'from-orange-400 to-amber-500' },
         { title: 'System Growth', value: '+12%', icon: TrendingUp, color: 'rose', gradient: 'from-pink-500 to-rose-600' },
@@ -207,8 +208,8 @@ const DashboardOverview = () => {
         return (
             <div className="flex justify-center items-center min-h-[60vh]">
                 <div className="relative">
-                    <div className="w-16 h-16 border-4 border-indigo-200 rounded-full animate-ping" />
-                    <div className="absolute inset-0 w-16 h-16 border-t-4 border-indigo-600 rounded-full animate-spin" />
+                    <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-ping" />
+                    <div className="absolute inset-0 w-16 h-16 border-t-4 border-[#0066CC] rounded-full animate-spin" />
                 </div>
             </div>
         );
@@ -223,13 +224,13 @@ const DashboardOverview = () => {
                     <motion.div
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full w-fit group"
+                        className="flex items-center gap-2 bg-blue-500/10 dark:bg-blue-400/10 px-4 py-1.5 rounded-full w-fit group"
                     >
-                        <LayoutDashboard size={14} className="text-indigo-500 group-hover:rotate-12 transition-transform" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">Admin Console</span>
+                        <LayoutDashboard size={14} className="text-[#0066CC] group-hover:rotate-12 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0066CC] dark:text-blue-400">Admin Console</span>
                     </motion.div>
                     <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
-                        Dashboard <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Overview</span>
+                        Dashboard <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066CC] to-blue-400">Overview</span>
                     </h1>
                 </div>
 
@@ -260,10 +261,10 @@ const DashboardOverview = () => {
                 <GlassCard className="lg:col-span-2 p-8" delay={0.4}>
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                            <Activity className="text-indigo-500" />
+                            <Activity className="text-[#0066CC]" />
                             Recent Activity
                         </h3>
-                        <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider">View All</button>
+                        <button className="text-xs font-bold text-[#0066CC] hover:text-blue-700 uppercase tracking-wider">View All</button>
                     </div>
 
                     <div className="space-y-2 h-[260px] overflow-y-auto pr-2 custom-scrollbar">
@@ -304,7 +305,7 @@ const DashboardOverview = () => {
                         <div className="grid grid-cols-1 gap-4">
                             <button
                                 onClick={() => setActiveModal('reports')}
-                                className="w-full p-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 active:scale-[0.98] transition-all flex items-center justify-between group"
+                                className="w-full p-4 rounded-2xl bg-gradient-to-r from-[#0066CC] to-blue-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-[0.98] transition-all flex items-center justify-between group"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-white/20 rounded-lg">
@@ -336,7 +337,7 @@ const DashboardOverview = () => {
                         </div>
                     </GlassCard>
 
-                    <GlassCard className="p-6 bg-gradient-to-br from-indigo-600 to-violet-700 text-white" delay={0.6}>
+                    <GlassCard className="p-6 bg-gradient-to-br from-[#0066CC] to-blue-700 text-white" delay={0.6}>
                         <div className="relative z-10">
                             <AlertCircle className="mb-4 opacity-80" size={32} />
                             <h4 className="text-lg font-black mb-2">System Status</h4>
@@ -358,7 +359,7 @@ const DashboardOverview = () => {
                         >
                             <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
                                 <h3 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-                                    <FileText className="text-indigo-500" />
+                                    <FileText className="text-[#0066CC]" />
                                     System Reports
                                 </h3>
                                 <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
@@ -374,8 +375,8 @@ const DashboardOverview = () => {
                                                 key={type}
                                                 onClick={() => setReportType(type)}
                                                 className={`p-4 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all ${reportType === type
-                                                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                                                    : 'border-slate-100 dark:border-slate-800 hover:border-indigo-200 text-slate-500'
+                                                    ? 'border-[#0066CC] bg-blue-50 text-[#0066CC] dark:bg-blue-900/30 dark:text-blue-300'
+                                                    : 'border-slate-100 dark:border-slate-800 hover:border-blue-200 text-slate-500'
                                                     }`}
                                             >
                                                 {type}
@@ -385,7 +386,7 @@ const DashboardOverview = () => {
                                 </div>
                                 <button
                                     onClick={generatePDFReport}
-                                    className="w-full py-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-xl shadow-indigo-500/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98] uppercase tracking-widest text-xs"
+                                    className="w-full py-5 rounded-2xl bg-[#0066CC] hover:bg-blue-700 text-white font-black shadow-xl shadow-blue-500/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98] uppercase tracking-widest text-xs"
                                 >
                                     <Download size={16} />
                                     Generate PDF
@@ -450,7 +451,7 @@ const DashboardOverview = () => {
                                             className="group p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700/50 hover:border-teal-200 dark:hover:border-teal-900 hover:shadow-xl hover:shadow-teal-900/5 transition-all flex items-center justify-between"
                                         >
                                             <div className="flex items-center gap-5">
-                                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg transform group-hover:scale-110 transition-transform ${user.role === 'faculty' ? 'bg-gradient-to-br from-purple-500 to-indigo-600 shadow-purple-200' : 'bg-gradient-to-br from-blue-400 to-cyan-500 shadow-blue-200'
+                                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg transform group-hover:scale-110 transition-transform ${user.role === 'faculty' ? 'bg-gradient-to-br from-[#0066CC] to-blue-400 shadow-blue-200' : 'bg-gradient-to-br from-[#0066CC] to-cyan-500 shadow-blue-200'
                                                     }`}>
                                                     {user.name.charAt(0)}
                                                 </div>

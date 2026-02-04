@@ -114,8 +114,8 @@ const Results = () => {
     return (
         <Layout role="student">
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Marks & Results</h1>
-                <p className="text-slate-600 dark:text-gray-400">View your academic performance and grade sheets</p>
+                <h1 className="text-2xl font-bold text-[#0F1419] dark:text-[#E8EAED]">Marks & Results</h1>
+                <p className="text-slate-600 dark:text-[#64748B] dark:text-[#868D9D]">View your academic performance and grade sheets</p>
             </div>
 
             {/* Profile & Overall Stats */}
@@ -142,9 +142,9 @@ const Results = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+                <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl p-6 shadow-sm border border-[#E2E5E9] dark:border-[#3D4556]">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-slate-600 dark:text-gray-400 text-sm">Overall CGPA</span>
+                        <span className="text-slate-600 dark:text-[#64748B] dark:text-[#868D9D] text-sm">Overall CGPA</span>
                         <div className="p-2 bg-emerald-100 dark:bg-green-900/30 rounded-lg">
                             <TrendingUp className="text-emerald-600 dark:text-green-400" size={20} />
                         </div>
@@ -156,7 +156,7 @@ const Results = () => {
                             ? (sems.reduce((sum, s) => sum + parseFloat(s.sgpa), 0) / sems.length).toFixed(2)
                             : 'N/A';
 
-                        return <div className="text-4xl font-bold text-slate-900 dark:text-white mt-2">{avgCGPA}</div>;
+                        return <div className="text-4xl font-bold text-[#0F1419] dark:text-[#E8EAED] mt-2">{avgCGPA}</div>;
                     })()}
                     <p className="text-emerald-500 text-sm font-medium mt-1">Excellent Performance</p>
                 </div>
@@ -166,41 +166,41 @@ const Results = () => {
             <div className="space-y-4">
                 {resultsData?.results && resultsData.results.length > 0 ? (
                     resultsData.results.map((semData) => (
-                        <div key={semData.semester} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+                        <div key={semData.semester} className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] overflow-hidden">
                             <div
                                 onClick={() => toggleSem(semData.semester)}
-                                className="p-6 flex items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-slate-700/50 transition-colors"
+                                className="p-6 flex items-center justify-between cursor-pointer hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition-colors"
                             >
                                 <div className="flex items-center gap-4">
                                     <div className="h-10 w-10 bg-blue-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center text-blue-700 dark:text-blue-400">
                                         <FileText size={20} />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-slate-900 dark:text-white">{semData.semester}</h3>
-                                        <p className="text-sm text-slate-600 dark:text-gray-400">{semData.results.length} Courses Taken</p>
+                                        <h3 className="font-bold text-[#0F1419] dark:text-[#E8EAED]">{semData.semester}</h3>
+                                        <p className="text-sm text-slate-600 dark:text-[#64748B] dark:text-[#868D9D]">{semData.results.length} Courses Taken</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <div className="text-right hidden sm:block">
-                                        <span className="block text-xs text-gray-400">SGPA</span>
-                                        <span className="font-bold text-lg text-slate-900 dark:text-white">{semData.sgpa}</span>
+                                        <span className="block text-xs text-[#64748B] dark:text-[#868D9D]">SGPA</span>
+                                        <span className="font-bold text-lg text-[#0F1419] dark:text-[#E8EAED]">{semData.sgpa}</span>
                                     </div>
                                     {expandedSem === semData.semester ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                 </div>
                             </div>
 
                             {expandedSem === semData.semester && (
-                                <div id={`grade-sheet-${semData.semester}`} className="px-6 pb-6 border-t border-gray-100 dark:border-slate-700 animate-fadeIn bg-white dark:bg-slate-800">
+                                <div id={`grade-sheet-${semData.semester}`} className="px-6 pb-6 border-t border-[#E2E5E9] dark:border-[#3D4556] animate-fadeIn bg-[#E5E7EB] dark:bg-[#242B3D]">
                                     <div className="flex justify-between items-center mt-6 mb-2">
                                         <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">Semester Detail Report</h4>
-                                        <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded">
+                                        <div className="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded">
                                             SGPA: {semData.sgpa}
                                         </div>
                                     </div>
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
                                             <thead>
-                                                <tr className="text-xs uppercase text-gray-400 border-b border-gray-100 dark:border-slate-700">
+                                                <tr className="text-xs uppercase text-[#64748B] dark:text-[#868D9D] border-b border-[#E2E5E9] dark:border-[#3D4556]">
                                                     <th className="py-3 font-semibold">Course Code</th>
                                                     <th className="py-3 font-semibold">Subject</th>
                                                     <th className="py-3 font-semibold text-center">Credits</th>
@@ -210,19 +210,19 @@ const Results = () => {
                                             </thead>
                                             <tbody className="text-sm">
                                                 {semData.results.map((subject, idx) => (
-                                                    <tr key={idx} className="border-b border-gray-50 dark:border-slate-700 last:border-0 hover:bg-white dark:hover:bg-slate-700/30 transition-colors">
+                                                    <tr key={idx} className="border-b border-[#E2E5E9] dark:border-[#3D4556] last:border-0 hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition-colors">
                                                         <td className="py-4 text-gray-600 dark:text-gray-300 font-medium">{subject.courseCode}</td>
-                                                        <td className="py-4 text-slate-900 dark:text-white font-semibold">{subject.courseName} <span className="text-xs text-gray-400 font-normal ml-1">({subject.examType})</span></td>
+                                                        <td className="py-4 text-[#0F1419] dark:text-[#E8EAED] font-semibold">{subject.courseName} <span className="text-xs text-[#64748B] dark:text-[#868D9D] font-normal ml-1">({subject.examType})</span></td>
                                                         <td className="py-4 text-center text-slate-600">{subject.credits}</td>
                                                         <td className="py-4 text-center">
-                                                            <span className="text-slate-900 dark:text-white font-medium">{subject.marksObtained}</span>
-                                                            <span className="text-gray-400 text-xs"> / {subject.maxMarks}</span>
+                                                            <span className="text-[#0F1419] dark:text-[#E8EAED] font-medium">{subject.marksObtained}</span>
+                                                            <span className="text-[#64748B] dark:text-[#868D9D] text-xs"> / {subject.maxMarks}</span>
                                                         </td>
                                                         <td className="py-4 text-center">
                                                             <span className={`inline-block px-2 py-1 rounded-md text-xs font-bold 
                                                                 ${subject.grade === 'F' ? 'bg-rose-100 text-rose-600' :
                                                                     subject.grade.startsWith('A') || subject.grade === 'O' ? 'bg-emerald-100 text-emerald-600' :
-                                                                        'bg-blue-100 text-blue-600'}`}>
+                                                                        'bg-blue-100 text-[#2563EB] dark:text-[#60A5FA]'}`}>
                                                                 {subject.grade}
                                                             </span>
                                                         </td>
@@ -245,8 +245,8 @@ const Results = () => {
                         </div>
                     ))
                 ) : (
-                    <div className="bg-white p-12 rounded-xl border border-dashed border-gray-300 text-center">
-                        <div className="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4 text-gray-400">
+                    <div className="bg-white p-12 rounded-xl border border-dashed border-[#E2E5E9] dark:border-[#3D4556] text-center">
+                        <div className="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4 text-[#64748B] dark:text-[#868D9D]">
                             <FileText size={32} />
                         </div>
                         <h3 className="text-lg font-medium text-slate-900">No results found yet</h3>

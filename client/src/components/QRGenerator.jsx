@@ -3,6 +3,7 @@ import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 import { X, QrCode, Users, Clock, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 const QRGenerator = ({ courses }) => {
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -72,7 +73,7 @@ const QRGenerator = ({ courses }) => {
 
     const handleGenerateQR = async () => {
         if (!selectedCourse) {
-            alert('Please select a course');
+            toast.error('Please select a course');
             return;
         }
 
@@ -88,7 +89,7 @@ const QRGenerator = ({ courses }) => {
             setScannedCount(0);
         } catch (error) {
             console.error('Generate QR error:', error);
-            alert(error.response?.data?.message || 'Failed to generate QR code');
+            toast.error(error.response?.data?.message || 'Failed to generate QR code');
         } finally {
             setLoading(false);
         }
@@ -109,7 +110,7 @@ const QRGenerator = ({ courses }) => {
             setTimeRemaining(null);
         } catch (error) {
             console.error('Close QR error:', error);
-            alert('Failed to close QR session');
+            toast.error('Failed to close QR session');
         }
     };
 

@@ -323,7 +323,7 @@ const Chat = () => {
                             localStorage.clear();
                             navigate('/login');
                         }}
-                        className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/30 transition-all active:scale-95"
+                        className="px-8 py-3 bg-[#0066CC] text-white font-bold rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all active:scale-95"
                     >
                         Re-login Now
                     </button>
@@ -336,7 +336,7 @@ const Chat = () => {
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-black text-slate-800 dark:text-white tracking-tighter leading-none">Messages</h2>
-                                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-[#0066CC] dark:text-blue-400 rounded-xl border border-blue-100 dark:border-blue-800">
                                     <MessageSquare size={20} />
                                 </div>
                             </div>
@@ -349,7 +349,7 @@ const Chat = () => {
                                     placeholder="Search conversations..."
                                     value={searchQuery}
                                     onChange={(e) => handleSearch(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all"
+                                    className="w-full pl-10 pr-4 py-3 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 transition-all"
                                 />
                             </div>
 
@@ -357,13 +357,13 @@ const Chat = () => {
                             <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800/50 rounded-xl">
                                 <button
                                     onClick={() => setActiveTab('chats')}
-                                    className={`flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'chats' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500'}`}
+                                    className={`flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'chats' ? 'bg-white dark:bg-slate-700 text-[#0066CC] dark:text-blue-400 shadow-sm' : 'text-slate-500'}`}
                                 >
                                     Chats
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('contacts')}
-                                    className={`flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'contacts' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500'}`}
+                                    className={`flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'contacts' ? 'bg-white dark:bg-slate-700 text-[#0066CC] dark:text-blue-400 shadow-sm' : 'text-slate-500'}`}
                                 >
                                     {currentUser.role === 'student' ? 'Faculty' : 'Students'}
                                 </button>
@@ -391,11 +391,11 @@ const Chat = () => {
                                                 className="w-full p-4 flex items-center gap-4 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-300"
                                             >
                                                 <div className="relative">
-                                                    <img src={`https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
+                                                    <img src={`https://ui-avatars.com/api/?name=${user.name}&background=0066CC&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
                                                 </div>
                                                 <div className="flex-1 text-left overflow-hidden">
                                                     <h4 className="font-black text-slate-800 dark:text-white truncate">{user.name}</h4>
-                                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{user.role}</p>
+                                                    <p className="text-[10px] font-black text-[#0066CC] uppercase tracking-widest">{user.role}</p>
                                                 </div>
                                             </button>
                                         ))
@@ -404,10 +404,10 @@ const Chat = () => {
                                             <button
                                                 key={idx}
                                                 onClick={() => handleSelectUser(conv.user)}
-                                                className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all duration-300 ${selectedUser?._id === conv.user._id ? 'bg-indigo-50 dark:bg-indigo-900/20 ring-1 ring-indigo-500/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                                                className={`w-full p-4 flex items-center gap-4 rounded-3xl transition-all duration-300 ${selectedUser?._id === conv.user._id ? 'bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
                                             >
                                                 <div className="relative flex-shrink-0">
-                                                    <img src={`https://ui-avatars.com/api/?name=${conv.user.name}&background=6366f1&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
+                                                    <img src={`https://ui-avatars.com/api/?name=${conv.user.name}&background=0066CC&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
                                                 </div>
                                                 <div className="flex-1 text-left min-w-0">
                                                     <div className="flex justify-between items-center mb-1">
@@ -426,7 +426,7 @@ const Chat = () => {
                                                 <MessageSquare className="text-slate-300 dark:text-slate-700" size={32} />
                                             </div>
                                             <p className="text-sm font-bold text-slate-500">No active conversations</p>
-                                            <button onClick={() => setActiveTab('contacts')} className="text-xs font-black text-indigo-500 uppercase tracking-widest hover:underline">Start a new chat</button>
+                                            <button onClick={() => setActiveTab('contacts')} className="text-xs font-black text-[#0066CC] uppercase tracking-widest hover:underline">Start a new chat</button>
                                         </div>
                                     )}
                                 </div>
@@ -438,7 +438,7 @@ const Chat = () => {
                                             onClick={() => handleSelectUser(user)}
                                             className="w-full p-4 flex items-center gap-4 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-300"
                                         >
-                                            <img src={`https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
+                                            <img src={`https://ui-avatars.com/api/?name=${user.name}&background=0066CC&color=fff`} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-sm" alt="" />
                                             <div className="flex-1 text-left">
                                                 <h4 className="font-black text-slate-800 dark:text-white truncate">{user.name}</h4>
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{user.email}</p>
@@ -461,7 +461,7 @@ const Chat = () => {
                                             <ChevronLeft size={20} />
                                         </button>
                                         <div className="relative">
-                                            <img src={`https://ui-avatars.com/api/?name=${selectedUser.name}&background=6366f1&color=fff`} className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-100 dark:border-slate-800" alt="" />
+                                            <img src={`https://ui-avatars.com/api/?name=${selectedUser.name}&background=0066CC&color=fff`} className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-100 dark:border-slate-800" alt="" />
                                         </div>
                                         <div>
                                             <h3 className="font-black text-slate-800 dark:text-white leading-tight">{selectedUser.name}</h3>
@@ -473,13 +473,13 @@ const Chat = () => {
                                     <div className="flex items-center gap-2 relative">
                                         <button
                                             onClick={toggleMessageSearch}
-                                            className={`p-3 rounded-2xl transition-all ${showMessageSearch ? 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                            className={`p-3 rounded-2xl transition-all ${showMessageSearch ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
                                         >
                                             <Search size={20} />
                                         </button>
                                         <button
                                             onClick={toggleOptionsMenu}
-                                            className={`p-3 rounded-2xl transition-all ${showOptionsMenu ? 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                            className={`p-3 rounded-2xl transition-all ${showOptionsMenu ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
                                         >
                                             <MoreVertical size={20} />
                                         </button>
@@ -518,7 +518,7 @@ const Chat = () => {
                                                 placeholder="Search in messages..."
                                                 value={messageSearchQuery}
                                                 onChange={(e) => setMessageSearchQuery(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-3 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all"
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 transition-all"
                                             />
                                         </div>
                                     </div>
@@ -544,7 +544,7 @@ const Chat = () => {
                                                         {/* File Attachment */}
                                                         {(msg.messageType === 'file' || msg.messageType === 'text-with-file') && msg.fileUrl && (
                                                             <div className={`p-3 rounded-2xl ${isMe
-                                                                ? 'bg-indigo-600 text-white rounded-tr-none'
+                                                                ? 'bg-[#0066CC] text-white rounded-tr-none'
                                                                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'}`}>
                                                                 <a
                                                                     href={`http://localhost:5000/${msg.fileUrl}`}
@@ -565,7 +565,7 @@ const Chat = () => {
                                                                             </div>
                                                                             <div className="flex-1 min-w-0">
                                                                                 <p className="font-bold text-sm truncate">{msg.fileName}</p>
-                                                                                <p className={`text-xs ${isMe ? 'text-indigo-200' : 'text-slate-400'}`}>
+                                                                                <p className={`text-xs ${isMe ? 'text-blue-200' : 'text-slate-400'}`}>
                                                                                     {formatFileSize(msg.fileSize)}
                                                                                 </p>
                                                                             </div>
@@ -578,7 +578,7 @@ const Chat = () => {
                                                         {/* Text Content */}
                                                         {msg.content && (
                                                             <div className={`p-4 rounded-[2rem] text-sm font-bold shadow-sm ${isMe
-                                                                ? 'bg-indigo-600 text-white rounded-tr-none shadow-indigo-200 dark:shadow-none'
+                                                                ? 'bg-[#0066CC] text-white rounded-tr-none shadow-blue-200 dark:shadow-none'
                                                                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'}`}>
                                                                 {msg.content}
                                                             </div>
@@ -586,7 +586,7 @@ const Chat = () => {
 
                                                         <div className={`flex items-center gap-2 px-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
                                                             <span className="text-[10px] font-bold text-slate-400">{format(new Date(msg.createdAt), 'HH:mm')}</span>
-                                                            {isMe && <ShieldCheck size={12} className={msg.read ? 'text-indigo-500' : 'text-slate-300'} />}
+                                                            {isMe && <ShieldCheck size={12} className={msg.read ? 'text-[#0066CC]' : 'text-slate-300'} />}
                                                         </div>
                                                     </div>
                                                 </motion.div>
@@ -610,11 +610,11 @@ const Chat = () => {
                                                 type="button"
                                                 onClick={handleAttachmentClick}
                                                 disabled={uploadProgress}
-                                                className={`p-3 rounded-xl transition-all ${uploadProgress ? 'opacity-50 cursor-not-allowed' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                                className={`p-3 rounded-xl transition-all ${uploadProgress ? 'opacity-50 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
                                                 title="Attach file"
                                             >
                                                 {uploadProgress ? (
-                                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-500 border-t-transparent"></div>
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
                                                 ) : (
                                                     <Paperclip size={20} />
                                                 )}
@@ -622,7 +622,7 @@ const Chat = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowEmojiPicker(prev => !prev)}
-                                                className={`p-3 rounded-xl transition-all ${showEmojiPicker ? 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+                                                className={`p-3 rounded-xl transition-all ${showEmojiPicker ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
                                                 title="Add emoji"
                                             >
                                                 <Smile size={20} />
@@ -672,13 +672,13 @@ const Chat = () => {
                                                 value={newMessage}
                                                 onChange={(e) => setNewMessage(e.target.value)}
                                                 placeholder="Type your message..."
-                                                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-none rounded-[2rem] text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all"
+                                                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-none rounded-[2rem] text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 transition-all"
                                             />
                                         </div>
                                         <button
                                             type="submit"
                                             disabled={!newMessage.trim()}
-                                            className="p-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white rounded-full shadow-lg shadow-indigo-200 dark:shadow-none hover:scale-105 transition-all active:scale-95"
+                                            className="p-4 bg-[#0066CC] hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white rounded-full shadow-lg shadow-blue-200 dark:shadow-none hover:scale-105 transition-all active:scale-95"
                                         >
                                             <Send size={20} />
                                         </button>
@@ -729,9 +729,9 @@ const Chat = () => {
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center p-10 text-center space-y-6">
                                 <div className="relative">
-                                    <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full"></div>
+                                    <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full"></div>
                                     <div className="relative w-32 h-32 bg-white dark:bg-slate-800 rounded-[3rem] shadow-xl border border-slate-100 dark:border-slate-700 flex items-center justify-center">
-                                        <MessageSquare size={48} className="text-indigo-500" />
+                                        <MessageSquare size={48} className="text-[#0066CC]" />
                                     </div>
                                 </div>
                                 <div className="max-w-xs space-y-2">
@@ -739,7 +739,7 @@ const Chat = () => {
                                     <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Start a real-time discussion with your {currentUser.role === 'student' ? 'teachers' : 'students'}.</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <div className="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-800">Secure Messaging</div>
+                                    <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-[#0066CC] dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 dark:border-blue-800">Secure Messaging</div>
                                     <div className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-800">Real-Time</div>
                                 </div>
                             </div>

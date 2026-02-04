@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, Search, UserPlus, Edit2, X, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ManageFaculty = () => {
     const [faculty, setFaculty] = useState([]);
@@ -102,7 +103,7 @@ const ManageFaculty = () => {
             setFaculty(faculty.filter(f => f._id !== id));
         } catch (error) {
             console.error('Error deleting faculty:', error);
-            alert('Failed to delete faculty');
+            toast.error('Failed to delete faculty');
         }
     };
 

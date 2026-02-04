@@ -31,7 +31,7 @@ const BentoCard = ({ children, className, title, icon: Icon, delay = 0, onClick 
         transition={{ duration: 0.5, delay }}
         onClick={onClick}
         className={cn(
-            "relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 p-6 md:p-8 group",
+            "relative overflow-hidden rounded-[2.5rem] bg-[#F3F4F6] dark:bg-[#1A1F2E] backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 p-6 md:p-8 group",
             onClick && "cursor-pointer",
             className
         )}
@@ -40,13 +40,13 @@ const BentoCard = ({ children, className, title, icon: Icon, delay = 0, onClick 
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     {Icon && (
-                        <div className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-500 dark:bg-rose-400/10 dark:text-rose-400">
+                        <div className="p-2.5 rounded-2xl bg-[#2563EB]/10 dark:bg-[#60A5FA]/10 text-[#2563EB] dark:text-[#60A5FA]">
                             <Icon size={20} />
                         </div>
                     )}
-                    <h3 className="font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase text-xs">{title}</h3>
+                    <h3 className="font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight uppercase text-xs">{title}</h3>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-[#F1F3F7] dark:bg-[#2D3548] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                     <ArrowRight size={14} className="text-slate-400" />
                 </div>
             </div>
@@ -73,11 +73,11 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
             transition={{ duration: 0.8 }}
             className="relative col-span-1 md:col-span-2 lg:col-span-2 row-span-1 rounded-[3rem] overflow-hidden p-8 md:p-10 flex flex-col justify-between min-h-[350px] shadow-2xl shadow-indigo-500/10"
         >
-            {/* Animated Mesh Gradient Background - Royal Orchid palette */}
-            <div className="absolute inset-0 bg-rose-600">
-                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-fuchsia-500 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-400 rounded-full blur-[120px] animate-pulse delay-700" />
-                <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-rose-400 rounded-full blur-[100px] animate-pulse delay-1000" />
+            {/* Animated Mesh Gradient Background - Professional Blue palette */}
+            <div className="absolute inset-0 bg-[#2563EB] dark:bg-[#60A5FA]">
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-400 rounded-full blur-[120px] animate-pulse delay-700" />
+                <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-blue-300 rounded-full blur-[100px] animate-pulse delay-1000" />
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-between">
@@ -109,11 +109,11 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
                 </div>
 
                 <div className="flex flex-wrap gap-4 mt-12">
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-white/10 flex-1 min-w-[150px]">
+                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex-1 min-w-[150px]">
                         <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Assigned Courses</p>
                         <p className="text-4xl font-black text-white leading-none">{stats.totalCourses?.value || 0}</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-white/10 flex-1 min-w-[150px]">
+                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex-1 min-w-[150px]">
                         <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Scheduled Today</p>
                         <p className="text-4xl font-black text-white leading-none">{stats.classesToday?.value || 0}</p>
                     </div>
@@ -141,7 +141,7 @@ const ActivityWidget = ({ title, value, icon: Icon, variant = "indigo", onClick 
                 variants[variant]
             )}
         >
-            <div className="p-3 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-current opacity-20 group-hover:opacity-100">
+            <div className="p-3 rounded-2xl bg-[#E5E7EB]/50 dark:bg-[#1A1F2E]/50 backdrop-blur-sm border border-current opacity-20 group-hover:opacity-100">
                 <Icon size={24} />
             </div>
             <div>
@@ -206,7 +206,7 @@ const FacultyDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-rose-600 dark:bg-rose-500 overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-rose-500/20 relative group cursor-pointer"
+                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-[#2563EB] dark:bg-[#60A5FA] overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20 relative group cursor-pointer"
                             onClick={() => navigate('/faculty/courses')}
                         >
                             <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
@@ -227,7 +227,7 @@ const FacultyDashboard = () => {
                                     </div>
                                 </div>
                             </div>
-                            <button className="relative z-10 w-full mt-6 py-4 bg-white text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
+                            <button className="relative z-10 w-full mt-6 py-4 bg-white text-[#2563EB] dark:text-[#60A5FA] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
                                 Start Onboarding
                             </button>
                         </motion.div>
@@ -249,10 +249,10 @@ const FacultyDashboard = () => {
                         />
                         <button
                             onClick={() => navigate('/faculty/notifications')}
-                            className="col-span-2 group p-6 rounded-[2.5rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 border border-slate-900 dark:border-white shadow-xl shadow-indigo-500/10 flex items-center justify-between transition-transform active:scale-95"
+                            className="col-span-2 group p-6 rounded-[2.5rem] bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] border border-slate-900 dark:border-white shadow-xl shadow-indigo-500/10 flex items-center justify-between transition-transform active:scale-95"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-2xl bg-white/10 dark:bg-slate-900/10">
+                                <div className="p-3 rounded-2xl bg-[#E5E7EB]/10 dark:bg-[#1A1F2E]/10">
                                     <PlusCircle size={24} />
                                 </div>
                                 <div className="text-left">
@@ -267,10 +267,10 @@ const FacultyDashboard = () => {
                     <BentoCard title="Daily Schedule" icon={Calendar} className="lg:row-span-1">
                         <div className="space-y-4">
                             {data.todayClasses.length > 0 ? data.todayClasses.map((session, idx) => (
-                                <div key={idx} className="p-5 rounded-[2rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 group/item hover:border-indigo-500/30 transition-all cursor-pointer" onClick={() => navigate('/faculty/attendance', { state: { courseId: session.courseId } })}>
+                                <div key={idx} className="p-5 rounded-[2rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] group/item hover:border-indigo-500/30 transition-all cursor-pointer" onClick={() => navigate('/faculty/attendance', { state: { courseId: session.courseId } })}>
                                     <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-sm font-black text-slate-800 dark:text-slate-100 leading-tight line-clamp-1">{session.subject}</h4>
-                                        <div className="bg-indigo-500/10 text-indigo-500 p-1.5 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                        <h4 className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight line-clamp-1">{session.subject}</h4>
+                                        <div className="bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] p-1.5 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity">
                                             <ArrowRight size={12} />
                                         </div>
                                     </div>
@@ -280,14 +280,14 @@ const FacultyDashboard = () => {
                                     </div>
                                 </div>
                             )) : (
-                                <div className="py-12 text-center bg-slate-50 dark:bg-slate-800/30 rounded-[2rem] border border-dashed border-slate-200 dark:border-slate-700">
+                                <div className="py-12 text-center bg-[#E5E7EB] dark:bg-[#242B3D] rounded-[2rem] border border-dashed border-[#E2E5E9] dark:border-[#3D4556]">
                                     <Clock size={32} className="text-slate-300 mx-auto mb-3" />
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No classes today</p>
                                 </div>
                             )}
                             <button
                                 onClick={() => navigate('/faculty/timetable')}
-                                className="w-full mt-2 py-4 rounded-[2rem] bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-rose-500/20 transition"
+                                className="w-full mt-2 py-4 rounded-[2rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-500/20 transition"
                             >
                                 View Timeline
                             </button>
@@ -374,20 +374,20 @@ const FacultyDashboard = () => {
                 >
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {data.announcements.length > 0 ? data.announcements.slice(0, 3).map((a, idx) => (
-                            <div key={idx} className="p-6 rounded-[2.5rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex flex-col justify-between group/ann">
+                            <div key={idx} className="p-6 rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] flex flex-col justify-between group/ann">
                                 <div>
                                     <div className="flex justify-between items-start mb-5">
-                                        <span className="text-[10px] font-black px-3 py-1 bg-indigo-500 text-white rounded-full uppercase tracking-widest">Notice</span>
+                                        <span className="text-[10px] font-black px-3 py-1 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-full uppercase tracking-widest">Notice</span>
                                         <span className="text-[10px] font-bold text-slate-400">{new Date(a.date).toLocaleDateString()}</span>
                                     </div>
-                                    <h4 className="font-black text-slate-800 dark:text-white mb-3 text-base leading-tight group-hover/ann:text-indigo-500 transition-colors">{a.title}</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">{a.content}</p>
+                                    <h4 className="font-black text-[#0F1419] dark:text-[#E8EAED] mb-3 text-base leading-tight group-hover/ann:text-[#2563EB] dark:text-[#60A5FA] transition-colors">{a.title}</h4>
+                                    <p className="text-xs text-[#64748B] dark:text-[#868D9D] line-clamp-3 leading-relaxed">{a.content}</p>
                                 </div>
-                                <div className="mt-8 flex items-center gap-2 pt-5 border-t border-slate-200/50 dark:border-slate-700/50">
-                                    <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] font-black text-white">
+                                <div className="mt-8 flex items-center gap-2 pt-5 border-t border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
+                                    <div className="w-6 h-6 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] flex items-center justify-center text-[10px] font-black text-white">
                                         {a.author[0]}
                                     </div>
-                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{a.author}</span>
+                                    <span className="text-[10px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">{a.author}</span>
                                 </div>
                             </div>
                         )) : (

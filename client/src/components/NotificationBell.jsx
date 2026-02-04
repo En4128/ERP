@@ -167,7 +167,7 @@ const NotificationBell = ({ role }) => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={markAsRead}
-                                        className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 uppercase tracking-wider"
+                                        className="text-xs font-bold text-[#0066CC] dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 uppercase tracking-wider"
                                     >
                                         Mark all read
                                     </button>
@@ -193,7 +193,7 @@ const NotificationBell = ({ role }) => {
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.1 }}
                                             onClick={() => handleNotificationClick(n)}
-                                            className={`p-4 border-b border-gray-100 dark:border-slate-800 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${!n.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                                            className={`p-4 border-b border-gray-100 dark:border-slate-800 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${!n.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
                                         >
                                             <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">{n.title}</p>
                                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{n.content}</p>

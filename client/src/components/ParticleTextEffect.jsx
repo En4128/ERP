@@ -134,7 +134,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
     const mouseRef = useRef({ x: 0, y: 0, isPressed: false, isRightClick: false });
     const [dimensions, setDimensions] = useState({ width: 1000, height: 300, fontSize: 80 });
 
-    const pixelSteps = 6;
+    const pixelSteps = 4; // Reduced from 8 for denser particles and complete text
     const drawAsPoints = true;
 
     const resizeCanvas = () => {
@@ -197,8 +197,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
         offscreenCanvas.height = canvas.height;
         const offscreenCtx = offscreenCanvas.getContext('2d');
 
-        offscreenCtx.fillStyle = 'black';
-        offscreenCtx.font = `bold ${fontSize}px Arial`;
+        offscreenCtx.fillStyle = 'white';
+        offscreenCtx.font = `900 ${fontSize}px 'Inter', 'Segoe UI', Arial, sans-serif`; // Black weight (900) for better coverage
         offscreenCtx.textAlign = 'center';
         offscreenCtx.textBaseline = 'middle';
         offscreenCtx.fillText(word, canvas.width / 2, canvas.height / 2);
@@ -206,10 +206,10 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
         const imageData = offscreenCtx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imageData.data;
 
-        // Generate vibrant colors instead of gray
-        const hue = Math.random() * 360;
-        const saturation = 70 + Math.random() * 30; // 70-100%
-        const lightness = 40 + Math.random() * 20; // 40-60%
+        // Generate bright blue-cyan colors for dark background
+        const hue = 190 + Math.random() * 50; // 190 (cyan) to 240 (blue)
+        const saturation = 85 + Math.random() * 15;
+        const lightness = 70 + Math.random() * 15; // Brighter for visibility
 
         // Convert HSL to RGB
         const hslToRgb = (h, s, l) => {
@@ -263,7 +263,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
 
                     particle.maxSpeed = Math.random() * 6 + 4;
                     particle.maxForce = particle.maxSpeed * 0.05;
-                    particle.particleSize = Math.random() * 6 + 6;
+                    particle.particleSize = Math.random() * 5 + 5; // Larger particles for better visibility
                     particle.colorBlendRate = Math.random() * 0.0275 + 0.0025;
 
                     particles.push(particle);
@@ -294,8 +294,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
         const ctx = canvas.getContext('2d');
         const particles = particlesRef.current;
 
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (let i = particles.length - 1; i >= 0; i--) {
             const particle = particles[i];
@@ -326,7 +325,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className = '' }) {
         }
 
         frameCountRef.current++;
-        if (frameCountRef.current % 240 === 0) {
+        if (frameCountRef.current % 180 === 0) { // Faster word transitions (3 seconds instead of 4)
             wordIndexRef.current = (wordIndexRef.current + 1) % words.length;
             nextWord(words[wordIndexRef.current], canvas, dimensions.fontSize);
         }

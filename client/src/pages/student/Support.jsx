@@ -41,13 +41,13 @@ const Support = ({ role = "student" }) => {
             content: (
                 <div className="space-y-4 text-gray-600 dark:text-slate-300">
                     <p>Security is paramount. Here is how you can update your credentials:</p>
-                    <h4 className="font-bold text-slate-900 dark:text-white">If you are logged in:</h4>
+                    <h4 className="font-bold text-[#0F1419] dark:text-[#E8EAED]">If you are logged in:</h4>
                     <ul className="list-disc list-inside space-y-1 ml-2">
                         <li>Go to <strong>My Profile</strong> via the sidebar.</li>
                         <li>Scroll down to the <strong>Security</strong> section.</li>
                         <li>Click <strong>Change Password</strong>.</li>
                     </ul>
-                    <h4 className="font-bold text-slate-900 dark:text-white mt-4">If you cannot login:</h4>
+                    <h4 className="font-bold text-[#0F1419] dark:text-[#E8EAED] mt-4">If you cannot login:</h4>
                     <p>Click the "Forgot Password" link on the main login screen and follow the OTP verification process sent to your registered email.</p>
                 </div>
             )
@@ -57,12 +57,12 @@ const Support = ({ role = "student" }) => {
             content: (
                 <div className="space-y-4 text-gray-600 dark:text-slate-300">
                     <p>The Central Library is open from 8 AM to 8 PM on weekdays.</p>
-                    <h4 className="font-bold text-slate-900 dark:text-white">Borrowing Rules:</h4>
+                    <h4 className="font-bold text-[#0F1419] dark:text-[#E8EAED]">Borrowing Rules:</h4>
                     <ul className="list-disc list-inside space-y-1 ml-2">
                         <li>Undergraduate students can borrow up to <strong>3 books</strong> at a time.</li>
                         <li>Maximum borrowing period is <strong>14 days</strong>.</li>
                     </ul>
-                    <h4 className="font-bold text-slate-900 dark:text-white mt-4">Fines:</h4>
+                    <h4 className="font-bold text-[#0F1419] dark:text-[#E8EAED] mt-4">Fines:</h4>
                     <p>A fine of <strong>$1 per day</strong> is levied for overdue books. Books lost must be replaced or paid for at current market value.</p>
                 </div>
             )
@@ -100,15 +100,15 @@ const Support = ({ role = "student" }) => {
             <div className="animate-fade-in-up space-y-8">
                 {view === 'main' ? (
                     <>
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Help & Support</h2>
+                        <h2 className="text-3xl font-extrabold text-[#0F1419] dark:text-[#E8EAED]">Help & Support</h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 text-center hover:shadow-lg transition">
+                            <div className="bg-[#E5E7EB] dark:bg-[#242B3D] p-8 rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] text-center hover:shadow-lg transition">
                                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-700">
                                     <MessageSquare size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Chat with Us</h3>
-                                <p className="text-slate-600 dark:text-slate-400 mb-6">Start a conversation with our support team.</p>
+                                <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-2">Chat with Us</h3>
+                                <p className="text-[#64748B] dark:text-[#868D9D] mb-6">Start a conversation with our support team.</p>
                                 <button
                                     onClick={openChat}
                                     className="px-6 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition"
@@ -117,24 +117,24 @@ const Support = ({ role = "student" }) => {
                                 </button>
                             </div>
 
-                            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 text-center hover:shadow-lg transition">
+                            <div className="bg-[#E5E7EB] dark:bg-[#242B3D] p-8 rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] text-center hover:shadow-lg transition">
                                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600">
                                     <Phone size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Call Support</h3>
-                                <p className="text-slate-600 dark:text-slate-400 mb-6">Available 9 AM - 6 PM</p>
-                                <button className="px-6 py-2 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-white dark:hover:bg-slate-700 transition">+1 (800) 123-4567</button>
+                                <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-2">Call Support</h3>
+                                <p className="text-[#64748B] dark:text-[#868D9D] mb-6">Available 9 AM - 6 PM</p>
+                                <button className="px-6 py-2 border border-[#E2E5E9] dark:border-[#3D4556] text-[#475569] dark:text-[#B8BDC6] rounded-lg font-medium hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition">+1 (800) 123-4567</button>
                             </div>
 
-                            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 text-center hover:shadow-lg transition">
+                            <div className="bg-[#E5E7EB] dark:bg-[#242B3D] p-8 rounded-2xl shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] text-center hover:shadow-lg transition">
                                 <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
                                     <HelpCircle size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">FAQs</h3>
-                                <p className="text-slate-600 dark:text-slate-400 mb-6">Find answers to common questions.</p>
+                                <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-2">FAQs</h3>
+                                <p className="text-[#64748B] dark:text-[#868D9D] mb-6">Find answers to common questions.</p>
                                 <button
                                     onClick={() => setView('faq')}
-                                    className="px-6 py-2 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-white dark:hover:bg-slate-700 transition"
+                                    className="px-6 py-2 border border-[#E2E5E9] dark:border-[#3D4556] text-[#475569] dark:text-[#B8BDC6] rounded-lg font-medium hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition"
                                 >
                                     View FAQs
                                 </button>
@@ -142,16 +142,16 @@ const Support = ({ role = "student" }) => {
                         </div>
 
                         <div className="mt-8">
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Common Topics</h3>
+                            <h3 className="text-xl font-bold text-[#0F1419] dark:text-[#E8EAED] mb-4">Common Topics</h3>
                             <div className="space-y-3">
                                 {Object.keys(articles).map((topic, i) => (
                                     <button
                                         key={i}
                                         onClick={() => openArticle(topic)}
-                                        className="w-full bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 flex justify-between items-center cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition text-left group"
+                                        className="w-full bg-[#E5E7EB] dark:bg-[#242B3D] p-4 rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] flex justify-between items-center cursor-pointer hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition text-left group"
                                     >
                                         <span className="font-medium text-slate-700 dark:text-slate-200 flex items-center">
-                                            <FileText size={18} className="mr-3 text-gray-400 group-hover:text-blue-700 transition-colors" /> {topic}
+                                            <FileText size={18} className="mr-3 text-[#64748B] dark:text-[#868D9D] group-hover:text-blue-700 transition-colors" /> {topic}
                                         </span>
                                         <div className="text-blue-700 dark:text-blue-400 text-sm font-semibold flex items-center">
                                             Read Article <ArrowLeft className="ml-2 rotate-180" size={16} />
@@ -170,24 +170,24 @@ const Support = ({ role = "student" }) => {
                             <ArrowLeft size={20} className="mr-2" /> Back to Support
                         </button>
 
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Frequently Asked Questions</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mb-8">Quick answers to questions you may have.</p>
+                        <h2 className="text-3xl font-extrabold text-[#0F1419] dark:text-[#E8EAED] mb-2">Frequently Asked Questions</h2>
+                        <p className="text-[#64748B] dark:text-[#868D9D] mb-8">Quick answers to questions you may have.</p>
 
                         <div className="space-y-4">
                             {faqs.map((faq, index) => (
                                 <div
                                     key={index}
-                                    className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden transition-all duration-300"
+                                    className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-xl border border-[#E2E5E9] dark:border-[#3D4556] overflow-hidden transition-all duration-300"
                                 >
                                     <button
                                         onClick={() => toggleFaq(index)}
                                         className="w-full text-left p-5 flex justify-between items-center focus:outline-none"
                                     >
-                                        <span className="font-bold text-slate-900 dark:text-white text-lg">{faq.question}</span>
+                                        <span className="font-bold text-[#0F1419] dark:text-[#E8EAED] text-lg">{faq.question}</span>
                                         {expandedFaq === index ? (
                                             <ChevronUp className="text-blue-700 dark:text-blue-400" size={20} />
                                         ) : (
-                                            <ChevronDown className="text-gray-400" size={20} />
+                                            <ChevronDown className="text-[#64748B] dark:text-[#868D9D]" size={20} />
                                         )}
                                     </button>
 
@@ -212,12 +212,12 @@ const Support = ({ role = "student" }) => {
                         </button>
 
                         {selectedArticle && (
-                            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-slate-700 animate-fade-in-up">
+                            <div className="bg-[#E5E7EB] dark:bg-[#242B3D] rounded-2xl p-8 shadow-sm border border-[#E2E5E9] dark:border-[#3D4556] animate-fade-in-up">
                                 <div className="flex items-center mb-6">
                                     <div className="p-3 bg-blue-50 dark:bg-indigo-900/20 rounded-lg mr-4">
                                         <FileText size={28} className="text-blue-700 dark:text-blue-400" />
                                     </div>
-                                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{selectedArticle.title}</h1>
+                                    <h1 className="text-2xl font-bold text-[#0F1419] dark:text-[#E8EAED]">{selectedArticle.title}</h1>
                                 </div>
                                 <div className="prose dark:prose-invert max-w-none">
                                     {selectedArticle.content}
