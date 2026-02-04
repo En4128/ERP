@@ -8,6 +8,7 @@ import axios from 'axios';
 const NotificationBell = ({ role }) => {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [showClearMessage, setShowClearMessage] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -64,8 +65,14 @@ const NotificationBell = ({ role }) => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
+            // Set to empty array immediately
             setNotifications([]);
-            setIsOpen(false);
+
+            // Show success message
+            setShowClearMessage(true);
+            setTimeout(() => {
+                setShowClearMessage(false);
+            }, 3000);
         } catch (error) {
             console.error("Error clearing notifications:", error);
         }
@@ -200,6 +207,23 @@ const NotificationBell = ({ role }) => {
                             </div>
                         </motion.div>
                     </>
+                )}
+            </AnimatePresence>
+
+            {/* Success Message Toast */}
+            <AnimatePresence>
+                {showClearMessage && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-20 right-4 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="font-semibold text-sm">Notifications cleared successfully!</span>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>

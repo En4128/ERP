@@ -50,7 +50,7 @@ app.use('/api/search', require('./routes/searchRoutes'));
 
 
 app.get('/', (req, res) => {
-    res.send('Smart Campus ERP API is running...');
+    res.send('LearNex is running...');
 });
 
 // Start Server

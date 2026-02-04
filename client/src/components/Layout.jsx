@@ -15,6 +15,7 @@ const Layout = ({ children, role }) => {
 
     const [userName, setUserName] = useState(localStorage.getItem('userName') || 'User');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [profileImage, setProfileImage] = useState('');
 
     useEffect(() => {
         if (isDarkMode) {
@@ -37,12 +38,6 @@ const Layout = ({ children, role }) => {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const storedName = localStorage.getItem('userName');
-            if (storedName) {
-                setUserName(storedName);
-                return;
-            }
-
             try {
                 const token = localStorage.getItem('token');
                 if (!token) return;
@@ -50,17 +45,27 @@ const Layout = ({ children, role }) => {
                 const endpoint = role === 'student' ? '/api/student/profile' : role === 'faculty' ? '/api/faculty/profile' : null;
                 if (!endpoint) return;
 
+                console.log('Fetching profile from:', endpoint);
                 const res = await axios.get(`http://localhost:5000${endpoint}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
+                console.log('Profile response:', res.data);
                 const name = res.data.user?.name || res.data.name;
+                const image = res.data.user?.profileImage || res.data.profileImage;
+
+                console.log('Extracted name:', name);
+                console.log('Extracted image:', image);
+
                 if (name) {
                     setUserName(name);
                     localStorage.setItem('userName', name);
                 }
+                if (image) {
+                    setProfileImage(image);
+                }
             } catch (err) {
-                console.error("Error fetching name in layout:", err);
+                console.error("Error fetching profile in layout:", err);
             }
         };
 
@@ -103,7 +108,11 @@ const Layout = ({ children, role }) => {
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 p-1.5 rounded-full transition-colors pr-3 outline-none"
                             >
-                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt="Profile" className="w-9 h-9 rounded-full shadow-sm border-2 border-white dark:border-slate-700 ring-2 ring-gray-100 dark:ring-slate-800" />
+                                <img
+                                    src={profileImage ? `http://localhost:5000${profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+                                    alt="Profile"
+                                    className="w-9 h-9 rounded-full shadow-sm border-2 border-white dark:border-slate-700 ring-2 ring-gray-100 dark:ring-slate-800 object-cover"
+                                />
                                 <div className="hidden md:block text-right">
                                     <p className="text-sm font-semibold text-gray-700 dark:text-slate-200 leading-tight">{user.name}</p>
                                     <p className="text-xs text-gray-400 dark:text-slate-500 font-medium">{user.role}</p>

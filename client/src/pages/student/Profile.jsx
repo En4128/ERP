@@ -129,10 +129,22 @@ const Profile = () => {
         <Layout role="student">
             <div className="animate-fade-in-up max-w-5xl mx-auto space-y-8 pb-10">
                 <div className="relative mb-32">
-                    {/* Cover Background */}
-                    <div className="h-48 w-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-3xl opacity-90 overflow-hidden shadow-lg">
+                    {/* Cover Background with Glow Effect - Salt and Pepper Theme */}
+                    <div className="relative h-48 w-full rounded-3xl overflow-hidden shadow-2xl">
+                        {/* Animated Gradient Background - Light: Grayscale, Dark: Vibrant Colors */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-500 to-gray-700 dark:from-cyan-500 dark:via-teal-500 dark:to-blue-500 opacity-90 animate-gradient-x"></div>
+
+                        {/* Glow Effect Layer */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600 dark:from-cyan-400 dark:via-teal-400 dark:to-blue-400 blur-3xl opacity-60 animate-pulse-slow"></div>
+
+                        {/* Pattern Overlay */}
                         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+
+                        {/* Dark Gradient Overlay - Lighter in dark mode */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent dark:from-black/30 dark:to-transparent"></div>
+
+                        {/* Outer Glow - Adapts to theme */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-gray-300 via-gray-500 to-gray-700 dark:from-cyan-500 dark:via-teal-500 dark:to-blue-500 blur-2xl opacity-30 dark:opacity-50 -z-10"></div>
                     </div>
 
                     {/* Profile Header Card */}

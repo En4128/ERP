@@ -1,8 +1,9 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, LayoutDashboard, Calendar, FileText, CheckSquare, MessageSquare, Award, Briefcase, File, LogOut, Users, Bell, UserCircle, Clock, CreditCard } from "lucide-react";
 import { cn } from "../lib/utils";
+import axios from 'axios';
 
 // Context for Sidebar state
 const SidebarContext = createContext(undefined);
@@ -160,6 +161,44 @@ const SidebarLink = ({ link, className, ...props }) => {
 const SidebarComponent = ({ role }) => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const [userName, setUserName] = useState(localStorage.getItem('userName') || 'User');
+    const [profileImage, setProfileImage] = useState('');
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const storedName = localStorage.getItem('userName');
+            if (storedName) {
+                setUserName(storedName);
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const endpoint = role === 'student' ? '/api/student/profile' : role === 'faculty' ? '/api/faculty/profile' : null;
+                if (!endpoint) return;
+
+                const res = await axios.get(`http://localhost:5000${endpoint}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                const name = res.data.user?.name || res.data.name;
+                const image = res.data.user?.profileImage || res.data.profileImage;
+
+                if (name) {
+                    setUserName(name);
+                    localStorage.setItem('userName', name);
+                }
+                if (image) {
+                    setProfileImage(image);
+                }
+            } catch (err) {
+                console.error("Error fetching profile in sidebar:", err);
+            }
+        };
+
+        fetchProfile();
+    }, [role]);
 
     const links = {
         student: [
@@ -261,8 +300,8 @@ const SidebarComponent = ({ role }) => {
                     {/* Profile Minified */}
                     <div className="mt-2 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 px-2 overflow-hidden">
                         <img
-                            src={`https://ui-avatars.com/api/?name=User&background=6366f1&color=fff`}
-                            className="h-8 w-8 flex-shrink-0 rounded-full border-2 border-white dark:border-slate-800 shadow-sm"
+                            src={profileImage ? `http://localhost:5000${profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6366f1&color=fff`}
+                            className="h-8 w-8 flex-shrink-0 rounded-full border-2 border-white dark:border-slate-800 shadow-sm object-cover"
                             alt="Avatar"
                         />
                         <AnimatePresence mode="wait">
@@ -273,7 +312,7 @@ const SidebarComponent = ({ role }) => {
                                     exit={{ opacity: 0, x: -10 }}
                                     className="flex flex-col overflow-hidden"
                                 >
-                                    <span className="text-sm font-black text-slate-800 dark:text-white truncate">Connected</span>
+                                    <span className="text-sm font-black text-slate-800 dark:text-white truncate">{userName}</span>
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">{role}</span>
                                 </motion.div>
                             )}

@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import StudentProfileModal from '../../components/StudentProfileModal';
 
 // --- Premium UI Components ---
 
@@ -102,6 +103,8 @@ const FacultyCourses = () => {
     const [uploading, setUploading] = useState(false);
     const [materialFile, setMaterialFile] = useState(null);
     const [materialTitle, setMaterialTitle] = useState('');
+    const [viewingStudent, setViewingStudent] = useState(null);
+    const [studentProfileLoading, setStudentProfileLoading] = useState(false);
 
     useEffect(() => {
         fetchCourses();
@@ -254,6 +257,23 @@ const FacultyCourses = () => {
         }
     };
 
+    const handleViewProfile = async (studentId) => {
+        setViewingStudent({});
+        setStudentProfileLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:5000/api/faculty/students/${studentId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setViewingStudent(res.data.profile);
+        } catch (error) {
+            console.error("Error fetching student profile:", error);
+            setViewingStudent(null);
+        } finally {
+            setStudentProfileLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <Layout role="faculty">
@@ -270,6 +290,12 @@ const FacultyCourses = () => {
     return (
         <Layout role="faculty">
             <div className="max-w-[1600px] mx-auto p-3 md:p-6 space-y-6 animate-fade-in-up">
+                <StudentProfileModal
+                    isOpen={!!viewingStudent}
+                    onClose={() => setViewingStudent(null)}
+                    student={viewingStudent}
+                    loading={studentProfileLoading}
+                />
 
                 {viewMode === 'list' ? (
                     <>
@@ -441,8 +467,8 @@ const FacultyCourses = () => {
                                                 {/* Status Badge & Edit Button */}
                                                 <div className="flex flex-col items-end gap-3">
                                                     <span className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-full border ${course.isMarkedToday
-                                                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                            : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                        : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                                                         }`}>
                                                         {course.isMarkedToday ? "MARKED" : "PENDING"}
                                                     </span>
@@ -621,13 +647,6 @@ const FacultyCourses = () => {
                                                 <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter italic">Cohort Registry</h3>
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5 italic">Authorized Performance Analytics</p>
                                             </div>
-                                            <div className="relative w-full md:w-96">
-                                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                                <input
-                                                    placeholder="LOCATE IDENTITY..."
-                                                    className="w-full pl-14 pr-6 py-5 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
-                                                />
-                                            </div>
                                         </div>
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left border-collapse">
@@ -673,10 +692,10 @@ const FacultyCourses = () => {
                                                             </td>
                                                             <td className="px-8 py-5 text-right">
                                                                 <div className="flex justify-end gap-3">
-                                                                    <button className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-500 hover:bg-indigo-500/10 transition-all border border-transparent hover:border-indigo-500/20">
-                                                                        <MessageSquare size={16} />
-                                                                    </button>
-                                                                    <button className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+                                                                    <button
+                                                                        onClick={() => handleViewProfile(student._id)}
+                                                                        className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95"
+                                                                    >
                                                                         Detailed Audit
                                                                     </button>
                                                                 </div>

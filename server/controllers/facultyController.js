@@ -234,7 +234,7 @@ exports.getStudentDetail = async (req, res) => {
         const courseIds = courses.map(c => c._id);
 
         const student = await Student.findById(studentId)
-            .populate('user', 'name email profileImage')
+            .populate('user', 'name email profileImage phone address gender dob bio socialLinks')
             .populate('enrolledCourses', 'name code');
 
         if (!student) return res.status(404).json({ message: 'Student not found' });
