@@ -112,15 +112,15 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
                     </motion.div>
                 </div>
 
-                <div className="flex flex-wrap gap-4 mt-12">
+                <div className="grid grid-cols-2 gap-3 md:gap-4 mt-8 md:mt-12">
                     <div
                         onClick={() => navigate('/student/attendance')}
-                        className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px] cursor-pointer hover:bg-white/20 transition-colors"
+                        className="bg-white/10 backdrop-blur-md rounded-[1.5rem] md:rounded-[2rem] p-3 md:p-4 border border-white/10 flex flex-col justify-between cursor-pointer hover:bg-white/20 transition-colors"
                     >
-                        <p className="text-blue-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Attendance</p>
+                        <p className="text-blue-100/60 text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1">Attendance</p>
                         <div className="flex items-end gap-2">
-                            <p className="text-3xl font-black text-white leading-none">{stats.attendance}%</p>
-                            <div className="h-1.5 flex-1 bg-white/10 rounded-full mb-1 overflow-hidden">
+                            <p className="text-2xl md:text-3xl font-black text-white">{stats.attendance}%</p>
+                            <div className="h-1 flex-1 bg-white/10 rounded-full mb-1 sm:block hidden overflow-hidden">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${stats.attendance}%` }}
@@ -131,11 +131,10 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
                     </div>
                     <div
                         onClick={() => navigate('/student/results')}
-                        className="bg-white/10 backdrop-blur-md rounded-[2rem] p-4 border border-white/10 flex-1 min-w-[140px] cursor-pointer hover:bg-white/20 transition-colors"
+                        className="bg-white/10 backdrop-blur-md rounded-[1.5rem] md:rounded-[2rem] p-3 md:p-4 border border-white/10 flex flex-col justify-between cursor-pointer hover:bg-white/20 transition-colors"
                     >
-                        <p className="text-blue-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">CGPA Status</p>
-                        <p className="text-3xl font-black text-white leading-none">{stats.cgpa}</p>
-                        <p className="text-[10px] text-white/40 font-bold uppercase mt-1 tracking-wider">Out of 10.0</p>
+                        <p className="text-blue-100/60 text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1">CGPA Status</p>
+                        <p className="text-2xl md:text-3xl font-black text-white">{stats.cgpa}</p>
                     </div>
                 </div>
             </div>
@@ -269,22 +268,22 @@ const LeaveStatusWidget = ({ stats, navigate }) => (
         onClick={() => navigate('/student/leave')}
     >
         <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center justify-between p-4 rounded-3xl bg-amber-500/5 border border-amber-500/10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">
-                            <Clock size={16} />
+            <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2 p-4 rounded-3xl bg-amber-500/5 border border-amber-500/10">
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">
+                            <Clock size={12} />
                         </div>
-                        <span className="text-xs font-black text-[#0F1419] dark:text-[#E8EAED] uppercase tracking-tighter">Pending</span>
+                        <span className="text-[10px] font-black text-[#0F1419] dark:text-[#E8EAED] uppercase tracking-tighter">Pending</span>
                     </div>
                     <span className="text-xl font-black text-amber-600">{stats?.pending || 0}</span>
                 </div>
-                <div className="flex items-center justify-between p-4 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                            <CheckCircle2 size={16} />
+                <div className="flex flex-col gap-2 p-4 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                            <CheckCircle2 size={12} />
                         </div>
-                        <span className="text-xs font-black text-[#0F1419] dark:text-[#E8EAED] uppercase tracking-tighter">Approved</span>
+                        <span className="text-[10px] font-black text-[#0F1419] dark:text-[#E8EAED] uppercase tracking-tighter">Approved</span>
                     </div>
                     <span className="text-xl font-black text-emerald-600">{stats?.approved || 0}</span>
                 </div>
@@ -391,10 +390,10 @@ const DashboardPage = () => {
 
     return (
         <Layout role="student">
-            <div className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-6 md:space-y-8 animate-fade-in-up">
+            <div className="max-w-[1600px] mx-auto p-3 md:p-8 space-y-4 md:space-y-8 animate-fade-in-up">
 
                 {/* Bento Layer 1: Hero & High Priority */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-1 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 md:gap-6">
 
                     {/* Hero Section */}
                     <MeshGradientHero name={studentName} stats={stats} navigate={navigate} />
@@ -423,22 +422,22 @@ const DashboardPage = () => {
                         delay={0.4}
                         onClick={() => navigate('/student/attendance')}
                     >
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 md:gap-6 mt-2">
                             {attendanceOverview.slice(0, 4).map((item, idx) => {
                                 const percent = item.total > 0 ? Math.round((item.attended / item.total) * 100) : 0;
                                 return (
-                                    <div key={idx} className="p-6 rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] transition-transform hover:translate-y-[-4px]">
-                                        <div className="flex justify-between items-center mb-5">
+                                    <div key={idx} className="p-4 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] transition-transform hover:translate-y-[-4px]">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 sm:mb-5">
                                             <div>
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Subject</p>
-                                                <p className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED] truncate max-w-[160px]">{item.subject}</p>
+                                                <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Subject</p>
+                                                <p className="text-[10px] md:text-sm font-black text-[#0F1419] dark:text-[#E8EAED] truncate max-w-[80px] md:max-w-[160px]">{item.subject}</p>
                                             </div>
                                             <div className={cn(
-                                                "w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black",
+                                                "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center text-[10px] md:text-sm font-black",
                                                 percent >= 75 ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
                                             )}>{percent}%</div>
                                         </div>
-                                        <div className="w-full bg-[#E2E5E9] dark:bg-[#3D4556] rounded-full h-2 overflow-hidden">
+                                        <div className="w-full bg-[#E2E5E9] dark:bg-[#3D4556] rounded-full h-1.5 md:h-2 overflow-hidden">
                                             <motion.div
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${percent}%` }}
@@ -449,8 +448,8 @@ const DashboardPage = () => {
                                                 )}
                                             />
                                         </div>
-                                        <p className="text-[10px] text-slate-400 font-bold mt-3 text-right">
-                                            {item.attended} / {item.total} CLASSES
+                                        <p className="text-[8px] md:text-[10px] text-slate-400 font-bold mt-2 md:mt-3 text-right">
+                                            {item.attended} / {item.total} CLASS
                                         </p>
                                     </div>
                                 );
@@ -467,19 +466,19 @@ const DashboardPage = () => {
                     >
                         <div className="space-y-3">
                             {grades.length > 0 ? grades.map((grade, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-4 rounded-3xl bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-[#2563EB] dark:bg-[#60A5FA] text-white flex items-center justify-center font-black text-lg shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
+                                <div key={idx} className="flex items-center justify-between p-3 md:p-4 rounded-[1.5rem] md:rounded-3xl bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
+                                    <div className="flex items-center gap-3 md:gap-4">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-[#2563EB] dark:bg-[#60A5FA] text-white flex items-center justify-center font-black text-sm md:text-lg shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
                                             {grade.grade}
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black text-[#0F1419] dark:text-[#E8EAED] line-clamp-1">{grade.subject}</p>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Verified Entry</p>
+                                            <p className="text-[10px] md:text-xs font-black text-[#0F1419] dark:text-[#E8EAED] line-clamp-1">{grade.subject}</p>
+                                            <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Verified</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-xs font-black text-[#0F1419] dark:text-[#E8EAED]">{grade.marks}</p>
-                                        <div className="w-8 h-1 bg-[#E2E5E9] dark:bg-[#3D4556] rounded-full mt-1 ml-auto overflow-hidden">
+                                        <p className="text-[10px] md:text-xs font-black text-[#0F1419] dark:text-[#E8EAED]">{grade.marks}</p>
+                                        <div className="w-6 md:w-8 h-1 bg-[#E2E5E9] dark:bg-[#3D4556] rounded-full mt-1 ml-auto overflow-hidden">
                                             <div className="h-full bg-[#2563EB] dark:bg-[#60A5FA]" style={{ width: `${(grade.marks / grade.maxMarks) * 100}%` }} />
                                         </div>
                                     </div>
@@ -516,28 +515,28 @@ const DashboardPage = () => {
                     >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                             {announcements.slice(0, 2).map((notice, idx) => (
-                                <div key={idx} className="p-6 rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] flex flex-col justify-between group/ann">
+                                <div key={idx} className="p-4 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] flex flex-col justify-between group/ann">
                                     <div>
-                                        <div className="flex items-center justify-between mb-5">
+                                        <div className="flex items-center justify-between mb-3 md:mb-5">
                                             <span className={cn(
-                                                "text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest",
+                                                "text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 rounded-full uppercase tracking-widest",
                                                 notice.type === 'urgent' ? "bg-rose-500 text-white" : "bg-[#2563EB] dark:bg-[#60A5FA] text-white"
                                             )}>{notice.type}</span>
-                                            <div className="w-8 h-8 rounded-full bg-[#E5E7EB] dark:bg-[#242B3D] flex items-center justify-center opacity-0 group-hover/ann:opacity-100 transition-opacity">
-                                                <ArrowRight size={14} className="text-[#2563EB] dark:text-[#60A5FA]" />
+                                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-[#E5E7EB] dark:bg-[#242B3D] flex items-center justify-center opacity-0 group-hover/ann:opacity-100 transition-opacity">
+                                                <ArrowRight size={12} md:size={14} className="text-[#2563EB] dark:text-[#60A5FA]" />
                                             </div>
                                         </div>
-                                        <h4 className="font-black text-[#0F1419] dark:text-[#E8EAED] mb-3 leading-[1.2] line-clamp-2 text-base">{notice.title}</h4>
-                                        <p className="text-xs text-[#64748B] dark:text-[#868D9D] line-clamp-3 leading-relaxed">{notice.content}</p>
+                                        <h4 className="font-black text-[#0F1419] dark:text-[#E8EAED] mb-2 md:mb-3 leading-[1.2] line-clamp-2 text-sm md:text-base">{notice.title}</h4>
+                                        <p className="text-[10px] md:text-xs text-[#64748B] dark:text-[#868D9D] line-clamp-2 md:line-clamp-3 leading-relaxed">{notice.content}</p>
                                     </div>
-                                    <div className="mt-8 flex items-center justify-between pt-5 border-t border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] flex items-center justify-center text-[10px] font-black text-white">
+                                    <div className="mt-6 md:mt-8 flex items-center justify-between pt-4 md:pt-5 border-t border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
+                                        <div className="flex items-center gap-1.5 md:gap-2">
+                                            <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] flex items-center justify-center text-[8px] md:text-[10px] font-black text-white">
                                                 {notice.author[0]}
                                             </div>
-                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{notice.author}</span>
+                                            <span className="text-[8px] md:text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{notice.author}</span>
                                         </div>
-                                        <span className="text-[10px] font-bold text-slate-400">{new Date(notice.date).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                                        <span className="text-[8px] md:text-[10px] font-bold text-slate-400">{new Date(notice.date).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
                                     </div>
                                 </div>
                             ))}

@@ -71,7 +71,7 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="relative col-span-1 md:col-span-2 lg:col-span-2 row-span-1 rounded-[3rem] overflow-hidden p-8 md:p-10 flex flex-col justify-between min-h-[350px] shadow-2xl shadow-indigo-500/10"
+            className="relative col-span-1 md:col-span-2 lg:col-span-2 row-span-1 rounded-[2rem] md:rounded-[3rem] overflow-hidden p-6 md:p-10 flex flex-col justify-between min-h-[300px] md:min-h-[350px] shadow-2xl shadow-indigo-500/10"
         >
             {/* Animated Mesh Gradient Background - Professional Blue palette */}
             <div className="absolute inset-0 bg-[#2563EB] dark:bg-[#60A5FA]">
@@ -90,11 +90,11 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
                             className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit mb-4"
                         >
                             <Sparkles size={14} className="text-amber-300" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">{formattedDate}</span>
+                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/90">{formattedDate}</span>
                         </motion.div>
-                        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">
+                        <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-white tracking-tighter leading-[0.9]">
                             Welcome, <br />
-                            <span className="text-indigo-200">Prof. {name.split(' ').pop()}</span>
+                            <span className="text-indigo-200 truncate block">Prof. {name.split(' ').pop()}</span>
                         </h1>
                     </div>
 
@@ -102,20 +102,20 @@ const MeshGradientHero = ({ name, stats, navigate }) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-white/10 backdrop-blur-xl px-6 py-6 rounded-[3rem] border border-white/20 flex items-center justify-center shadow-2xl shadow-black/5"
+                        className="bg-white/10 backdrop-blur-xl px-4 py-4 md:px-6 md:py-6 rounded-[2rem] md:rounded-[3rem] border border-white/20 flex items-center justify-center shadow-2xl shadow-black/5"
                     >
-                        <p className="text-white font-black text-xl tracking-tighter tabular-nums leading-none">{formattedTime}</p>
+                        <p className="text-white font-black text-base md:text-xl tracking-tighter tabular-nums leading-none">{formattedTime}</p>
                     </motion.div>
                 </div>
 
-                <div className="flex flex-wrap gap-4 mt-12">
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex-1 min-w-[150px]">
-                        <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Assigned Courses</p>
-                        <p className="text-4xl font-black text-white leading-none">{stats.totalCourses?.value || 0}</p>
+                <div className="flex gap-4 mt-8 md:mt-12">
+                    <div className="bg-white/10 backdrop-blur-md rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex-1 min-w-0">
+                        <p className="text-indigo-100/60 text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1.5 truncate">Assigned Courses</p>
+                        <p className="text-2xl md:text-4xl font-black text-white leading-none">{stats.totalCourses?.value || 0}</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md rounded-[2rem] p-5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex-1 min-w-[150px]">
-                        <p className="text-indigo-100/60 text-[10px] font-black uppercase tracking-widest mb-1.5">Scheduled Today</p>
-                        <p className="text-4xl font-black text-white leading-none">{stats.classesToday?.value || 0}</p>
+                    <div className="bg-white/10 backdrop-blur-md rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex-1 min-w-0">
+                        <p className="text-indigo-100/60 text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1.5 truncate">Scheduled Today</p>
+                        <p className="text-2xl md:text-4xl font-black text-white leading-none">{stats.classesToday?.value || 0}</p>
                     </div>
                 </div>
             </div>
@@ -233,7 +233,7 @@ const FacultyDashboard = () => {
                         </motion.div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4 lg:col-span-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-2 lg:col-span-1">
                         <ActivityWidget
                             title="Pending Evals"
                             icon={ClipboardList}
@@ -249,15 +249,15 @@ const FacultyDashboard = () => {
                         />
                         <button
                             onClick={() => navigate('/faculty/notifications')}
-                            className="col-span-2 group p-6 rounded-[2.5rem] bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] border border-slate-900 dark:border-white shadow-xl shadow-indigo-500/10 flex items-center justify-between transition-transform active:scale-95"
+                            className="sm:col-span-2 group p-6 rounded-[2rem] md:rounded-[2.5rem] bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] border border-slate-900 dark:border-white shadow-xl shadow-indigo-500/10 flex items-center justify-between transition-transform active:scale-95"
                         >
                             <div className="flex items-center gap-4">
                                 <div className="p-3 rounded-2xl bg-[#E5E7EB]/10 dark:bg-[#1A1F2E]/10">
                                     <PlusCircle size={24} />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-white/60 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest">Action Center</p>
-                                    <p className="font-black">Create Announcement</p>
+                                    <p className="text-white/60 dark:text-slate-400 text-[8px] md:text-[10px] font-black uppercase tracking-widest">Action Center</p>
+                                    <p className="font-black text-sm md:text-base">Create Announcement</p>
                                 </div>
                             </div>
                             <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />

@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import Sidebar, { SidebarProvider, useSidebar } from './Sidebar';
 import ChatbotWidget from './ChatbotWidget';
 import NotificationBell from './NotificationBell';
-import { Menu, Moon, Sun, Settings, LogOut, User } from 'lucide-react';
+import { Menu, Moon, Sun, Settings, LogOut, User, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
-const Layout = ({ children, role }) => {
+const LayoutContent = ({ children, role }) => {
     const navigate = useNavigate();
     const [isDarkMode, setIsDarkMode] = useState(() => {
         return localStorage.getItem('theme') === 'dark';
     });
 
+    const { setOpen } = useSidebar();
     const [userName, setUserName] = useState(localStorage.getItem('userName') || 'User');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [profileImage, setProfileImage] = useState('');
@@ -45,17 +46,12 @@ const Layout = ({ children, role }) => {
                 const endpoint = role === 'student' ? '/api/student/profile' : role === 'faculty' ? '/api/faculty/profile' : null;
                 if (!endpoint) return;
 
-                console.log('Fetching profile from:', endpoint);
                 const res = await axios.get(`http://localhost:5000${endpoint}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                console.log('Profile response:', res.data);
                 const name = res.data.user?.name || res.data.name;
                 const image = res.data.user?.profileImage || res.data.profileImage;
-
-                console.log('Extracted name:', name);
-                console.log('Extracted image:', image);
 
                 if (name) {
                     setUserName(name);
@@ -72,98 +68,115 @@ const Layout = ({ children, role }) => {
         fetchProfile();
     }, [role]);
 
-
     const user = { name: userName, role: role || 'Student' };
 
     return (
-        <div className="flex flex-col md:flex-row bg-[#F5F7FA] dark:bg-slate-950 min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300 overflow-hidden">
+        <div className="flex flex-col md:flex-row bg-[#F5F7FA] dark:bg-slate-950 h-screen font-sans selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300 overflow-hidden">
             <Sidebar role={role} />
-            <div className="flex-1 flex flex-col h-screen overflow-hidden">
-                {/* Header */}
-                <header className="bg-white/80 dark:bg-slate-900/90 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-slate-800 p-4 sticky top-0 z-30 flex justify-between items-center px-8 transition-all duration-300">
-                    <div className="flex items-center space-x-4">
-                        <div>
-                            <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-50 dark:to-slate-300">
-                                Welcome Back, <span className="text-[#0066CC] dark:text-blue-400 drop-shadow-sm">{user.name}</span>
-                            </h2>
-                            <p className="text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider">Have a productive day!</p>
+            <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Header Container */}
+                <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 shadow-sm border-b border-gray-100 dark:border-slate-800 transition-all duration-300">
+                    {/* Row 1: Brand (Mobile Only) */}
+                    <div className="md:hidden h-14 bg-slate-900 border-b border-white/5 flex items-center justify-between px-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-1.5 bg-slate-800 rounded-lg shadow-lg border border-white/10">
+                                <img src="/logo-light.jpg" alt="Logo" className="w-5 h-5 object-contain" />
+                            </div>
+                            <h1 className="font-black text-white tracking-widest uppercase text-xs">LearNex</h1>
                         </div>
+                        <button
+                            onClick={() => setOpen(true)}
+                            className="p-2 text-white/50 hover:text-white transition-colors"
+                        >
+                            <Menu size={20} />
+                        </button>
                     </div>
 
-                    <div className="flex items-center space-x-6">
+                    {/* Row 2: Greeting & Actions */}
+                    <div className="backdrop-blur-md bg-white/70 dark:bg-slate-900/70 p-3 md:p-4 flex justify-between items-center px-4 md:px-8">
+                        <div className="flex items-center space-x-3 md:space-x-4">
+                            <div className="w-1 md:w-1.5 h-8 bg-blue-600 dark:bg-blue-500 rounded-full md:block hidden"></div>
+                            <div>
+                                <h2 className="text-sm md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-50 dark:to-slate-300">
+                                    Welcome, <span className="text-[#0066CC] dark:text-blue-400">{user.name.split(' ')[0]}</span>
+                                </h2>
+                                <p className="text-[10px] md:text-xs text-gray-400 dark:text-slate-500 font-bold uppercase tracking-wider leading-none mt-0.5">Academic Portal</p>
+                            </div>
+                        </div>
 
-                        <div className="w-px h-8 bg-gray-200 dark:bg-slate-800 mx-2"></div>
-
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 rounded-full text-gray-500 dark:text-cyan-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                        </button>
-
-                        <NotificationBell role={role} />
-
-                        <div className="relative">
+                        <div className="flex items-center space-x-3 md:space-x-4">
                             <button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 p-1.5 rounded-full transition-colors pr-3 outline-none"
+                                onClick={toggleTheme}
+                                className="p-2 rounded-full text-gray-500 dark:text-cyan-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300 dark:shadow-[0_0_15px_-3px_rgba(34,211,238,0.2)] bg-slate-50 dark:bg-slate-800/50"
                             >
-                                <img
-                                    src={profileImage ? `http://localhost:5000${profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
-                                    alt="Profile"
-                                    className="w-9 h-9 rounded-full shadow-sm border-2 border-white dark:border-slate-700 ring-2 ring-gray-100 dark:ring-slate-800 object-cover"
-                                />
-                                <div className="hidden md:block text-right">
-                                    <p className="text-sm font-semibold text-gray-700 dark:text-slate-200 leading-tight">{user.name}</p>
-                                    <p className="text-xs text-gray-400 dark:text-slate-500 font-medium">{user.role}</p>
-                                </div>
+                                {isDarkMode ? <Sun size={18} className="drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" /> : <Moon size={18} />}
                             </button>
 
-                            <AnimatePresence>
-                                {isDropdownOpen && (
-                                    <>
-                                        <div
-                                            className="fixed inset-0 z-40"
-                                            onClick={() => setIsDropdownOpen(false)}
+                            <NotificationBell role={role} />
+
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="flex items-center cursor-pointer hover:scale-105 transition-all outline-none"
+                                >
+                                    <div className="relative">
+                                        <img
+                                            src={profileImage ? `http://localhost:5000${profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0066CC&color=fff&rounded=true`}
+                                            alt="Profile"
+                                            className="w-9 h-9 md:w-10 md:h-10 rounded-full shadow-[0_0_15px_rgba(0,102,204,0.3)] border-2 border-white dark:border-slate-800 object-cover"
                                         />
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 z-50 overflow-hidden"
-                                        >
-                                            <div className="p-4 border-b border-gray-100 dark:border-slate-800">
-                                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
-                                                <p className="text-xs text-slate-500 truncate">{user.role}</p>
-                                            </div>
-                                            <div className="p-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setIsDropdownOpen(false);
-                                                        navigate(user.role === 'faculty' ? '/faculty/profile' : '/student/profile');
-                                                    }}
-                                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
-                                                >
-                                                    <Settings size={16} /> Settings
-                                                </button>
-                                                <button
-                                                    onClick={handleLogout}
-                                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors"
-                                                >
-                                                    <LogOut size={16} /> Logout
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    </>
-                                )}
-                            </AnimatePresence>
+                                    </div>
+                                    <div className="hidden md:block text-right ml-3">
+                                        <p className="text-sm font-semibold text-gray-700 dark:text-slate-200 leading-tight">{user.name}</p>
+                                        <p className="text-xs text-gray-400 dark:text-slate-500 font-medium">{user.role}</p>
+                                    </div>
+                                </button>
+                                <AnimatePresence>
+                                    {isDropdownOpen && (
+                                        <>
+                                            <div
+                                                className="fixed inset-0 z-40"
+                                                onClick={() => setIsDropdownOpen(false)}
+                                            />
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 z-50 overflow-hidden"
+                                            >
+                                                <div className="p-4 border-b border-gray-100 dark:border-slate-800">
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
+                                                    <p className="text-xs text-slate-500 truncate">{user.role}</p>
+                                                </div>
+                                                <div className="p-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsDropdownOpen(false);
+                                                            navigate(user.role === 'faculty' ? '/faculty/profile' : '/student/profile');
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                                                    >
+                                                        <Settings size={16} /> Settings
+                                                    </button>
+                                                    <button
+                                                        onClick={handleLogout}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors"
+                                                    >
+                                                        <LogOut size={16} /> Logout
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        </>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
                 </header>
 
                 {/* Main Content Area */}
-                <main className="flex-1 p-8 overflow-y-auto relative z-0 scroll-smooth">
+                <main className="flex-1 p-4 md:p-8 overflow-y-auto relative z-0 scroll-smooth">
                     {/* Content Background Decor */}
                     <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-teal-50/50 dark:from-teal-900/20 to-transparent pointer-events-none -z-10"></div>
 
@@ -175,6 +188,14 @@ const Layout = ({ children, role }) => {
                 <ChatbotWidget />
             </div>
         </div>
+    );
+};
+
+const Layout = (props) => {
+    return (
+        <SidebarProvider>
+            <LayoutContent {...props} />
+        </SidebarProvider>
     );
 };
 

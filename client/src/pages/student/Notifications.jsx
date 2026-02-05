@@ -116,27 +116,43 @@ const Notifications = () => {
     return (
         <Layout role="student">
             <div className="animate-fade-in-up max-w-4xl mx-auto space-y-8 pb-10">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h2 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Broadcasting Hub</h2>
-                        <p className="text-[#64748B] dark:text-[#868D9D] mt-1 font-medium italic">Stay updated with the latest campus announcements.</p>
-                    </div>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex space-x-2 bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50 backdrop-blur-sm p-1.5 rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556] w-fit shadow-sm">
-                    {['all', 'unread', 'urgent'].map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab
-                                ? 'bg-amber-500 text-white shadow-lg'
-                                : 'text-[#64748B] dark:text-[#868D9D] hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548]'
-                                }`}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-3 md:space-y-4 text-center md:text-left">
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-3 py-1.5 md:px-4 md:py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit mx-auto md:mx-0"
                         >
-                            {tab}
-                        </button>
-                    ))}
+                            <Sparkles size={12} md:size={14} className="text-indigo-500" />
+                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Broadcasting Hub</span>
+                        </motion.div>
+                        <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
+                            Smart <br />
+                            <span className="text-indigo-400">Notices</span>
+                        </h1>
+                    </div>
+
+                    <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth">
+                        {[
+                            { id: 'all', label: 'All Stream', icon: Bell },
+                            { id: 'unread', label: 'New Only', icon: Mail },
+                            { id: 'urgent', label: 'Critical', icon: AlertTriangle },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={cn(
+                                    "flex items-center gap-2.5 px-6 md:px-8 py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                                    activeTab === tab.id
+                                        ? "bg-amber-500 text-white shadow-xl shadow-amber-500/20"
+                                        : "bg-[#F3F4F6] dark:bg-[#2D3548] text-slate-400 dark:text-[#868D9D] border border-[#E2E5E9] dark:border-[#3D4556] hover:text-amber-500"
+                                )}
+                            >
+                                <tab.icon size={14} />
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -150,26 +166,29 @@ const Notifications = () => {
                                 onClick={() => setSelectedNotice(notif)}
                                 className={`p-6 rounded-3xl border flex items-start space-x-5 transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer active:scale-[0.98] ${getBgColor(notif.type)}`}
                             >
-                                <div className="p-3 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-2xl shadow-sm flex-shrink-0">
-                                    {getIcon(notif.type)}
+                                <div className="p-3.5 md:p-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-xl md:rounded-2xl shadow-sm flex-shrink-0">
+                                    <Bell size={18} md:size={24} className="text-indigo-500" />
                                 </div>
-                                <div className="flex-1">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <h3 className={`font-black text-lg ${notif.read ? 'text-[#475569] dark:text-[#B8BDC6]' : 'text-gray-900 dark:text-white'}`}>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <h3 className={cn(
+                                                "font-black text-sm md:text-xl tracking-tight truncate",
+                                                notif.read ? 'text-[#475569] dark:text-[#B8BDC6]' : 'text-[#0F1419] dark:text-white'
+                                            )}>
                                                 {notif.title}
                                             </h3>
-                                            <div className="flex items-center gap-3 mt-1">
-                                                <span className="text-[10px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest flex items-center gap-1">
+                                            <div className="flex items-center gap-3 mt-1 underline-offset-4">
+                                                <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                                     <Clock size={12} /> {formatTime(notif.date)}
                                                 </span>
-                                                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full uppercase tracking-widest">
-                                                    By {notif.author}
+                                                <span className="text-[8px] md:text-[10px] font-black text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-full uppercase tracking-widest border border-indigo-500/20">
+                                                    Via {notif.author}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-600 dark:text-slate-400 mt-4 leading-relaxed font-medium line-clamp-2">
+                                    <p className="text-[11px] md:text-sm text-slate-500 dark:text-[#868D9D] mt-3 md:mt-4 leading-relaxed font-bold line-clamp-2 md:line-clamp-3">
                                         {notif.content}
                                     </p>
                                 </div>
@@ -209,55 +228,59 @@ const Notifications = () => {
                         >
                             <div className={`h-2 w-full bg-gradient-to-r ${getBgColor(selectedNotice.type).includes('red') ? 'from-red-500 to-rose-600' : 'from-indigo-500 to-purple-600'}`}></div>
 
-                            <div className="p-10">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className="p-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-2xl shadow-inner text-blue-700">
-                                        {getIcon(selectedNotice.type)}
+                            <div className="p-8 md:p-12">
+                                <div className="flex justify-between items-start mb-8 md:mb-10">
+                                    <div className="p-3.5 md:p-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-xl md:rounded-2xl shadow-inner text-indigo-500">
+                                        <Bell size={20} md:size={24} />
                                     </div>
                                     <button
                                         onClick={() => { stopSpeaking(); setSelectedNotice(null); }}
-                                        className="p-3 hover:bg-gray-100 hover:bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl transition-all text-[#64748B] dark:text-[#868D9D]"
+                                        className="p-3 bg-[#F1F3F7] dark:bg-[#2D3548] text-slate-400 rounded-xl hover:rotate-90 transition-all duration-300"
                                     >
-                                        <X size={24} />
+                                        <X size={20} md:size={24} />
                                     </button>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight">
-                                        {selectedNotice.title}
-                                    </h2>
+                                <div className="space-y-6 md:space-y-10">
+                                    <div className="space-y-4">
+                                        <h2 className="text-2xl md:text-5xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none">
+                                            {selectedNotice.title}
+                                        </h2>
 
-                                    <div className="flex items-center gap-4 text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.2em] py-4 border-y border-[#E2E5E9] dark:border-[#3D4556]">
-                                        <div className="flex items-center gap-2">
-                                            <Clock size={14} />
-                                            {new Date(selectedNotice.date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Users size={14} />
-                                            By {selectedNotice.author}
+                                        <div className="flex flex-wrap items-center gap-4 text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] py-5 border-y border-[#E2E5E9] dark:border-[#3D4556]">
+                                            <div className="flex items-center gap-2.5">
+                                                <Clock size={14} className="text-indigo-500" />
+                                                {new Date(selectedNotice.date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
+                                            </div>
+                                            <div className="flex items-center gap-2.5">
+                                                <Users size={14} className="text-indigo-500" />
+                                                Authored by {selectedNotice.author}
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="relative group p-8 bg-[#E5E7EB]/50 dark:bg-[#1A1F2E]/50 rounded-[2rem] border border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
-                                        <p className="text-gray-600 dark:text-slate-300 text-lg leading-relaxed font-medium whitespace-pre-wrap pr-16">
+                                    <div className="relative group p-8 md:p-12 bg-[#F1F3F7] dark:bg-[#1A1F2E]/50 rounded-[2rem] border border-[#E2E5E9] dark:border-[#3D4556] shadow-inner">
+                                        <p className="text-sm md:text-xl font-bold text-[#475569] dark:text-[#B8BDC6] leading-relaxed whitespace-pre-wrap">
                                             {selectedNotice.content}
                                         </p>
 
                                         <button
                                             onClick={(e) => { e.stopPropagation(); isSpeaking ? stopSpeaking() : handleSpeak(selectedNotice.title, selectedNotice.content); }}
-                                            className={`absolute right-4 top-4 p-5 rounded-[1.5rem] shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isSpeaking ? 'bg-rose-500 text-white animate-pulse' : 'bg-amber-500 text-white shadow-indigo-100 dark:shadow-none'}`}
-                                            title={isSpeaking ? "Stop Reading" : "Read Aloud"}
+                                            className={cn(
+                                                "absolute bottom-4 right-4 md:-right-6 md:top-1/2 md:-translate-y-1/2 p-5 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl transition-all transform hover:scale-110 active:scale-95 z-10",
+                                                isSpeaking ? "bg-rose-500 text-white animate-pulse" : "bg-indigo-600 text-white"
+                                            )}
                                         >
-                                            <Volume2 size={28} />
+                                            <Volume2 size={24} md:size={32} />
                                         </button>
                                     </div>
 
-                                    <div className="pt-4">
+                                    <div className="pt-6">
                                         <button
                                             onClick={() => handleMarkAsRead(selectedNotice.id)}
-                                            className="w-full py-5 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 dark:shadow-none transition transform active:scale-[0.98] flex items-center justify-center gap-2"
+                                            className="w-full py-5 md:py-6 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl md:rounded-[2.5rem] text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-500/20 transition transform active:scale-[0.98] flex items-center justify-center gap-3"
                                         >
-                                            <CheckCircle size={20} /> Mark as Read & Close
+                                            <CheckCircle2 size={20} /> Terminate & Close
                                         </button>
                                     </div>
                                 </div>

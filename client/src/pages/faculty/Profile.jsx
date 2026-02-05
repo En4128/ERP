@@ -222,14 +222,14 @@ const FacultyProfile = () => {
 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4 text-center md:text-left">
                         <motion.div
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-4 py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit"
+                            className="flex items-center gap-2 bg-indigo-500/10 dark:bg-indigo-400/10 px-3 py-1.5 md:px-4 md:py-1.5 rounded-full border border-indigo-200/50 dark:border-indigo-800/50 w-fit mx-auto md:mx-0"
                         >
-                            <Sparkles size={14} className="text-indigo-500" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Identity Passport</span>
+                            <Sparkles size={12} md:size={14} className="text-indigo-500" />
+                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Identity Passport</span>
                         </motion.div>
                         <h1 className="text-4xl md:text-6xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-[0.9]">
                             Personal <br />
@@ -239,22 +239,22 @@ const FacultyProfile = () => {
 
                     <button
                         onClick={() => editing ? handleSave() : setEditing(true)}
-                        className="px-8 py-4 bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all flex items-center gap-3"
+                        className="w-full md:w-auto px-8 py-4 bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-600/20 active:scale-95 transition-all flex items-center justify-center gap-3"
                     >
-                        {editing ? <><Save size={16} /> Synchronize Data</> : <><Edit3 size={16} /> Modify Identity</>}
+                        {editing ? <><Save size={16} /> Save Changes</> : <><Edit3 size={16} /> Modify Profile</>}
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
 
                     {/* Perspective Sidebar */}
-                    <div className="space-y-8">
-                        <GlassCard className="p-10 text-center relative overflow-hidden">
+                    <div className="space-y-6 md:space-y-8">
+                        <GlassCard className="p-6 md:p-10 text-center relative overflow-hidden">
                             <div className="absolute top-[-20%] right-[-20%] w-[150px] h-[150px] bg-indigo-500/10 rounded-full blur-[60px]" />
 
-                            <div className="relative inline-block mb-8 group">
-                                <div className="w-40 h-40 rounded-[3rem] bg-indigo-600 p-1.5 shadow-2xl shadow-indigo-600/30">
-                                    <div className="w-full h-full bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[2.8rem] flex items-center justify-center overflow-hidden relative">
+                            <div className="relative inline-block mb-6 md:mb-8 group">
+                                <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] md:rounded-[3rem] bg-indigo-600 p-1 md:p-1.5 shadow-2xl shadow-indigo-600/30">
+                                    <div className="w-full h-full bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[2.3rem] md:rounded-[2.8rem] flex items-center justify-center overflow-hidden relative">
                                         <img
                                             src={profile.user.profileImage ? `http://localhost:5000${profile.user.profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.user.name)}&size=200&background=6366f1&color=fff&bold=true`}
                                             alt="Profile"
@@ -262,7 +262,7 @@ const FacultyProfile = () => {
                                         />
                                         {uploading && (
                                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                             </div>
                                         )}
                                     </div>
@@ -276,23 +276,23 @@ const FacultyProfile = () => {
                                 />
                                 <button
                                     onClick={() => fileInputRef.current.click()}
-                                    className="absolute bottom-2 right-2 p-3.5 bg-[#E5E7EB] dark:bg-[#242B3D] border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-indigo-600 shadow-xl hover:scale-110 active:scale-95 transition-all z-10"
+                                    className="absolute bottom-1 right-1 md:bottom-2 md:right-2 p-3 md:p-3.5 bg-[#E5E7EB] dark:bg-[#242B3D] border-2 md:border-4 border-white dark:border-slate-900 rounded-xl md:rounded-[1.5rem] text-indigo-600 shadow-xl hover:scale-110 active:scale-95 transition-all z-10"
                                 >
-                                    <Camera size={18} />
+                                    <Camera size={14} md:size={18} />
                                 </button>
                                 {profile.user.profileImage && (
                                     <button
                                         onClick={handleRemoveImage}
-                                        className="absolute bottom-2 left-2 p-3.5 bg-rose-500 border-4 border-white dark:border-slate-900 rounded-[1.5rem] text-white shadow-xl hover:scale-110 active:scale-95 transition-all z-10"
+                                        className="absolute bottom-1 left-1 md:bottom-2 md:left-2 p-3 md:p-3.5 bg-rose-500 border-2 md:border-4 border-white dark:border-slate-900 rounded-xl md:rounded-[1.5rem] text-white shadow-xl hover:scale-110 active:scale-95 transition-all z-10"
                                     >
-                                        <Trash2 size={18} />
+                                        <Trash2 size={14} md:size={18} />
                                     </button>
                                 )}
                             </div>
 
 
-                            <h3 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter mb-1.5 leading-none">{profile.user.name}</h3>
-                            <p className="text-indigo-500 font-black tracking-[0.2em] text-[10px] uppercase mb-8">{profile.designation} <br /> <span className="text-slate-400">{profile.department} Unit</span></p>
+                            <h3 className="text-xl md:text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter mb-1.5 leading-none truncate px-2">{profile.user.name}</h3>
+                            <p className="text-indigo-500 font-black tracking-[0.2em] text-[8px] md:text-[10px] uppercase mb-6 md:mb-8">{profile.designation} <br /> <span className="text-slate-400">{profile.department} Unit</span></p>
 
                             <div className="flex justify-center">
                                 <span className="bg-emerald-500/10 text-emerald-600 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/20 flex items-center gap-2">
@@ -301,7 +301,7 @@ const FacultyProfile = () => {
                             </div>
                         </GlassCard>
 
-                        <GlassCard className="p-8 space-y-6">
+                        <GlassCard className="p-8 md:p-10 space-y-6 md:space-y-8">
                             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-3">
                                 <BookOpen size={16} className="text-indigo-600" /> Assigned Courses
                             </h4>
@@ -329,9 +329,9 @@ const FacultyProfile = () => {
                     </div>
 
                     {/* Meta Information */}
-                    <div className="lg:col-span-2 space-y-8">
-                        <GlassCard className="p-10">
-                            <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mb-10 border-b border-[#E2E5E9] dark:border-[#3D4556] pb-6">Professional Vector</h4>
+                    <div className="lg:col-span-2 space-y-6 md:space-y-8">
+                        <GlassCard className="p-8 md:p-12">
+                            <h4 className="text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mb-8 md:mb-10 border-b border-[#E2E5E9] dark:border-[#3D4556] pb-6">Professional Vector</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 <DetailItem
                                     icon={Briefcase}
@@ -388,8 +388,8 @@ const FacultyProfile = () => {
 
                         </GlassCard>
 
-                        <GlassCard className="p-10">
-                            <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mb-10 border-b border-[#E2E5E9] dark:border-[#3D4556] pb-6">Synchronization Channels</h4>
+                        <GlassCard className="p-8 md:p-12">
+                            <h4 className="text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mb-8 md:mb-10 border-b border-[#E2E5E9] dark:border-[#3D4556] pb-6">Synchronization Channels</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 <DetailItem icon={Mail} label="Secure Relay" value={profile.user.email} delay={0.5} />
                                 <DetailItem icon={Phone} label="Voice Vector" value={editing ? editFormData.phone : profile.user.phone} delay={0.6} editing={editing} name="phone" onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })} />
@@ -399,9 +399,9 @@ const FacultyProfile = () => {
                             </div>
                         </GlassCard>
 
-                        <GlassCard className="p-10 relative overflow-hidden bg-slate-900 text-white border-none shadow-2xl shadow-indigo-900/20">
+                        <GlassCard className="p-8 md:p-12 relative overflow-hidden bg-slate-900 text-white border-none shadow-2xl shadow-indigo-900/20">
                             <div className="absolute top-[-50%] left-[-10%] w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[80px]" />
-                            <h4 className="text-[11px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.4em] mb-6 relative z-10">Abstract / Biography</h4>
+                            <h4 className="text-[10px] md:text-[11px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-[0.4em] mb-6 relative z-10">Abstract / Biography</h4>
                             {editing ? (
                                 <textarea
                                     value={editFormData.bio}

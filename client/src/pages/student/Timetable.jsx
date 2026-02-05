@@ -116,36 +116,37 @@ const Timetable = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8"
                 >
-                    <div>
-                        <div className="flex items-center gap-2 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400 font-black tracking-widest uppercase text-xs mb-3">
+                    <div className="text-center md:text-left">
+                        <div className="flex items-center justify-center md:justify-start gap-2 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400 font-black tracking-widest uppercase text-[10px] md:text-xs mb-3">
                             <Calendar size={14} />
                             Academic Schedule
                         </div>
-                        <h1 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Your Weekly <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] dark:from-[#60A5FA] to-blue-600 dark:from-blue-400 dark:to-blue-400">Timetable</span></h1>
-                        <div className="flex items-center gap-3 mt-4">
-                            <div className="px-3 py-1 bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-300 rounded-full text-xs font-black border border-blue-500/20 flex items-center gap-2">
+                        <h1 className="text-3xl md:text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Your Weekly <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] dark:from-[#60A5FA] to-blue-600 dark:from-blue-400 dark:to-blue-400">Timetable</span></h1>
+                        <div className="flex items-center justify-center md:justify-start gap-3 mt-4">
+                            <div className="px-3 py-1 bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-300 rounded-full text-[10px] md:text-xs font-black border border-blue-500/20 flex items-center gap-2">
                                 <BookOpen size={12} />
                                 {student?.department || 'Computer Science'}
                             </div>
-                            <div className="px-3 py-1 bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D] rounded-full text-xs font-black border border-[#E2E5E9] dark:border-[#3D4556]">
+                            <div className="px-3 py-1 bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D] rounded-full text-[10px] md:text-xs font-black border border-[#E2E5E9] dark:border-[#3D4556]">
                                 Semester {student?.sem || '4'}
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
+                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth -mx-4 px-4 md:mx-0 md:px-0">
                         {days.map((day) => (
                             <button
                                 key={day}
                                 onClick={() => setActiveDay(day)}
-                                className={`px-6 py-2.5 rounded-2xl text-sm font-black transition-all duration-300 whitespace-nowrap border-2 shadow-sm ${activeDay === day
+                                className={`px-5 md:px-6 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[10px] md:text-sm font-black transition-all duration-300 whitespace-nowrap border-2 shadow-sm ${activeDay === day
                                     ? 'bg-[#2563EB] dark:bg-[#60A5FA] border-[#2563EB] dark:border-[#60A5FA] text-white shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20 dark:shadow-none scale-105'
                                     : 'bg-[#F3F4F6] dark:bg-[#1A1F2E] text-[#64748B] dark:text-[#868D9D] border-transparent hover:border-[#2563EB]/30 dark:border-[#60A5FA]/30 dark:hover:border-slate-800'
                                     }`}
                             >
-                                {day}
+                                {day.substring(0, 3)}
+                                <span className="hidden md:inline">{day.substring(3)}</span>
                                 {day === currentDayName && (
-                                    <span className="ml-2 w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] dark:bg-blue-400 inline-block animate-pulse" />
+                                    <span className="ml-1.5 md:ml-2 w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] dark:bg-blue-400 inline-block animate-pulse" />
                                 )}
                             </button>
                         ))}
@@ -179,12 +180,12 @@ const Timetable = () => {
 
                                             <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
                                                 {/* Time and Type */}
-                                                <div className="flex flex-row md:flex-col items-center md:items-start space-x-4 md:space-x-0 md:space-y-2 min-w-[140px]">
-                                                    <div className="flex items-center space-x-2 py-1.5 px-3 bg-[#E5E7EB]/60 dark:bg-[#242B3D]/60 rounded-xl border border-[#E2E5E9]/40 dark:border-[#3D4556]/40 shadow-sm">
-                                                        <Clock size={14} className="opacity-70" />
-                                                        <span className="text-sm font-black tracking-tight">{session.startTime}</span>
+                                                <div className="flex flex-row md:flex-col items-center md:items-start space-x-3 md:space-x-0 md:space-y-2 min-w-[120px] md:min-w-[140px]">
+                                                    <div className="flex items-center space-x-2 py-1 md:py-1.5 px-2.5 md:px-3 bg-[#E5E7EB]/60 dark:bg-[#242B3D]/60 rounded-lg md:rounded-xl border border-[#E2E5E9]/40 dark:border-[#3D4556]/40 shadow-sm">
+                                                        <Clock size={12} md:size={14} className="opacity-70" />
+                                                        <span className="text-[10px] md:text-sm font-black tracking-tight">{session.startTime}</span>
                                                     </div>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50 px-1">{session.type || 'CLASS'}</span>
+                                                    <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-50 px-1">{session.type || 'CLASS'}</span>
                                                 </div>
 
                                                 {/* Course Details */}
@@ -195,21 +196,21 @@ const Timetable = () => {
                                                     <h3 className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight">{session.courseName}</h3>
 
                                                     <div className="flex flex-wrap gap-4">
-                                                        <div className="flex items-center text-xs font-bold opacity-60">
-                                                            <MapPin size={14} className="mr-1.5 text-blue-500" />
+                                                        <div className="flex items-center text-[10px] md:text-xs font-bold opacity-60">
+                                                            <MapPin size={12} md:size={14} className="mr-1 md:mr-1.5 text-blue-500" />
                                                             {session.room}
                                                         </div>
-                                                        <div className="flex items-center text-xs font-bold opacity-60">
-                                                            <User size={14} className="mr-1.5 text-blue-400" />
+                                                        <div className="flex items-center text-[10px] md:text-xs font-bold opacity-60">
+                                                            <User size={12} md:size={14} className="mr-1 md:mr-1.5 text-blue-400" />
                                                             {session.faculty || 'Unassigned'}
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Right Action/Indicator */}
-                                                <div className="flex items-center justify-end">
-                                                    <div className="p-3 bg-[#E5E7EB]/50 dark:bg-[#242B3D]/50 rounded-2xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all duration-500">
-                                                        <ChevronRight className="opacity-40 group-hover:opacity-100" />
+                                                <div className="flex items-center justify-end md:static absolute bottom-6 right-6">
+                                                    <div className="p-2 md:p-3 bg-[#E5E7EB]/50 dark:bg-[#242B3D]/50 rounded-xl md:rounded-2xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all duration-500">
+                                                        <ChevronRight className="opacity-40 group-hover:opacity-100" size={16} md:size={20} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -291,60 +292,60 @@ const Timetable = () => {
                                 className="relative w-full max-w-lg bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-[3rem] overflow-hidden shadow-2xl border border-[#E2E5E9] dark:border-[#3D4556]"
                             >
                                 {/* Modal Header Decoration */}
-                                <div className={`h-24 bg-gradient-to-r ${colors[selectedSession.type?.toUpperCase()] || colors.default} relative flex items-center justify-center`}>
+                                <div className={`h-16 md:h-24 bg-gradient-to-r ${colors[selectedSession.type?.toUpperCase()] || colors.default} relative flex items-center justify-center`}>
                                     <div className="absolute inset-0 bg-[#F3F4F6]/20 dark:bg-[#1A1F2E]/20"></div>
-                                    <h4 className="relative text-white font-black tracking-widest uppercase text-xs">Session Details</h4>
+                                    <h4 className="relative text-white font-black tracking-widest uppercase text-[10px] md:text-xs">Session Details</h4>
                                     <button
                                         onClick={() => setSelectedSession(null)}
-                                        className="absolute right-6 top-6 p-2 bg-[#F1F3F7]/20 dark:bg-[#2D3548]/20 hover:bg-[#F1F3F7]/40 dark:bg-[#2D3548]/40 rounded-full text-white transition-colors"
+                                        className="absolute right-4 md:right-6 top-4 md:top-6 p-1.5 md:p-2 bg-[#F1F3F7]/20 dark:bg-[#2D3548]/20 hover:bg-[#F1F3F7]/40 dark:bg-[#2D3548]/40 rounded-full text-white transition-colors"
                                     >
-                                        <X size={20} />
+                                        <X size={16} md:size={20} />
                                     </button>
                                 </div>
 
-                                <div className="p-8 space-y-8">
+                                <div className="p-6 md:p-8 space-y-6 md:space-y-8">
                                     {/* Subject Info */}
                                     <div className="space-y-2">
-                                        <span className="text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400 uppercase tracking-widest">{selectedSession.type} SESSION</span>
-                                        <h3 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight">{selectedSession.courseName}</h3>
+                                        <span className="text-[8px] md:text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400 uppercase tracking-widest">{selectedSession.type} SESSION</span>
+                                        <h3 className="text-xl md:text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight">{selectedSession.courseName}</h3>
                                         <div className="flex items-center space-x-2">
-                                            <span className="px-2 py-0.5 bg-[#E5E7EB] dark:bg-[#242B3D] text-[#64748B] dark:text-[#868D9D] rounded-md text-[10px] font-black border border-[#E2E5E9] dark:border-[#3D4556]">{selectedSession.courseCode}</span>
-                                            <span className="text-sm font-bold text-slate-400 italic">Semester {selectedSession.semester}</span>
+                                            <span className="px-2 py-0.5 bg-[#E5E7EB] dark:bg-[#242B3D] text-[#64748B] dark:text-[#868D9D] rounded-md text-[8px] md:text-[10px] font-black border border-[#E2E5E9] dark:border-[#3D4556]">{selectedSession.courseCode}</span>
+                                            <span className="text-[10px] md:text-sm font-bold text-slate-400 italic">Semester {selectedSession.semester}</span>
                                         </div>
                                     </div>
 
                                     {/* Detail Grid */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556]">
-                                            <div className="flex items-center space-x-2 text-blue-500 mb-2">
-                                                <User size={16} />
-                                                <span className="text-[10px] font-black uppercase tracking-tight">Faculty Name</span>
+                                    <div className="grid grid-cols-2 gap-3 md:gap-4">
+                                        <div className="p-3 md:p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-xl md:rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556]">
+                                            <div className="flex items-center space-x-2 text-blue-500 mb-1.5 md:mb-2">
+                                                <User size={14} md:size={16} />
+                                                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-tight">Faculty Name</span>
                                             </div>
-                                            <p className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{selectedSession.faculty || 'Unassigned'}</p>
+                                            <p className="text-[11px] md:text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{selectedSession.faculty || 'Unassigned'}</p>
                                         </div>
 
-                                        <div className="p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556]">
-                                            <div className="flex items-center space-x-2 text-blue-500 mb-2">
-                                                <MapPin size={16} />
-                                                <span className="text-[10px] font-black uppercase tracking-tight">Room Number</span>
+                                        <div className="p-3 md:p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-xl md:rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556]">
+                                            <div className="flex items-center space-x-2 text-blue-500 mb-1.5 md:mb-2">
+                                                <MapPin size={14} md:size={16} />
+                                                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-tight">Room Number</span>
                                             </div>
-                                            <p className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{selectedSession.room}</p>
+                                            <p className="text-[11px] md:text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{selectedSession.room}</p>
                                         </div>
 
-                                        <div className="p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556] col-span-2">
-                                            <div className="flex items-center space-x-2 text-[#2563EB] dark:text-[#60A5FA] mb-2">
-                                                <Building2 size={16} />
-                                                <span className="text-[10px] font-black uppercase tracking-tight">Building Location</span>
+                                        <div className="p-3 md:p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-xl md:rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556] col-span-2">
+                                            <div className="flex items-center space-x-2 text-[#2563EB] dark:text-[#60A5FA] mb-1.5 md:mb-2">
+                                                <Building2 size={14} md:size={16} />
+                                                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-tight">Building Location</span>
                                             </div>
-                                            <p className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{getBuilding(selectedSession.room)}</p>
+                                            <p className="text-[11px] md:text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{getBuilding(selectedSession.room)}</p>
                                         </div>
 
-                                        <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-500/20 col-span-2 flex items-center justify-between">
-                                            <div className="flex items-center space-x-3 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">
-                                                <Clock size={20} />
-                                                <span className="text-lg font-black">{selectedSession.startTime} - {selectedSession.endTime}</span>
+                                        <div className="p-3 md:p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl md:rounded-2xl border border-blue-500/20 col-span-2 flex items-center justify-between">
+                                            <div className="flex items-center space-x-2 md:space-x-3 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">
+                                                <Clock size={16} md:size={20} />
+                                                <span className="text-sm md:text-lg font-black">{selectedSession.startTime} - {selectedSession.endTime}</span>
                                             </div>
-                                            <span className="text-[10px] font-black px-2 py-1 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-lg">LIVE SESSION</span>
+                                            <span className="text-[8px] md:text-[10px] font-black px-1.5 md:px-2 py-0.5 md:py-1 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-md md:rounded-lg">LIVE</span>
                                         </div>
                                     </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Mail, Lock, ChevronRight, Loader2, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
@@ -352,15 +352,14 @@ const Login = () => {
                             </motion.div>
                         </form>
 
-                        {/* Footer Links */}
                         <motion.div
                             variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
                             className="mt-12 text-center"
                         >
-                            <a href="#" className="relative inline-block text-slate-500 hover:text-indigo-400 text-[10px] font-bold tracking-[0.3em] uppercase transition-colors group">
+                            <Link to="/forgot-password" size="sm" className="relative inline-block text-slate-500 hover:text-indigo-400 text-[10px] font-bold tracking-[0.3em] uppercase transition-colors group">
                                 Forgot Password?
                                 <span className="absolute bottom-[-6px] left-0 w-full h-[1px] bg-indigo-400/40 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
-                            </a>
+                            </Link>
                         </motion.div>
                     </motion.div>
                 </motion.div>

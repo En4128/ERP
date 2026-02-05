@@ -125,19 +125,20 @@ const FacultyTimetable = () => {
                 </div>
 
                 {/* Day Selection Tabs */}
-                <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+                <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
                     {days.map((day) => (
                         <button
                             key={day}
                             onClick={() => setCurrentDay(day)}
                             className={cn(
-                                "px-10 py-5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border",
+                                "px-6 md:px-10 py-3 md:py-5 rounded-xl md:rounded-[1.5rem] text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border",
                                 currentDay === day
                                     ? "bg-[#2563EB] dark:bg-[#60A5FA] text-white border-[#2563EB] dark:border-[#60A5FA] shadow-xl shadow-blue-600/20"
                                     : "bg-[#F3F4F6] dark:bg-[#1A1F2E] text-slate-400 dark:text-slate-600 border-[#E2E5E9] dark:border-[#3D4556] hover:border-[#2563EB] dark:border-[#60A5FA] hover:text-[#2563EB] dark:text-[#60A5FA]"
                             )}
                         >
-                            {day}
+                            {day.substring(0, 3)}
+                            <span className="hidden md:inline">{day.substring(3)}</span>
                         </button>
                     ))}
                 </div>
@@ -146,45 +147,45 @@ const FacultyTimetable = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                     {/* Perspective Summary */}
-                    <div className="space-y-6">
-                        <GlassCard className="p-8">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Day Overview</h3>
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556]">
-                                    <div className="p-3 rounded-2xl bg-blue-500 text-white shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
-                                        <BookOpen size={20} />
+                    <div className="space-y-4 md:space-y-6">
+                        <GlassCard className="p-6 md:p-8">
+                            <h3 className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest mb-4 md:mb-6">Day Overview</h3>
+                            <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6">
+                                <div className="flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-2xl md:rounded-[1.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556]">
+                                    <div className="p-2 md:p-3 rounded-xl md:rounded-2xl bg-blue-500 text-white shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
+                                        <BookOpen size={16} md:size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">{dayTimetable.length}</p>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Planned Units</p>
+                                        <p className="text-xl md:text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">{dayTimetable.length}</p>
+                                        <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">Units</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556]">
-                                    <div className="p-3 rounded-2xl bg-blue-500 text-white shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
-                                        <Zap size={20} />
+                                <div className="flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-2xl md:rounded-[1.5rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556]">
+                                    <div className="p-2 md:p-3 rounded-xl md:rounded-2xl bg-blue-500 text-white shadow-lg shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20">
+                                        <Zap size={16} md:size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">Active</p>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Next Class</p>
+                                        <p className="text-xl md:text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">Active</p>
+                                        <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">Next</p>
                                     </div>
                                 </div>
                             </div>
                         </GlassCard>
 
-                        <GlassCard className="p-8 bg-slate-900 text-white border-none shadow-2xl shadow-blue-900/20 overflow-hidden relative">
+                        <GlassCard className="p-6 md:p-8 bg-slate-900 text-white border-none shadow-2xl shadow-blue-900/20 overflow-hidden relative">
                             <div className="absolute top-[-20%] right-[-20%] w-[100px] h-[100px] bg-blue-500/20 rounded-full blur-[40px]" />
-                            <h3 className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest mb-6 relative z-10">Room Allocation</h3>
-                            <div className="space-y-4 relative z-10">
+                            <h3 className="text-[8px] md:text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest mb-4 md:mb-6 relative z-10">Room Allocation</h3>
+                            <div className="space-y-3 md:space-y-4 relative z-10">
                                 {[...new Set(dayTimetable.map(s => s.room))].map((room, i) => (
-                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 hover:bg-white/10 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <MapPin size={14} className="text-blue-400" />
-                                            <span className="text-xs font-black tracking-widest uppercase">{room}</span>
+                                    <div key={i} className="flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 hover:bg-white/10 transition-colors">
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <MapPin size={12} md:size={14} className="text-blue-400" />
+                                            <span className="text-[10px] md:text-xs font-black tracking-widest uppercase">{room}</span>
                                         </div>
-                                        <ArrowRight size={12} className="opacity-40" />
+                                        <ArrowRight size={10} md:size={12} className="opacity-40" />
                                     </div>
                                 ))}
-                                {dayTimetable.length === 0 && <p className="text-xs font-bold text-[#64748B] dark:text-[#868D9D] italic">No rooms assigned.</p>}
+                                {dayTimetable.length === 0 && <p className="text-[10px] md:text-xs font-bold text-[#64748B] dark:text-[#868D9D] italic text-center">No assignments.</p>}
                             </div>
                         </GlassCard>
                     </div>
@@ -211,35 +212,35 @@ const FacultyTimetable = () => {
                                                 className="relative group"
                                             >
                                                 {/* Node Circle */}
-                                                <div className="absolute -left-[30px] top-8 w-4 h-4 rounded-full bg-[#E5E7EB] dark:bg-[#1A1F2E] border-2 border-[#2563EB] dark:border-[#60A5FA] z-10 shadow-sm group-hover:scale-125 transition-transform" />
+                                                <div className="absolute -left-[26px] md:-left-[30px] top-6 md:top-8 w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#E5E7EB] dark:bg-[#1A1F2E] border-2 border-[#2563EB] dark:border-[#60A5FA] z-10 shadow-sm group-hover:scale-125 transition-transform" />
 
                                                 {/* Content Component */}
-                                                <GlassCard className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 group-hover:border-[#2563EB]/50 dark:border-[#60A5FA]/50 transition-all">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="p-5 rounded-[2rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] border border-blue-500/20 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all shadow-sm">
-                                                            <BookOpen size={28} />
+                                                <GlassCard className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 group-hover:border-[#2563EB]/50 dark:border-[#60A5FA]/50 transition-all">
+                                                    <div className="flex items-center gap-4 md:gap-6">
+                                                        <div className="p-3 md:p-5 rounded-2xl md:rounded-[2rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] border border-blue-500/20 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all shadow-sm">
+                                                            <BookOpen size={20} md:size={28} />
                                                         </div>
                                                         <div>
-                                                            <p className="text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] uppercase tracking-[0.2em] mb-1">Session {idx + 1}</p>
-                                                            <h4 className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight leading-none mb-3">{slot.courseName}</h4>
-                                                            <div className="flex flex-wrap items-center gap-4">
-                                                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-[#E2E5E9] dark:border-[#3D4556] px-3 py-1 rounded-full bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50">
-                                                                    <Clock size={12} /> {slot.startTime} - {slot.endTime}
+                                                            <p className="text-[8px] md:text-[10px] font-black text-[#2563EB] dark:text-[#60A5FA] uppercase tracking-[0.2em] mb-1">Session {idx + 1}</p>
+                                                            <h4 className="text-lg md:text-2xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight leading-none mb-2 md:mb-3">{slot.courseName}</h4>
+                                                            <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                                                                <div className="flex items-center gap-1.5 md:gap-2 text-[8px] md:text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-[#E2E5E9] dark:border-[#3D4556] px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50">
+                                                                    <Clock size={10} md:size={12} /> {slot.startTime} - {slot.endTime}
                                                                 </div>
-                                                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-[#E2E5E9] dark:border-[#3D4556] px-3 py-1 rounded-full bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50">
-                                                                    <MapPin size={12} /> Room {slot.room}
+                                                                <div className="flex items-center gap-1.5 md:gap-2 text-[8px] md:text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest border border-[#E2E5E9] dark:border-[#3D4556] px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50">
+                                                                    <MapPin size={10} md:size={12} /> Rm {slot.room}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex flex-col items-end gap-3 border-t md:border-t-0 md:border-l border-[#E2E5E9] dark:border-[#3D4556] pt-6 md:pt-0 md:pl-10">
-                                                        <span className="px-4 py-1.5 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] text-[10px] font-black uppercase tracking-widest">
+                                                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 border-t md:border-t-0 md:border-l border-[#E2E5E9] dark:border-[#3D4556] pt-4 md:pt-0 md:pl-10">
+                                                        <span className="px-3 md:px-4 py-1 md:py-1.5 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] text-[8px] md:text-[10px] font-black uppercase tracking-widest">
                                                             {slot.type} Class
                                                         </span>
                                                         <div className="flex items-center gap-2">
-                                                            <Users size={14} className="text-slate-400" />
-                                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Synchronized</span>
+                                                            <Users size={12} md:size={14} className="text-slate-400" />
+                                                            <span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Synced</span>
                                                         </div>
                                                     </div>
                                                 </GlassCard>

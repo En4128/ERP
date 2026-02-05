@@ -4,6 +4,8 @@ import { AnimatePresence } from 'framer-motion';
 import PageLoader from './components/PageLoader';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import AdminDashboard from './pages/admin/Dashboard';
 import StudentDashboard from './pages/student/Dashboard';
 import StudentAttendance from './pages/student/Attendance';
@@ -62,6 +64,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
 
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/attendance" element={<StudentAttendance />} />

@@ -73,25 +73,7 @@ const DesktopSidebar = ({ className, children, ...props }) => {
 const MobileSidebar = ({ className, children, ...props }) => {
     const { open, setOpen } = useSidebar();
     return (
-        <div
-            className={cn(
-                "h-16 px-6 py-4 flex flex-row md:hidden items-center justify-between bg-white dark:bg-slate-900 w-full border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50"
-            )}
-            {...props}
-        >
-            <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden flex items-center justify-center">
-                    <img src="/logo-light.jpg" alt="LearNex" className="w-8 h-8 block dark:hidden object-contain" />
-                    <img src="/logo-dark.jpg" alt="LearNex" className="w-8 h-8 hidden dark:block object-contain" />
-                </div>
-                <h1 className="font-black text-slate-800 dark:text-white tracking-tight uppercase text-xs">LearNex</h1>
-            </div>
-            <div className="flex justify-end z-[60]">
-                <Menu
-                    className="text-slate-800 dark:text-slate-200 cursor-pointer"
-                    onClick={() => setOpen(!open)}
-                />
-            </div>
+        <div className="md:hidden">
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -121,14 +103,20 @@ const MobileSidebar = ({ className, children, ...props }) => {
     );
 };
 
-const SidebarLink = ({ link, className, ...props }) => {
-    const { open, animate } = useSidebar();
+const SidebarLink = ({ link, className, onClick, ...props }) => {
+    const { open, setOpen, animate } = useSidebar();
     const location = useLocation();
     const isActive = location.pathname === link.path;
 
     return (
         <Link
             to={link.path}
+            onClick={(e) => {
+                if (onClick) onClick(e);
+                if (window.innerWidth < 768) {
+                    setOpen(false);
+                }
+            }}
             className={cn(
                 "flex items-center justify-start gap-3 group/sidebar px-4 py-3 rounded-xl transition-all duration-200",
                 isActive
@@ -159,7 +147,12 @@ const SidebarLink = ({ link, className, ...props }) => {
 
 // Main Exported Component that uses the structure above
 const SidebarComponent = ({ role }) => {
-    const [open, setOpen] = useState(false);
+    const context = useContext(SidebarContext);
+    const [localOpen, setLocalOpen] = useState(false);
+
+    const open = context ? context.open : localOpen;
+    const setOpen = context ? context.setOpen : setLocalOpen;
+
     const navigate = useNavigate();
     const [userName, setUserName] = useState(localStorage.getItem('userName') || 'User');
     const [profileImage, setProfileImage] = useState('');
@@ -205,7 +198,7 @@ const SidebarComponent = ({ role }) => {
             { name: 'Dashboard', path: '/student', icon: <LayoutDashboard size={20} /> },
             { name: 'Attendance', path: '/student/attendance', icon: <CheckSquare size={20} /> },
             { name: 'Courses', path: '/student/courses', icon: <FileText size={20} /> },
-            { name: 'Assignments', path: '/student/assignments', icon: <FileText size={20} /> },
+
             { name: 'Timetable', path: '/student/timetable', icon: <Calendar size={20} /> },
             { name: 'Messages', path: '/student/chat', icon: <MessageSquare size={20} /> },
             { name: 'Exam Schedule', path: '/student/exams', icon: <Clock size={20} /> },

@@ -128,9 +128,9 @@ const Profile = () => {
     return (
         <Layout role="student">
             <div className="animate-fade-in-up max-w-5xl mx-auto space-y-8 pb-10">
-                <div className="relative mb-32">
+                <div className="relative mb-48 md:mb-32">
                     {/* Cover Background - Professional ERP Theme (Blue) */}
-                    <div className="relative h-48 w-full rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="relative h-32 md:h-48 w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
                         {/* Animated Gradient Background - Using User Provided Primary Blue #0066CC */}
                         <div className="absolute inset-0 bg-gradient-to-r from-[#2563EB] dark:from-[#60A5FA] dark:via-[#3385DB] dark:to-[#004C99] opacity-90 animate-gradient-x"></div>
 
@@ -148,9 +148,9 @@ const Profile = () => {
                     </div>
 
                     {/* Profile Header Card */}
-                    <div className="absolute top-24 left-4 right-4 md:left-8 md:right-8 bg-[#E5E7EB]/80 dark:bg-[#242B3D]/80 backdrop-blur-xl border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-3xl shadow-2xl p-6 flex flex-col md:flex-row items-center md:items-end gap-6 transition-all duration-300">
-                        <div className="relative group">
-                            <div className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-lg overflow-hidden bg-slate-100 relative group transition-transform duration-300 hover:scale-105">
+                    <div className="absolute top-16 md:top-24 left-4 right-4 md:left-8 md:right-8 bg-[#E5E7EB]/80 dark:bg-[#242B3D]/80 backdrop-blur-xl border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-3xl shadow-2xl p-6 md:p-8 flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6 transition-all duration-300">
+                        <div className="relative group -mt-16 md:mt-0">
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-lg overflow-hidden bg-slate-100 relative group transition-transform duration-300 hover:scale-105">
                                 <img
                                     src={profile.user.profileImage ? `http://localhost:5000${profile.user.profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.user.name)}&background=random`}
                                     alt="Profile"
@@ -158,7 +158,7 @@ const Profile = () => {
                                 />
                                 {uploading && (
                                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                        <Loader2 className="w-6 h-6 md:w-8 md:h-8 text-white animate-spin" />
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -167,7 +167,7 @@ const Profile = () => {
                                         className="p-2 bg-[#F1F3F7]/20 dark:bg-[#2D3548]/20 hover:bg-[#F1F3F7]/40 dark:bg-[#2D3548]/40 rounded-full text-white backdrop-blur-sm transition-all transform hover:scale-110"
                                         title="Upload Photo"
                                     >
-                                        <Camera size={18} />
+                                        <Camera size={16} />
                                     </button>
                                     {profile.user.profileImage && (
                                         <button
@@ -175,7 +175,7 @@ const Profile = () => {
                                             className="p-2 bg-rose-500/80 hover:bg-rose-600/90 rounded-full text-white backdrop-blur-sm transition-all transform hover:scale-110"
                                             title="Remove Photo"
                                         >
-                                            <Trash2 size={18} />
+                                            <Trash2 size={16} />
                                         </button>
                                     )}
                                 </div>
@@ -189,32 +189,32 @@ const Profile = () => {
                             </div>
                         </div>
 
-                        <div className="flex-1 text-center md:text-left mb-2">
-                            <h1 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{profile.user.name}</h1>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-3">
-                                <span className="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-xs font-bold uppercase tracking-wider rounded-lg border border-indigo-500/30">
+                        <div className="flex-1 text-center md:text-left">
+                            <h1 className="text-2xl md:text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight truncate">{profile.user.name}</h1>
+                            <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3 mt-2 md:mt-3">
+                                <span className="px-2 md:px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-indigo-500/30 whitespace-nowrap">
                                     {profile.department}
                                 </span>
-                                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider rounded-lg border border-emerald-500/20">
-                                    Semester {profile.sem}
+                                <span className="px-2 md:px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-emerald-500/20 whitespace-nowrap">
+                                    Sem {profile.sem}
                                 </span>
-                                <span className="px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-bold uppercase tracking-wider rounded-lg border border-amber-500/20">
+                                <span className="px-2 md:px-3 py-1 bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-amber-500/20 whitespace-nowrap">
                                     {profile.admissionNumber}
                                 </span>
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 w-full md:w-auto">
                             <button
                                 onClick={() => isEditing ? handleSave() : setIsEditing(true)}
                                 className={cn(
-                                    "px-6 py-3 font-black uppercase tracking-widest text-[11px] rounded-2xl transition-all shadow-lg active:scale-95 flex items-center gap-2",
+                                    "w-full md:w-auto px-6 py-3 font-black uppercase tracking-widest text-[10px] md:text-[11px] rounded-2xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2",
                                     isEditing
                                         ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/30"
                                         : "bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] hover:bg-slate-800 dark:hover:bg-slate-100 shadow-slate-900/20"
                                 )}
                             >
-                                {isEditing ? <><CheckCircle size={16} /> Save Changes</> : 'Edit Profile'}
+                                {isEditing ? <><CheckCircle size={16} /> Save</> : 'Edit Profile'}
                             </button>
                         </div>
                     </div>

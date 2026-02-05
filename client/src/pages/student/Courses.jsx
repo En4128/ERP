@@ -154,70 +154,70 @@ const StudentCourses = () => {
 
                 {/* Header with Stats */}
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2">
-                    <div>
-                        <div className="flex items-center gap-2 mb-2">
+                    <div className="text-center md:text-left">
+                        <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                             <div className="w-8 h-1 bg-indigo-600 rounded-full"></div>
                             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">Academic Portal</span>
                         </div>
-                        <h1 className="text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">My Courses</h1>
-                        <p className="text-[#64748B] dark:text-[#868D9D] mt-2 max-w-md font-medium">
+                        <h1 className="text-3xl md:text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">My Courses</h1>
+                        <p className="text-xs md:text-sm text-[#64748B] dark:text-[#868D9D] mt-2 max-w-md font-medium mx-auto md:mx-0">
                             Manage your academic path, track detailed progress, and explore new learning opportunities.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-4 rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className="p-2 rounded-xl bg-blue-100/50 dark:bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">
-                                    <BookOpen className="h-4 w-4" />
+                    <div className="grid grid-cols-3 gap-2 md:gap-3">
+                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-3 md:p-4 rounded-2xl md:rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-2 md:gap-3 mb-1">
+                                <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-blue-100/50 dark:bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA]">
+                                    <BookOpen className="h-3 w-3 md:h-4 md:w-4" />
                                 </div>
-                                <span className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">Active</span>
+                                <span className="text-[8px] md:text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">Active</span>
                             </div>
-                            <p className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{enrolledCourses.length}</p>
+                            <p className="text-sm md:text-xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{enrolledCourses.length}</p>
                         </div>
 
-                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-4 rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className="p-2 rounded-xl bg-indigo-100/50 dark:bg-indigo-500/10 text-indigo-400">
-                                    <Clock className="h-4 w-4" />
+                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-3 md:p-4 rounded-2xl md:rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-2 md:gap-3 mb-1">
+                                <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-indigo-100/50 dark:bg-indigo-500/10 text-indigo-400">
+                                    <Clock className="h-3 w-3 md:h-4 md:w-4" />
                                 </div>
-                                <span className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">Credits</span>
+                                <span className="text-[8px] md:text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">Credits</span>
                             </div>
-                            <p className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{totalCredits}</p>
+                            <p className="text-sm md:text-xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{totalCredits}</p>
                         </div>
 
-                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-4 rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className="p-2 rounded-xl bg-emerald-100/50 dark:bg-emerald-500/10 text-emerald-400">
-                                    <CheckCircle className="h-4 w-4" />
+                        <div className="bg-indigo-50/40 dark:bg-slate-800/50 p-3 md:p-4 rounded-2xl md:rounded-3xl border border-indigo-100/50 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-center gap-2 md:gap-3 mb-1">
+                                <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-emerald-100/50 dark:bg-emerald-500/10 text-emerald-400">
+                                    <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
                                 </div>
-                                <span className="text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">Done</span>
+                                <span className="text-[8px] md:text-[10px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-widest">Done</span>
                             </div>
-                            <p className="text-xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{completedCredits}</p>
+                            <p className="text-sm md:text-xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">{completedCredits}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-[#E5E7EB]/60 dark:bg-[#1A1F2E]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-100/50 dark:border-slate-800/50 p-6 shadow-xl shadow-indigo-100/50 dark:shadow-none">
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1 relative group">
+                <div className="bg-[#E5E7EB]/60 dark:bg-[#1A1F2E]/60 backdrop-blur-xl rounded-[2rem] md:rounded-[2.5rem] border border-indigo-100/50 dark:border-slate-800/50 p-4 md:p-6 shadow-xl shadow-indigo-100/50 dark:shadow-none">
+                    <div className="flex flex-col gap-4">
+                        <div className="relative group">
                             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition-colors pointer-events-none" />
                             <input
                                 type="text"
-                                placeholder="Find a course, faculty member, or code..."
+                                placeholder="         Find a course, faculty member, or code..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-12 w-full p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-[#F1F3F7]/80 dark:bg-[#2D3548]/80 dark:text-white focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/30 focus:outline-none text-slate-900 transition-all font-medium placeholder:text-slate-400 shadow-sm"
+                                className="pl-12 w-full p-3 md:p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-[#F1F3F7]/80 dark:bg-[#2D3548]/80 dark:text-white focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500/30 focus:outline-none text-slate-900 transition-all font-medium placeholder:text-slate-400 shadow-sm text-sm"
                             />
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <select
                                 value={departmentFilter}
                                 onChange={(e) => setDepartmentFilter(e.target.value)}
-                                className="p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-[#F1F3F7]/80 dark:bg-[#2D3548]/80 dark:text-white focus:ring-4 focus:ring-indigo-500/5 outline-none text-slate-900 transition-all font-semibold text-sm min-w-[170px] appearance-none cursor-pointer shadow-sm"
+                                className="flex-1 p-3 md:p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-[#F1F3F7]/80 dark:bg-[#2D3548]/80 dark:text-white focus:ring-4 focus:ring-indigo-500/5 outline-none text-slate-900 transition-all font-semibold text-sm sm:min-w-[170px] appearance-none cursor-pointer shadow-sm"
                             >
                                 {departments.map(dept => (
                                     <option key={dept} value={dept}>
@@ -229,7 +229,7 @@ const StudentCourses = () => {
                             <select
                                 value={creditsFilter}
                                 onChange={(e) => setCreditsFilter(e.target.value)}
-                                className="p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-[#F1F3F7]/80 dark:bg-[#2D3548]/80 dark:text-white focus:ring-4 focus:ring-indigo-500/5 outline-none text-slate-900 transition-all font-semibold text-sm min-w-[140px] appearance-none cursor-pointer shadow-sm"
+                                className="flex-1 p-3 md:p-4 rounded-2xl border border-indigo-50 dark:border-slate-800 bg-[#F1F3F7]/80 dark:bg-[#2D3548]/80 dark:text-white focus:ring-4 focus:ring-indigo-500/5 outline-none text-slate-900 transition-all font-semibold text-sm sm:min-w-[140px] appearance-none cursor-pointer shadow-sm"
                             >
                                 {creditOptions.map(credit => (
                                     <option key={credit} value={credit}>
@@ -241,10 +241,11 @@ const StudentCourses = () => {
                             {(searchTerm || departmentFilter !== 'all' || creditsFilter !== 'all') && (
                                 <button
                                     onClick={clearFilters}
-                                    className="p-4 rounded-2xl bg-rose-100/50 dark:bg-rose-500/10 text-rose-400 hover:bg-rose-200/50 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center aspect-square shadow-sm"
+                                    className="p-3 md:p-4 rounded-2xl bg-rose-100/50 dark:bg-rose-500/10 text-rose-400 hover:bg-rose-200/50 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center shadow-sm"
                                     title="Reset filters"
                                 >
-                                    <X className="h-5 w-5" />
+                                    <X className="h-5 w-5 mr-2 sm:mr-0" />
+                                    <span className="sm:hidden font-black text-[10px] uppercase tracking-widest">Clear Filters</span>
                                 </button>
                             )}
                         </div>
@@ -252,45 +253,45 @@ const StudentCourses = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-indigo-50/50 dark:bg-slate-950/50 p-1.5 rounded-[2rem] flex gap-2 border border-indigo-100/50 dark:border-slate-800/50 shadow-inner shadow-indigo-100/20">
+                <div className="bg-indigo-50/50 dark:bg-slate-950/50 p-1 md:p-1.5 rounded-3xl md:rounded-[2rem] flex gap-1 md:gap-2 border border-indigo-100/50 dark:border-slate-800/50 shadow-inner overflow-x-auto no-scrollbar">
                     <button
                         onClick={() => setActiveTab('enrolled')}
-                        className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[1.5rem] text-sm font-black transition-all duration-500 ${activeTab === 'enrolled'
+                        className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-[1.5rem] text-[10px] md:text-sm font-black transition-all duration-500 whitespace-nowrap ${activeTab === 'enrolled'
                             ? 'bg-[#E5E7EB] dark:bg-[#242B3D] text-indigo-600 dark:text-white shadow-xl shadow-indigo-200/50'
                             : 'text-[#64748B] dark:text-[#868D9D] hover:text-indigo-600 dark:hover:text-slate-300'
                             }`}
                     >
-                        <BookOpen className={`h-4 w-4 transition-transform duration-500 ${activeTab === 'enrolled' ? 'scale-125' : ''}`} />
+                        <BookOpen className={`h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-500 ${activeTab === 'enrolled' ? 'scale-125' : ''}`} />
                         ENROLLED
-                        <span className={`ml-1 px-2.5 py-0.5 rounded-lg text-[10px] ${activeTab === 'enrolled' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
+                        <span className={`ml-1 px-1.5 md:px-2.5 py-0.5 rounded-lg text-[8px] md:text-[10px] ${activeTab === 'enrolled' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
                             {filteredEnrolled.length}
                         </span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('available')}
-                        className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[1.5rem] text-sm font-black transition-all duration-500 ${activeTab === 'available'
+                        className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-[1.5rem] text-[10px] md:text-sm font-black transition-all duration-500 whitespace-nowrap ${activeTab === 'available'
                             ? 'bg-[#E5E7EB] dark:bg-[#242B3D] text-indigo-600 dark:text-white shadow-xl shadow-indigo-200/50'
                             : 'text-[#64748B] dark:text-[#868D9D] hover:text-indigo-600 dark:hover:text-slate-300'
                             }`}
                     >
-                        <GraduationCap className={`h-4 w-4 transition-transform duration-500 ${activeTab === 'available' ? 'scale-125' : ''}`} />
+                        <GraduationCap className={`h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-500 ${activeTab === 'available' ? 'scale-125' : ''}`} />
                         DISCOVER
-                        <span className={`ml-1 px-2.5 py-0.5 rounded-lg text-[10px] ${activeTab === 'available' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
+                        <span className={`ml-1 px-1.5 md:px-2.5 py-0.5 rounded-lg text-[8px] md:text-[10px] ${activeTab === 'available' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
                             {filteredAvailable.length}
                         </span>
                     </button>
 
                     <button
                         onClick={() => setActiveTab('completed')}
-                        className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[1.5rem] text-sm font-black transition-all duration-500 ${activeTab === 'completed'
+                        className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-[1.5rem] text-[10px] md:text-sm font-black transition-all duration-500 whitespace-nowrap ${activeTab === 'completed'
                             ? 'bg-[#E5E7EB] dark:bg-[#242B3D] text-indigo-600 dark:text-white shadow-xl shadow-indigo-200/50'
                             : 'text-[#64748B] dark:text-[#868D9D] hover:text-indigo-600 dark:hover:text-slate-300'
                             }`}
                     >
-                        <CheckCircle className={`h-4 w-4 transition-transform duration-500 ${activeTab === 'completed' ? 'scale-125' : ''}`} />
+                        <CheckCircle className={`h-3.5 w-3.5 md:h-4 md:w-4 transition-transform duration-500 ${activeTab === 'completed' ? 'scale-125' : ''}`} />
                         COMPLETED
-                        <span className={`ml-1 px-2.5 py-0.5 rounded-lg text-[10px] ${activeTab === 'completed' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
+                        <span className={`ml-1 px-1.5 md:px-2.5 py-0.5 rounded-lg text-[8px] md:text-[10px] ${activeTab === 'completed' ? 'bg-indigo-600 text-white' : 'bg-indigo-100/50 text-indigo-600 dark:bg-slate-800'}`}>
                             {filteredCompleted.length}
                         </span>
                     </button>
@@ -559,10 +560,10 @@ const CourseCard = ({ course, type, onEnroll, enrollingId }) => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-2">
+                <div className="flex items-center gap-3 pt-2">
                     <div className="flex items-center gap-2">
-                        <Clock className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="text-[11px] font-black text-[#64748B] dark:text-[#868D9D] dark:text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">{course.schedule || 'TBA'}</span>
+                        <Clock className="h-3 w-3 md:h-3.5 md:w-3.5 text-slate-400" />
+                        <span className="text-[10px] md:text-[11px] font-black text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">{course.schedule || 'TBA'}</span>
                     </div>
                 </div>
             </div>
@@ -596,10 +597,10 @@ const CourseCard = ({ course, type, onEnroll, enrollingId }) => {
                 {type === 'enrolled' && (
                     <button
                         onClick={() => onEnroll(course)}
-                        className="w-full py-4 rounded-2xl bg-[#E5E7EB] dark:bg-[#242B3D] text-indigo-400 border-2 border-indigo-100 dark:border-indigo-900 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 transition-all font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 group"
+                        className="w-full py-3 md:py-4 rounded-xl md:rounded-2xl bg-[#E5E7EB] dark:bg-[#242B3D] text-indigo-400 border-2 border-indigo-100 dark:border-indigo-900 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 transition-all font-black text-[10px] md:text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 group"
                     >
                         LEARNING HUB
-                        <ChevronRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4 transform group-hover:translate-x-1 transition-transform" />
                     </button>
                 )}
 
