@@ -1,5 +1,5 @@
 const express = require('express');
-const { getStudentProfile, getDashboardStats, getAttendanceDetails, getStudentFaculty, getNotifications, markAsRead, getStudentResults, applyForLeave, getMyLeaves, getStudentFees } = require('../controllers/studentController');
+const { getStudentProfile, getDashboardStats, getAttendanceDetails, getStudentFaculty, getNotifications, markAsRead, getStudentResults, applyForLeave, getMyLeaves, getStudentFees, searchAllCourses, subscribePush } = require('../controllers/studentController');
 const { getStudentExams } = require('../controllers/examController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');

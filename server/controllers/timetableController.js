@@ -1,6 +1,7 @@
 const Timetable = require('../models/Timetable');
 const Course = require('../models/Course');
 const Faculty = require('../models/Faculty');
+const SystemConfig = require('../models/SystemConfig');
 
 // @desc    Get all timetable slots
 // @route   GET /api/timetable
@@ -206,5 +207,18 @@ exports.deleteSlot = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get system setting by key (common access)
+// @route   GET /api/timetable/settings/:key
+// @access  Private
+exports.getConfig = async (req, res) => {
+    try {
+        const config = await SystemConfig.findOne({ key: req.params.key });
+        if (!config) return res.status(404).json({ message: 'Setting not found' });
+        res.json(config);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

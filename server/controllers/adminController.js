@@ -6,6 +6,7 @@ const Notice = require('../models/Notice');
 const Mark = require('../models/Mark');
 const Fee = require('../models/Fee');
 const Notification = require('../models/Notification');
+const SystemConfig = require('../models/SystemConfig');
 const bcrypt = require('bcryptjs');
 
 // @desc    Get counts for dashboard
@@ -413,6 +414,42 @@ exports.getRecentActivity = async (req, res) => {
         activities.sort((a, b) => new Date(b.time) - new Date(a.time));
 
         res.json(activities.slice(0, 10));
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// --- System Configuration Settings ---
+
+// @desc    Get system setting by key
+// @route   GET /api/admin/settings/:key
+// @access  Private (Admin)
+exports.getSystemConfig = async (req, res) => {
+    try {
+        const config = await SystemConfig.findOne({ key: req.params.key });
+        if (!config) return res.status(404).json({ message: 'Setting not found' });
+        res.json(config);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Update or create system setting
+// @route   POST /api/admin/settings
+// @access  Private (Admin)
+exports.updateSystemConfig = async (req, res) => {
+    const { key, value, description } = req.body;
+    try {
+        let config = await SystemConfig.findOne({ key });
+        if (config) {
+            config.value = value;
+            if (description) config.description = description;
+            config.updatedAt = Date.now();
+            await config.save();
+        } else {
+            config = await SystemConfig.create({ key, value, description });
+        }
+        res.json(config);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

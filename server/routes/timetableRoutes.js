@@ -1,5 +1,5 @@
 const express = require('express');
-const { getTimetable, addSlot, updateSlot, deleteSlot } = require('../controllers/timetableController');
+const { getTimetable, addSlot, updateSlot, deleteSlot, getConfig } = require('../controllers/timetableController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
@@ -10,5 +10,7 @@ router.route('/')
 router.route('/:id')
     .put(protect, authorize('admin'), updateSlot)
     .delete(protect, authorize('admin'), deleteSlot);
+
+router.get('/settings/:key', protect, getConfig);
 
 module.exports = router;

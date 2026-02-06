@@ -37,14 +37,18 @@ const GlassCard = ({ children, className, delay = 0 }) => (
     </motion.div>
 );
 
+const defaultDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 const FacultyTimetable = () => {
     const [fullSchedule, setFullSchedule] = useState([]);
     const [faculty, setFaculty] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentDay, setCurrentDay] = useState(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
+    const [workingDays, setWorkingDays] = useState(6);
+    const [saturdayMapping, setSaturdayMapping] = useState('None');
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const days = defaultDays.slice(0, workingDays);
 
     useEffect(() => {
         fetchData();
@@ -55,10 +59,16 @@ const FacultyTimetable = () => {
             const token = localStorage.getItem('token');
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
-            const profileRes = await axios.get('http://localhost:5000/api/faculty/profile', config);
-            setFaculty(profileRes.data);
+            const [profileRes, scheduleRes, configRes, mappingRes] = await Promise.all([
+                axios.get('http://localhost:5000/api/faculty/profile', config),
+                axios.get('http://localhost:5000/api/timetable', config),
+                axios.get('http://localhost:5000/api/timetable/settings/workingDays', config).catch(() => ({ data: { value: 6 } })),
+                axios.get('http://localhost:5000/api/timetable/settings/saturdayMapping', config).catch(() => ({ data: { value: 'None' } }))
+            ]);
 
-            const scheduleRes = await axios.get('http://localhost:5000/api/timetable', config);
+            setFaculty(profileRes.data);
+            setWorkingDays(configRes.data?.value || 6);
+            setSaturdayMapping(mappingRes.data?.value || 'None');
 
             const mySchedule = scheduleRes.data.filter(slot =>
                 slot.faculty?.trim() === profileRes.data.user?.name?.trim()
@@ -73,7 +83,10 @@ const FacultyTimetable = () => {
         }
     };
 
-    const dayTimetable = fullSchedule.filter(slot => slot.day === currentDay);
+    const dayTimetable = fullSchedule.filter(slot => {
+        const effectiveDay = (currentDay === 'Saturday' && saturdayMapping !== 'None') ? saturdayMapping : currentDay;
+        return slot.day === effectiveDay;
+    });
 
     if (loading) {
         return (

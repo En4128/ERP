@@ -157,7 +157,7 @@ const FacultyDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({
         facultyName: '',
-        stats: { totalCourses: 0, classesToday: 0, pendingEvaluations: 0 },
+        stats: { totalCourses: 0, classesToday: 0, pendingEvaluations: 0, messages: 0 },
         todayClasses: [],
         announcements: []
     });
@@ -166,6 +166,10 @@ const FacultyDashboard = () => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
+                if (!token) {
+                    navigate('/login');
+                    return;
+                }
                 const res = await axios.get('http://localhost:5000/api/faculty/dashboard-stats', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -177,12 +181,12 @@ const FacultyDashboard = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [navigate]);
 
     if (loading) {
         return (
             <Layout role="faculty">
-                <div className="flex justify-center items-center h-screen">
+                <div className="flex justify-center items-center h-[60vh]">
                     <div className="relative">
                         <div className="w-20 h-20 border-4 border-indigo-600/20 rounded-full animate-ping" />
                         <div className="absolute inset-0 w-20 h-20 border-t-4 border-indigo-600 rounded-full animate-spin" />
@@ -192,6 +196,8 @@ const FacultyDashboard = () => {
         );
     }
 
+    const safeName = data.facultyName || 'Faculty';
+
     return (
         <Layout role="faculty">
             <div className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-6 md:space-y-8 animate-fade-in-up">
@@ -199,14 +205,15 @@ const FacultyDashboard = () => {
                 {/* Layer 1: Hero & Primary Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    <MeshGradientHero name={data.facultyName} stats={data.stats} />
+                    <MeshGradientHero name={safeName} stats={data.stats || {}} />
 
                     {/* Quick Start / Onboarding (Visible if no courses) */}
-                    {(data.stats.totalCourses?.value === 0 || data.stats.totalCourses === 0) && (
+                    {((data.stats?.totalCourses?.value || 0) === 0) && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-[#2563EB] dark:bg-[#60A5FA] overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20 relative group cursor-pointer"
+                            whileHover={{ y: -5 }}
+                            className="col-span-1 md:col-span-2 lg:col-span-1 row-span-1 rounded-[3rem] bg-[#2563EB] dark:bg-[#60A5FA] overflow-hidden p-8 flex flex-col justify-between shadow-2xl shadow-[#2563EB]/20 dark:shadow-[#60A5FA]/20 relative group cursor-pointer z-10"
                             onClick={() => navigate('/faculty/courses')}
                         >
                             <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform">
@@ -227,36 +234,37 @@ const FacultyDashboard = () => {
                                     </div>
                                 </div>
                             </div>
-                            <button className="relative z-10 w-full mt-6 py-4 bg-white text-[#2563EB] dark:text-[#60A5FA] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
+                            <button className="relative z-10 w-full mt-6 py-4 bg-white text-[#2563EB] dark:text-[#60A5FA] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-slate-50 active:scale-95 transition-all">
                                 Start Onboarding
                             </button>
                         </motion.div>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-2 lg:col-span-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-2 lg:col-span-1 z-10">
                         <ActivityWidget
                             title="Pending Evals"
+                            value={data.stats?.pendingEvaluations?.value || "0"}
                             icon={ClipboardList}
                             variant="amber"
                             onClick={() => navigate('/faculty/marks')}
                         />
                         <ActivityWidget
                             title="Messages"
-                            value={data.stats.messages?.value || "4"}
+                            value={data.stats?.messages?.value || data.stats?.messages || "4"}
                             icon={MessageSquare}
                             variant="purple"
                             onClick={() => navigate('/faculty/chat')}
                         />
                         <button
                             onClick={() => navigate('/faculty/notifications')}
-                            className="sm:col-span-2 group p-6 rounded-[2rem] md:rounded-[2.5rem] bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] border border-slate-900 dark:border-white shadow-xl shadow-indigo-500/10 flex items-center justify-between transition-transform active:scale-95"
+                            className="sm:col-span-2 group p-6 rounded-[2rem] md:rounded-[2.5rem] bg-[#2563EB] dark:bg-[#60A5FA] text-white dark:text-[#0F1419] border border-transparent shadow-xl shadow-indigo-500/10 flex items-center justify-between transition-all hover:shadow-[#2563EB]/40 active:scale-95 z-10"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-2xl bg-[#E5E7EB]/10 dark:bg-[#1A1F2E]/10">
+                                <div className="p-3 rounded-2xl bg-white/20 dark:bg-black/20">
                                     <PlusCircle size={24} />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-white/60 dark:text-slate-400 text-[8px] md:text-[10px] font-black uppercase tracking-widest">Action Center</p>
+                                    <p className="text-white/60 dark:text-[#0F1419]/60 text-[8px] md:text-[10px] font-black uppercase tracking-widest">Action Center</p>
                                     <p className="font-black text-sm md:text-base">Create Announcement</p>
                                 </div>
                             </div>
@@ -264,10 +272,15 @@ const FacultyDashboard = () => {
                         </button>
                     </div>
 
-                    <BentoCard title="Daily Schedule" icon={Calendar} className="lg:row-span-1">
+                    <BentoCard title="Daily Schedule" icon={Calendar} className="lg:row-span-1 z-10">
                         <div className="space-y-4">
-                            {data.todayClasses.length > 0 ? data.todayClasses.map((session, idx) => (
-                                <div key={idx} className="p-5 rounded-[2rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] group/item hover:border-indigo-500/30 transition-all cursor-pointer" onClick={() => navigate('/faculty/attendance', { state: { courseId: session.courseId } })}>
+                            {data.todayClasses && data.todayClasses.length > 0 ? data.todayClasses.map((session, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    whileHover={{ x: 5 }}
+                                    className="p-5 rounded-[2rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] group/item hover:border-indigo-500/30 transition-all cursor-pointer relative z-10"
+                                    onClick={() => navigate('/faculty/attendance', { state: { courseId: session.courseId } })}
+                                >
                                     <div className="flex justify-between items-start mb-2">
                                         <h4 className="text-sm font-black text-[#0F1419] dark:text-[#E8EAED] leading-tight line-clamp-1">{session.subject}</h4>
                                         <div className="bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] p-1.5 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity">
@@ -278,7 +291,7 @@ const FacultyDashboard = () => {
                                         <div className="flex items-center gap-1.5"><Clock size={12} /> {session.time}</div>
                                         <div className="flex items-center gap-1.5"><MapPin size={12} /> {session.room}</div>
                                     </div>
-                                </div>
+                                </motion.div>
                             )) : (
                                 <div className="py-12 text-center bg-[#E5E7EB] dark:bg-[#242B3D] rounded-[2rem] border border-dashed border-[#E2E5E9] dark:border-[#3D4556]">
                                     <Clock size={32} className="text-slate-300 mx-auto mb-3" />
@@ -287,7 +300,7 @@ const FacultyDashboard = () => {
                             )}
                             <button
                                 onClick={() => navigate('/faculty/timetable')}
-                                className="w-full mt-2 py-4 rounded-[2rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-500/20 transition"
+                                className="w-full mt-2 py-4 rounded-[2rem] bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-500/20 active:scale-95 transition z-10"
                             >
                                 View Timeline
                             </button>
@@ -299,12 +312,13 @@ const FacultyDashboard = () => {
                 {/* Layer 2: Main Features */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                    <BentoCard title="Quick Management" className="lg:col-span-2">
+                    <BentoCard title="Quick Management" className="lg:col-span-2 z-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <motion.div
-                                whileHover={{ scale: 1.01 }}
+                                whileHover={{ scale: 1.02, y: -5 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={() => navigate('/faculty/attendance')}
-                                className="p-8 rounded-[2.5rem] bg-emerald-500 dark:bg-emerald-600 text-white cursor-pointer group shadow-lg shadow-emerald-500/10"
+                                className="p-8 rounded-[2.5rem] bg-emerald-500 dark:bg-emerald-600 text-white cursor-pointer group shadow-lg shadow-emerald-500/10 relative z-10"
                             >
                                 <div className="flex justify-between items-start mb-8">
                                     <div className="p-4 rounded-2xl bg-white/20 backdrop-blur-md">
@@ -319,9 +333,10 @@ const FacultyDashboard = () => {
                             </motion.div>
 
                             <motion.div
-                                whileHover={{ scale: 1.01 }}
+                                whileHover={{ scale: 1.02, y: -5 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={() => navigate('/faculty/marks')}
-                                className="p-8 rounded-[2.5rem] bg-rose-600 dark:bg-rose-700 text-white cursor-pointer group shadow-lg shadow-rose-500/10"
+                                className="p-8 rounded-[2.5rem] bg-rose-600 dark:bg-rose-700 text-white cursor-pointer group shadow-lg shadow-rose-500/10 relative z-10"
                             >
                                 <div className="flex justify-between items-start mb-8">
                                     <div className="p-4 rounded-2xl bg-white/20 backdrop-blur-md">
@@ -337,8 +352,8 @@ const FacultyDashboard = () => {
                         </div>
                     </BentoCard>
 
-                    <BentoCard title="Student Directory" icon={Users}>
-                        <div className="p-6 rounded-[2rem] bg-slate-900 text-white h-full flex flex-col justify-between">
+                    <BentoCard title="Student Directory" icon={Users} className="z-10">
+                        <div className="p-6 rounded-[2rem] bg-slate-900 text-white h-full flex flex-col justify-between relative z-10">
                             <div>
                                 <h4 className="text-xl font-black tracking-tighter mb-4">Manage <br />Cohort</h4>
                                 <div className="space-y-4">
@@ -358,7 +373,7 @@ const FacultyDashboard = () => {
                             </div>
                             <button
                                 onClick={() => navigate('/faculty/students')}
-                                className="w-full mt-8 py-4 rounded-2xl bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg active:scale-95 transition"
+                                className="w-full mt-8 py-4 rounded-2xl bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg active:scale-95 transition relative z-20"
                             >
                                 Open Directory
                             </button>
@@ -371,10 +386,11 @@ const FacultyDashboard = () => {
                     title="Faculty Notice Board"
                     icon={Bell}
                     onClick={() => navigate('/faculty/notifications')}
+                    className="z-10 cursor-pointer"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {data.announcements.length > 0 ? data.announcements.slice(0, 3).map((a, idx) => (
-                            <div key={idx} className="p-6 rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] flex flex-col justify-between group/ann">
+                        {data.announcements && data.announcements.length > 0 ? data.announcements.slice(0, 3).map((a, idx) => (
+                            <div key={idx} className="p-6 rounded-[2.5rem] bg-[#E5E7EB] dark:bg-[#242B3D] border border-[#E2E5E9] dark:border-[#3D4556] flex flex-col justify-between group/ann relative z-10">
                                 <div>
                                     <div className="flex justify-between items-start mb-5">
                                         <span className="text-[10px] font-black px-3 py-1 bg-[#2563EB] dark:bg-[#60A5FA] text-white rounded-full uppercase tracking-widest">Notice</span>
@@ -385,9 +401,9 @@ const FacultyDashboard = () => {
                                 </div>
                                 <div className="mt-8 flex items-center gap-2 pt-5 border-t border-[#E2E5E9]/50 dark:border-[#3D4556]/50">
                                     <div className="w-6 h-6 rounded-full bg-[#2563EB] dark:bg-[#60A5FA] flex items-center justify-center text-[10px] font-black text-white">
-                                        {a.author[0]}
+                                        {(a.author || 'A')[0]}
                                     </div>
-                                    <span className="text-[10px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">{a.author}</span>
+                                    <span className="text-[10px] font-bold text-[#64748B] dark:text-[#868D9D] uppercase tracking-tighter">{a.author || 'Admin'}</span>
                                 </div>
                             </div>
                         )) : (

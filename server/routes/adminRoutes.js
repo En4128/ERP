@@ -19,7 +19,9 @@ const {
     createFee,
     updateFee,
     deleteFee,
-    getRecentActivity
+    getRecentActivity,
+    getSystemConfig,
+    updateSystemConfig
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -51,5 +53,9 @@ router.get('/fees', getAllFees);
 router.post('/fees', createFee);
 router.put('/fees/:id', updateFee);
 router.delete('/fees/:id', deleteFee);
+
+// System Settings
+router.get('/settings/:key', getSystemConfig);
+router.post('/settings', updateSystemConfig);
 
 module.exports = router;

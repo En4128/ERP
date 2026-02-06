@@ -140,7 +140,11 @@ const FacultyAttendance = () => {
             attRes.data.forEach(rec => {
                 const sId = typeof rec.student === 'object' ? rec.student._id : rec.student;
                 currentMap[sId] = rec.status;
-                viaMap[sId] = rec.markedVia || 'Manual';
+                viaMap[sId] = rec.markedVia === 'QR' ? 'QR Scan' : (rec.markedVia || 'Manual');
+                // Store actual time if available
+                if (rec.time) {
+                    currentMap[`${sId}_time`] = rec.time;
+                }
             });
 
             setAttendanceData(prev => {
@@ -486,9 +490,20 @@ const FacultyAttendance = () => {
                                                                         )}>
                                                                             {attendanceData[std._id]}
                                                                         </span>
-                                                                        {markedViaData[std._id] === 'QR' && (
-                                                                            <span className="flex items-center gap-1 text-[8px] font-black text-indigo-500 uppercase tracking-tighter">
-                                                                                <QrCode size={10} /> QR Sync
+                                                                        {markedViaData[std._id] === 'QR Scan' && (
+                                                                            <span className="flex flex-col items-center gap-1">
+                                                                                <span className="flex items-center gap-1 text-[8px] font-black text-indigo-500 uppercase tracking-tighter">
+                                                                                    <QrCode size={10} /> QR Sync
+                                                                                </span>
+                                                                                <span className="text-[7px] font-bold text-slate-400">{attendanceData[`${std._id}_time`]}</span>
+                                                                            </span>
+                                                                        )}
+                                                                        {markedViaData[std._id] === 'Manual' && attendanceData[std._id] === 'Present' && (
+                                                                            <span className="flex flex-col items-center gap-1">
+                                                                                <span className="flex items-center gap-1 text-[8px] font-black text-amber-500 uppercase tracking-tighter">
+                                                                                    <Clock size={10} /> Manual
+                                                                                </span>
+                                                                                <span className="text-[7px] font-bold text-slate-400">{attendanceData[`${std._id}_time`]}</span>
                                                                             </span>
                                                                         )}
                                                                     </div>

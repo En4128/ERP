@@ -370,10 +370,10 @@ exports.getAttendanceDetails = async (req, res) => {
             history.push({
                 id: record._id,
                 date: record.date.toLocaleDateString('en-CA'),
-                time: record.date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                time: record.createdAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
                 subject: record.course.name,
                 status: record.status,
-                mode: 'Manual' // Placeholder
+                mode: record.markedVia === 'QR' ? 'QR Scan' : record.markedVia === 'Manual' ? 'Manual' : record.markedVia || 'Manual'
             });
         });
 
@@ -427,7 +427,7 @@ exports.getAttendanceDetails = async (req, res) => {
 
                 classes = daysClasses.map(c => ({
                     name: c.course.name,
-                    time: c.date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                    time: c.createdAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
                     status: c.status
                 }));
             } else {

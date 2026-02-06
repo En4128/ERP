@@ -309,7 +309,7 @@ exports.markAttendance = async (req, res) => {
                         status: item.status,
                         markedBy: req.user.id,
                         markedByType: 'Faculty',
-                        markedVia: 'Manual'
+                        markedVia: item.markedVia || 'Manual'
                     }
                 },
                 upsert: true
@@ -343,9 +343,13 @@ exports.getAttendance = async (req, res) => {
         const attendance = await Attendance.find({
             course: courseId,
             date: dateObj
-        });
+        }).populate('student', 'user admissionNumber');
 
-        res.json(attendance);
+        res.json(attendance.map(a => ({
+            ...a.toObject(),
+            time: a.createdAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+            mode: a.markedVia === 'QR' ? 'QR Scan' : a.markedVia
+        })));
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

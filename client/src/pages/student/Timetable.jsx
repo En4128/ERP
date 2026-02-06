@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
-import { Calendar, Clock, MapPin, BookOpen, AlertCircle, ChevronRight, User, Hash, GraduationCap, X, Building2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, BookOpen, AlertCircle, ArrowRight, Users, Hash, GraduationCap, X, Building2, Sparkles, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Timetable = () => {
@@ -13,7 +13,10 @@ const Timetable = () => {
     const [selectedSession, setSelectedSession] = useState(null);
     const currentDayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const [workingDays, setWorkingDays] = useState(6);
+    const [saturdayMapping, setSaturdayMapping] = useState('None');
+    const defaultDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const days = defaultDays.slice(0, workingDays);
 
     const colors = {
         CLASS: 'from-blue-600/10 to-blue-400/10 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-300 border-blue-200/50 dark:border-blue-800/50 ring-blue-500',
@@ -32,17 +35,26 @@ const Timetable = () => {
     };
 
     useEffect(() => {
-        setActiveDay(days.includes(currentDayName) ? currentDayName : 'Monday');
-
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
-                const profileRes = await axios.get('http://localhost:5000/api/student/profile', config);
-                setStudent(profileRes.data);
+                const [profileRes, scheduleRes, configRes, mappingRes] = await Promise.all([
+                    axios.get('http://localhost:5000/api/student/profile', config),
+                    axios.get('http://localhost:5000/api/timetable', config),
+                    axios.get('http://localhost:5000/api/timetable/settings/workingDays', config).catch(() => ({ data: { value: 6 } })),
+                    axios.get('http://localhost:5000/api/timetable/settings/saturdayMapping', config).catch(() => ({ data: { value: 'None' } }))
+                ]);
 
-                const scheduleRes = await axios.get('http://localhost:5000/api/timetable', config);
+                setStudent(profileRes.data);
+                const wDays = configRes.data?.value || 6;
+                setWorkingDays(wDays);
+                setSaturdayMapping(mappingRes.data?.value || 'None');
+
+                // Ensure activeDay is valid for the number of working days
+                const validDays = defaultDays.slice(0, wDays);
+                setActiveDay(validDays.includes(currentDayName) ? currentDayName : 'Monday');
 
                 const filtered = scheduleRes.data.filter(slot => {
                     const deptMatch = slot.department?.trim() === profileRes.data.department?.trim() || slot.department?.trim() === 'CDC';
@@ -67,11 +79,12 @@ const Timetable = () => {
         };
 
         fetchData();
-    }, []);
+    }, [currentDayName]); // currentDayName is static but good for dependency completeness
 
     const dailySchedule = useMemo(() => {
-        return schedule.filter(slot => slot.day?.trim() === activeDay.trim());
-    }, [schedule, activeDay]);
+        const effectiveDay = (activeDay === 'Saturday' && saturdayMapping !== 'None') ? saturdayMapping : activeDay;
+        return schedule.filter(slot => slot.day?.trim() === effectiveDay.trim());
+    }, [schedule, activeDay, saturdayMapping]);
 
     if (loading) {
         return (
@@ -116,21 +129,14 @@ const Timetable = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8"
                 >
-                    <div className="text-center md:text-left">
-                        <div className="flex items-center justify-center md:justify-start gap-2 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400 font-black tracking-widest uppercase text-[10px] md:text-xs mb-3">
-                            <Calendar size={14} />
-                            Academic Schedule
+                    <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] border border-blue-500/20 mb-2">
+                            <Sparkles size={12} className="animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-wider">Academic Timeline</span>
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tight">Your Weekly <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] dark:from-[#60A5FA] to-blue-600 dark:from-blue-400 dark:to-blue-400">Timetable</span></h1>
-                        <div className="flex items-center justify-center md:justify-start gap-3 mt-4">
-                            <div className="px-3 py-1 bg-blue-500/10 text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-300 rounded-full text-[10px] md:text-xs font-black border border-blue-500/20 flex items-center gap-2">
-                                <BookOpen size={12} />
-                                {student?.department || 'Computer Science'}
-                            </div>
-                            <div className="px-3 py-1 bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D] rounded-full text-[10px] md:text-xs font-black border border-[#E2E5E9] dark:border-[#3D4556]">
-                                Semester {student?.sem || '4'}
-                            </div>
-                        </div>
+                        <h2 className="text-4xl md:text-5xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter">
+                            Your <span className="text-[#2563EB] dark:text-[#60A5FA]">Schedule</span>
+                        </h2>
                     </div>
 
                     <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth -mx-4 px-4 md:mx-0 md:px-0">
@@ -201,7 +207,7 @@ const Timetable = () => {
                                                             {session.room}
                                                         </div>
                                                         <div className="flex items-center text-[10px] md:text-xs font-bold opacity-60">
-                                                            <User size={12} md:size={14} className="mr-1 md:mr-1.5 text-blue-400" />
+                                                            <Users size={12} md:size={14} className="mr-1 md:mr-1.5 text-blue-400" />
                                                             {session.faculty || 'Unassigned'}
                                                         </div>
                                                     </div>
@@ -210,7 +216,7 @@ const Timetable = () => {
                                                 {/* Right Action/Indicator */}
                                                 <div className="flex items-center justify-end md:static absolute bottom-6 right-6">
                                                     <div className="p-2 md:p-3 bg-[#E5E7EB]/50 dark:bg-[#242B3D]/50 rounded-xl md:rounded-2xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 group-hover:bg-[#2563EB] dark:bg-[#60A5FA] group-hover:text-white transition-all duration-500">
-                                                        <ChevronRight className="opacity-40 group-hover:opacity-100" size={16} md:size={20} />
+                                                        <ArrowRight className="opacity-40 group-hover:opacity-100" size={16} md:size={20} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -253,12 +259,12 @@ const Timetable = () => {
                     <div className="p-6 bg-blue-50/50 dark:bg-blue-900/10 rounded-3xl border border-blue-100/50 dark:border-blue-800/50">
                         <div className="flex items-center space-x-3 mb-4">
                             <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg text-[#2563EB] dark:text-[#60A5FA] dark:text-blue-400">
-                                <BookOpen size={20} />
+                                <Zap size={20} />
                             </div>
                             <h4 className="font-black text-sm uppercase tracking-wider text-[#475569] dark:text-[#B8BDC6]">Study Mode</h4>
                         </div>
                         <p className="text-2xl font-black text-[#0F1419] dark:text-[#E8EAED]">Full-Time</p>
-                        <p className="text-xs font-bold text-slate-50 mt-1">Academics Regular</p>
+                        <p className="text-xs font-bold text-[#64748B] dark:text-[#868D9D] mt-1">Academics Regular</p>
                     </div>
 
                     <div className="p-6 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-3xl border border-indigo-100/50 dark:border-indigo-800/50">
@@ -318,7 +324,7 @@ const Timetable = () => {
                                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                                         <div className="p-3 md:p-4 bg-[#F1F3F7] dark:bg-[#2D3548] rounded-xl md:rounded-2xl border border-[#E2E5E9] dark:border-[#3D4556]">
                                             <div className="flex items-center space-x-2 text-blue-500 mb-1.5 md:mb-2">
-                                                <User size={14} md:size={16} />
+                                                <Users size={14} md:size={16} />
                                                 <span className="text-[8px] md:text-[10px] font-black uppercase tracking-tight">Faculty Name</span>
                                             </div>
                                             <p className="text-[11px] md:text-sm font-black text-[#0F1419] dark:text-[#E8EAED]">{selectedSession.faculty || 'Unassigned'}</p>
