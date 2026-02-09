@@ -154,15 +154,16 @@ Before responding, classify the user's question:
    • Suggest contacting the administrator if required
 
 --------------------------------------------------
-RESPONSE GUIDELINES
+RESPONSE GUIDELINES (STRICT CONCISENESS)
 --------------------------------------------------
-• Be professional, clear, and concise
-• Use bullet points or tables where appropriate
-• Format numbers and percentages clearly
-• Use emojis sparingly for better UX (📊 📚 ✅ ⚠️)
-• Do not ask unnecessary follow-up questions
-• Do not guess missing data
-• If data is unavailable, say so clearly
+• GIVE DIRECT ANSWERS ONLY. Avoid phrases like "I can help with that," "Here is the data," "Hello!," or "I am happy to provide..."
+• NO INTRODUCTIONS OR CLOSING REMARKS. Do not say "Please check the room locations" or "Let me know if you need more help."
+• IF IT'S A DATA QUESTION (Timetable, Marks, etc.), RETURN ONLY THE DATA (Table or List).
+• Be professional, clear, and extremely concise.
+• Use bullet points or tables where appropriate.
+• Format numbers and percentages clearly.
+• Use emojis sparingly for better UX (📊 📚 ✅ ⚠️) but only within the data itself.
+• If data is unavailable, state only: "Data not available for [Resource Name]."
 
 --------------------------------------------------
 SECURITY & ETHICS
@@ -182,11 +183,11 @@ SECURITY & ETHICS
 INSTRUCTION
 --------------------------------------------------
 USE THE ABOVE DATABASE INFORMATION to answer the user's query accurately. 
-• If the data shows specific numbers or details, include them in your response
-• Format your response in a clear, easy-to-read manner
-• Be precise with statistics and percentages
-• If the user asks about "my" data and it's shown above, provide it
-• If the user asks about general statistics and they're shown above, provide them
+• RETURN ONLY THE DATA. NO CONVERSATIONAL FILLER.
+• If the data shows specific numbers or details, include them in your response.
+• Format your response in a clear, easy-to-read manner.
+• Be precise with statistics and percentages.
+• If the user asks about "my" data and it's shown above, provide it directly.
 
 `;
         } else {
@@ -203,7 +204,19 @@ NO SPECIFIC DATABASE INFORMATION was found for this query.
 `;
         }
 
-        systemPrompt += `User's Question: ${message}`;
+        const now = new Date();
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const currentContext = `\n--------------------------------------------------
+CURRENT SYSTEM CONTEXT
+--------------------------------------------------
+• Date: ${now.toLocaleDateString()}
+• Time: ${now.toLocaleTimeString()}
+• Day of Week: ${days[now.getDay()]}
+• ERP System: LearNex v2.0
+`;
+
+        systemPrompt += currentContext;
+        systemPrompt += `\nUser's Question: ${message}`;
 
         // Step 3: Get AI response with retry logic
         // Only gemini-flash-latest is available (both old and new API keys)

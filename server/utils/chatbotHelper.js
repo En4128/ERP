@@ -14,203 +14,137 @@ const User = require('../models/User');
  */
 async function queryDatabase(message, userId = null) {
     const lowerMessage = message.toLowerCase();
-    const results = {};
+    const results = {
+        personalContext: {}
+    };
 
     try {
-        // Detect query intent
-        const isAttendanceQuery = /attendance|present|absent|attendance rate/i.test(message);
-        const isGradeQuery = /grade|mark|score|result|cgpa|gpa/i.test(message);
-        const isCourseQuery = /course|subject|class|enrolled/i.test(message);
-        const isAssignmentQuery = /assignment|homework|task|submission/i.test(message);
-        const isTimetableQuery = /timetable|schedule|timing|when/i.test(message);
-        const isLeaveQuery = /leave|holiday|vacation|absent request/i.test(message);
-        const isExamQuery = /exam|test|examination/i.test(message);
-        const isStudentQuery = /student|how many student|total student/i.test(message);
-        const isFacultyQuery = /faculty|teacher|professor|instructor/i.test(message);
+        // --- 1. ALWAYS-AVAILABLE PERSONAL CONTEXT ---
+        // If user is logged in, we provide their core identity and schedule context automatically
+        if (userId) {
+            const student = await Student.findOne({ user: userId }).populate('enrolledCourses');
+            const faculty = await Faculty.findOne({ user: userId });
 
-        // Query Students
-        if (isStudentQuery) {
-            const students = await Student.find().populate('user', 'name email');
-            results.students = {
-                total: students.length,
-                byDepartment: {},
-                bySemester: {}
-            };
-
-            students.forEach(student => {
-                // Count by department
-                results.students.byDepartment[student.department] =
-                    (results.students.byDepartment[student.department] || 0) + 1;
-
-                // Count by semester
-                results.students.bySemester[student.semester] =
-                    (results.students.bySemester[student.semester] || 0) + 1;
-            });
-        }
-
-        // Query Faculty
-        if (isFacultyQuery) {
-            const faculty = await Faculty.find().populate('user', 'name email');
-            results.faculty = {
-                total: faculty.length,
-                byDepartment: {}
-            };
-
-            faculty.forEach(fac => {
-                results.faculty.byDepartment[fac.department] =
-                    (results.faculty.byDepartment[fac.department] || 0) + 1;
-            });
-        }
-
-        // Query Courses
-        if (isCourseQuery) {
-            const courses = await Course.find()
-                .populate('instructor', 'name')
-                .populate('enrolledStudents', 'name');
-
-            results.courses = courses.map(course => ({
-                name: course.name,
-                code: course.code,
-                department: course.department,
-                semester: course.semester,
-                credits: course.credits,
-                instructor: course.instructor?.name,
-                enrolledCount: course.enrolledStudents?.length || 0
-            }));
-        }
-
-        // Query Attendance (if userId provided)
-        if (isAttendanceQuery && userId) {
-            const student = await Student.findOne({ user: userId });
             if (student) {
-                const attendanceRecords = await Attendance.find({ student: student._id })
-                    .populate('course', 'name code')
-                    .sort({ date: -1 })
-                    .limit(50);
-
-                const attendanceStats = {};
-                attendanceRecords.forEach(record => {
-                    const courseKey = record.course?.name || 'Unknown';
-                    if (!attendanceStats[courseKey]) {
-                        attendanceStats[courseKey] = { present: 0, total: 0 };
-                    }
-                    attendanceStats[courseKey].total++;
-                    // Check for Present status (case-insensitive)
-                    if (record.status && record.status.toLowerCase() === 'present') {
-                        attendanceStats[courseKey].present++;
-                    }
-                });
-
-                results.attendance = {
-                    records: attendanceRecords.slice(0, 10).map(r => ({
-                        course: r.course?.name,
-                        date: r.date,
-                        status: r.status
-                    })),
-                    statistics: Object.entries(attendanceStats).map(([course, stats]) => ({
-                        course,
-                        percentage: ((stats.present / stats.total) * 100).toFixed(2),
-                        present: stats.present,
-                        total: stats.total
-                    }))
+                results.personalContext.type = 'Student';
+                results.personalContext.profile = {
+                    dept: student.department,
+                    sem: student.sem,
+                    section: student.section,
+                    admission: student.admissionNumber
                 };
-            }
-        }
 
-        // Query Marks/Grades (if userId provided)
-        if (isGradeQuery && userId) {
-            const student = await Student.findOne({ user: userId });
-            if (student) {
-                const marks = await Mark.find({ student: student._id })
-                    .populate('course', 'name code credits')
-                    .sort({ createdAt: -1 });
-
-                results.marks = marks.map(mark => ({
-                    course: mark.course?.name,
-                    courseCode: mark.course?.code,
-                    marksObtained: mark.marksObtained,
-                    totalMarks: mark.totalMarks,
-                    percentage: ((mark.marksObtained / mark.totalMarks) * 100).toFixed(2),
-                    grade: mark.grade
-                }));
-
-                // Calculate overall stats
-                if (marks.length > 0) {
-                    const totalPercentage = marks.reduce((sum, m) =>
-                        sum + (m.marksObtained / m.totalMarks) * 100, 0);
-                    results.overallPercentage = (totalPercentage / marks.length).toFixed(2);
+                // Personal Courses
+                if (student.enrolledCourses && student.enrolledCourses.length > 0) {
+                    results.personalContext.courses = student.enrolledCourses.map(c => ({
+                        name: c.name,
+                        code: c.code,
+                        instructor: 'Fetching...' // Will populate below
+                    }));
                 }
-            }
-        }
 
-        // Query Assignments
-        if (isAssignmentQuery && userId) {
-            const student = await Student.findOne({ user: userId });
-            if (student) {
-                const assignments = await Assignment.find()
-                    .populate('course', 'name code')
-                    .sort({ dueDate: -1 })
-                    .limit(10);
+                // Personal Timetable
+                const courseIds = student.enrolledCourses?.map(c => c._id) || [];
+                let timetables = [];
+                if (courseIds.length > 0) {
+                    timetables = await Timetable.find({ course: { $in: courseIds } }).populate('course', 'name code');
+                } else {
+                    // Fallback to dept/sem
+                    const deptCourses = await Course.find({ department: student.department, semester: student.sem });
+                    const deptCourseIds = deptCourses.map(c => c._id);
+                    timetables = await Timetable.find({ course: { $in: deptCourseIds } }).populate('course', 'name code');
+                }
 
-                results.assignments = assignments.map(assignment => ({
-                    title: assignment.title,
-                    course: assignment.course?.name,
-                    dueDate: assignment.dueDate,
-                    totalMarks: assignment.totalMarks,
-                    description: assignment.description
-                }));
-            }
-        }
-
-        // Query Timetable
-        if (isTimetableQuery && userId) {
-            const student = await Student.findOne({ user: userId });
-            if (student) {
-                const timetables = await Timetable.find({
-                    department: student.department,
-                    semester: student.semester
-                }).populate('course', 'name code');
-
-                results.timetable = timetables.map(tt => ({
+                results.personalContext.timetable = timetables.map(tt => ({
                     day: tt.day,
-                    startTime: tt.startTime,
-                    endTime: tt.endTime,
+                    time: `${tt.startTime} - ${tt.endTime}`,
+                    course: tt.course?.name,
+                    room: tt.room
+                }));
+
+                // Basic Attendance Stats
+                const attendanceStats = await Attendance.aggregate([
+                    { $match: { student: student._id } },
+                    {
+                        $group: {
+                            _id: "$course",
+                            present: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },
+                            total: { $sum: 1 }
+                        }
+                    },
+                    { $lookup: { from: 'courses', localField: '_id', foreignField: '_id', as: 'courseInfo' } }
+                ]);
+
+                results.personalContext.attendanceOverview = attendanceStats.map(stat => ({
+                    course: stat.courseInfo[0]?.name || 'Unknown',
+                    percentage: ((stat.present / stat.total) * 100).toFixed(1) + '%'
+                }));
+            } else if (faculty) {
+                results.personalContext.type = 'Faculty';
+                results.personalContext.profile = {
+                    dept: faculty.department,
+                    designation: faculty.designation
+                };
+
+                // Faculty Timetable
+                const tt = await Timetable.find({ faculty: faculty._id }).populate('course', 'name code');
+                results.personalContext.timetable = tt.map(tt => ({
+                    day: tt.day,
+                    time: `${tt.startTime} - ${tt.endTime}`,
                     course: tt.course?.name,
                     room: tt.room
                 }));
             }
         }
 
-        // Query Leave Requests
-        if (isLeaveQuery && userId) {
-            const leaves = await Leave.find({ user: userId })
-                .sort({ createdAt: -1 })
-                .limit(5);
+        // --- 2. INTENT-BASED DEEP QUERIES ---
+        const isAttendanceQuery = /attendance|present|absent|attendance rate|atendance|classes attended/i.test(message);
+        const isGradeQuery = /grade|mark|score|result|cgpa|gpa|marksheet|how did i do/i.test(message);
+        const isCourseQuery = /course|subject|class|enrolled|what do i study|my subjects|syllabus|listing of subjects/i.test(message);
+        const isAssignmentQuery = /assignment|homework|task|submission|pending work|deadline/i.test(message);
+        const isTimetableQuery = /timetable|schedule|timing|when|when is my class|period|routine|classes today/i.test(message);
+        const isLeaveQuery = /leave|holiday|vacation|absent request|apply for leave/i.test(message);
+        const isExamQuery = /exam|test|examination|date sheet|exam info/i.test(message);
+        const isStudentQuery = /student|total student|how many student|student count/i.test(message);
+        const isFacultyQuery = /faculty|teacher|professor|instructor|who teaches|who is my professor|staff/i.test(message);
 
-            results.leaves = leaves.map(leave => ({
-                reason: leave.reason,
-                startDate: leave.startDate,
-                endDate: leave.endDate,
-                status: leave.status,
-                days: leave.days
+        // Specific Student/Faculty info if requested
+        if (isStudentQuery) {
+            const count = await Student.countDocuments();
+            results.studentStats = { totalCount: count };
+        }
+
+        if (isFacultyQuery) {
+            const faculty = await Faculty.find().populate('user', 'name email').limit(20);
+            results.facultyList = faculty.map(f => ({
+                name: f.user?.name,
+                email: f.user?.email,
+                dept: f.department,
+                subjects: f.subjects // if field exists
             }));
         }
 
-        // Query Exams
-        if (isExamQuery) {
-            const exams = await Exam.find()
-                .populate('course', 'name code')
-                .sort({ date: -1 })
-                .limit(10);
+        if (isCourseQuery && !results.personalContext.courses) {
+            results.allCourses = await Course.find({}).limit(10).select('name code department semester');
+        }
 
-            results.exams = exams.map(exam => ({
-                course: exam.course?.name,
-                date: exam.date,
-                startTime: exam.startTime,
-                endTime: exam.endTime,
-                room: exam.room,
-                totalMarks: exam.totalMarks
-            }));
+        if (isGradeQuery && userId) {
+            const student = await Student.findOne({ user: userId });
+            if (student) {
+                results.detailedGrades = await Mark.find({ student: student._id }).populate('course', 'name code');
+            }
+        }
+
+        if (isAssignmentQuery && userId) {
+            results.activeAssignments = await Assignment.find().populate('course', 'name code').sort({ dueDate: 1 }).limit(10);
+        }
+
+        if (isLeaveQuery && userId) {
+            results.myLeaves = await Leave.find({ user: userId }).sort({ createdAt: -1 }).limit(5);
+        }
+
+        if (isExamQuery) {
+            results.upcomingExams = await Exam.find().populate('course', 'name code').sort({ date: 1 }).limit(10);
         }
 
         return results;
@@ -229,90 +163,65 @@ function buildDatabaseContext(results) {
         return null;
     }
 
-    let context = '\n\n=== DATABASE INFORMATION ===\n';
+    let context = '\n\n=== ERP DATABASE CONTEXT ===\n';
 
-    if (results.students) {
-        context += `\nSTUDENT STATISTICS:\n`;
-        context += `- Total Students: ${results.students.total}\n`;
-        if (Object.keys(results.students.byDepartment).length > 0) {
-            context += `- By Department:\n`;
-            Object.entries(results.students.byDepartment).forEach(([dept, count]) => {
-                context += `  * ${dept}: ${count} students\n`;
+    // 1. Personal Context (Highest Priority)
+    if (results.personalContext && results.personalContext.type) {
+        const pc = results.personalContext;
+        context += `\nUSER PROFILE: ${pc.type} (${pc.profile?.dept}, Sem: ${pc.profile?.sem || 'N/A'})\n`;
+
+        if (pc.timetable && pc.timetable.length > 0) {
+            context += `CURRENT TIMETABLE:\n`;
+            pc.timetable.forEach(tt => {
+                context += `- ${tt.day} ${tt.time}: ${tt.course} [Room ${tt.room}]\n`;
+            });
+        }
+
+        if (pc.attendanceOverview && pc.attendanceOverview.length > 0) {
+            context += `ATTENDANCE SUMMARY:\n`;
+            pc.attendanceOverview.forEach(att => {
+                context += `- ${att.course}: ${att.percentage}\n`;
             });
         }
     }
 
-    if (results.faculty) {
-        context += `\nFACULTY STATISTICS:\n`;
-        context += `- Total Faculty: ${results.faculty.total}\n`;
-        if (Object.keys(results.faculty.byDepartment).length > 0) {
-            context += `- By Department:\n`;
-            Object.entries(results.faculty.byDepartment).forEach(([dept, count]) => {
-                context += `  * ${dept}: ${count} faculty members\n`;
-            });
-        }
-    }
-
-    if (results.courses) {
-        context += `\nCOURSES:\n`;
-        results.courses.slice(0, 10).forEach(course => {
-            context += `- ${course.name} (${course.code}) - ${course.department}, Semester ${course.semester}\n`;
-            context += `  Instructor: ${course.instructor || 'Not assigned'}, Students: ${course.enrolledCount}\n`;
+    // 2. Intent-specific Data
+    if (results.facultyList) {
+        context += `\nFACULTY INFORMATION:\n`;
+        results.facultyList.forEach(f => {
+            context += `- Prof. ${f.name} (${f.dept}) - ${f.email || 'No email'}\n`;
         });
     }
 
-    if (results.attendance) {
-        context += `\nATTENDANCE INFORMATION:\n`;
-        if (results.attendance.statistics) {
-            results.attendance.statistics.forEach(stat => {
-                context += `- ${stat.course}: ${stat.percentage}% (${stat.present}/${stat.total} classes)\n`;
-            });
-        }
-    }
-
-    if (results.marks) {
-        context += `\nGRADES/MARKS:\n`;
-        results.marks.forEach(mark => {
-            context += `- ${mark.course}: ${mark.marksObtained}/${mark.totalMarks} (${mark.percentage}%) - Grade: ${mark.grade || 'N/A'}\n`;
-        });
-        if (results.overallPercentage) {
-            context += `\nOverall Percentage: ${results.overallPercentage}%\n`;
-        }
-    }
-
-    if (results.assignments && results.assignments.length > 0) {
-        context += `\nASSIGNMENTS:\n`;
-        results.assignments.forEach(assignment => {
-            context += `- ${assignment.title} (${assignment.course})\n`;
-            context += `  Due: ${new Date(assignment.dueDate).toLocaleDateString()}\n`;
+    if (results.detailedGrades) {
+        context += `\nDETAILED GRADES:\n`;
+        results.detailedGrades.forEach(g => {
+            context += `- ${g.course?.name}: ${g.marksObtained}/${g.totalMarks} (Grade: ${g.grade})\n`;
         });
     }
 
-    if (results.timetable && results.timetable.length > 0) {
-        context += `\nTIMETABLE:\n`;
-        results.timetable.forEach(tt => {
-            context += `- ${tt.day}: ${tt.course} (${tt.startTime} - ${tt.endTime}) in ${tt.room}\n`;
+    if (results.activeAssignments) {
+        context += `\nPENDING ASSIGNMENTS:\n`;
+        results.activeAssignments.forEach(a => {
+            context += `- ${a.title} [${a.course?.name}] due ${new Date(a.dueDate).toLocaleDateString()}\n`;
         });
     }
 
-    if (results.leaves && results.leaves.length > 0) {
-        context += `\nLEAVE REQUESTS:\n`;
-        results.leaves.forEach(leave => {
-            context += `- ${leave.reason}: ${new Date(leave.startDate).toLocaleDateString()} to ${new Date(leave.endDate).toLocaleDateString()}\n`;
-            context += `  Status: ${leave.status}\n`;
+    if (results.upcomingExams) {
+        context += `\nEXAM SCHEDULE:\n`;
+        results.upcomingExams.forEach(e => {
+            context += `- ${e.course?.name} on ${new Date(e.date).toLocaleDateString()} at ${e.startTime}\n`;
         });
     }
 
-    if (results.exams && results.exams.length > 0) {
-        context += `\nUPCOMING EXAMS:\n`;
-        results.exams.forEach(exam => {
-            context += `- ${exam.course}: ${new Date(exam.date).toLocaleDateString()} at ${exam.startTime}\n`;
-            context += `  Room: ${exam.room}, Total Marks: ${exam.totalMarks}\n`;
+    if (results.allCourses) {
+        context += `\nSYSTEM COURSES:\n`;
+        results.allCourses.forEach(c => {
+            context += `- ${c.name} (${c.code}) - Dept: ${c.department}\n`;
         });
     }
 
-    context += '\n=== END DATABASE INFORMATION ===\n';
-
+    context += '\n=== END ERP DATA ===\n';
     return context;
 }
 

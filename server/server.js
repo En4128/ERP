@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const initSocket = require('./socket');
-
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -12,7 +11,6 @@ const app = express();
 const server = http.createServer(app);
 const io = initSocket(server);
 const PORT = process.env.PORT || 5000;
-
 
 // Middleware
 app.use(express.json());
@@ -29,9 +27,20 @@ app.use((req, res, next) => {
 });
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/campus-erp')
-    .then(() => console.log('Database Connected'))
-    .catch(err => console.log('MongoDB Connection Error:', err));
+const connectDB = async () => {
+    try {
+        console.log('Connecting to MongoDB...');
+        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/campus-erp', {
+            serverSelectionTimeoutMS: 5000,
+            family: 4 // Force IPv4 to avoid resolution delays
+        });
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        return true;
+    } catch (err) {
+        console.error('MongoDB Connection Error:', err.message);
+        return false;
+    }
+};
 
 // Routes Configuration
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -48,12 +57,22 @@ app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/search', require('./routes/searchRoutes'));
 
-
 app.get('/', (req, res) => {
     res.send('LearNex is running...');
 });
 
-// Start Server
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Start Server after DB connection
+const startServer = async () => {
+    const isConnected = await connectDB();
+
+    if (isConnected) {
+        server.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } else {
+        console.error('CRITICAL: Failed to connect to MongoDB. Server will not start.');
+        process.exit(1);
+    }
+};
+
+startServer();

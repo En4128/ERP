@@ -10,8 +10,12 @@ A next-generation, full-stack College ERP solution built with the **MERN Stack**
 - **Fees & Payments**: View outstanding dues, payment history, and "Pay Now" options.
 - **Academic Hub**: Access Enrolled Courses, Timetable, Results, and Exam Schedules.
 - **Support & Leaves**: Apply for leave and request support directly from the portal.
-- **AI Chatbot**: Integrated **Google Gemini AI** powered assistant for academic queries and support.
+- **AI Chatbot**: Integrated **Google Gemini AI** powered assistant with:
+    - **Persistent History**: Conversations are saved to `localStorage` and persist across navigation.
+    - **Personal Context**: Automatic recognition of user's department, courses, and timetable.
+    - **Clear Chat**: Functionality to reset and purge conversational data.
 - **Real-time Chat**: Instant messaging with faculty and peers, powered by **Socket.IO**.
+- **Modern Notifications**: Redesigned notification center with **Glassmorphism UI** and smooth animations.
 
 ### 👨‍🏫 Faculty Portal
 - **Dashboard**: Quick overview of daily schedules and pending requests.
@@ -42,10 +46,10 @@ A next-generation, full-stack College ERP solution built with the **MERN Stack**
 - **Framework**: Express.js
 - **Database**: MongoDB (Mongoose ODM)
 - **Authentication**: JWT (JSON Web Tokens) with secure password hashing (Bcrypt)
-- **AI Integration**: Google Generative AI (Gemini)
+- **AI Integration**: Google Generative AI (Gemini Flash)
 - **Real-time**: Socket.IO
-- **Validation**: Zod (if applicable) / Manual validation
-- **Logging**: File-based persistent debugging
+- **Stability**: Synchronized Mongoose connection management for reliable server startup.
+- **Logging**: File-based persistent debugging and enhanced error reporting.
 
 ## ⚙️ Setup Instructions
 
@@ -113,6 +117,9 @@ npm run dev
 - `GET /api/faculty/schedule`: Get daily timetable
 - `POST /api/faculty/attendance`: Mark student attendance
 
+### Chatbot
+- `POST /api/chatbot/ask`: Get AI-powered response with persistent ERP context
+
 ### Chat
 - Socket.IO events: `join_room`, `send_message`, `receive_message`
 
@@ -134,5 +141,6 @@ root/
 
 ## ✨ Highlights
 - **Dark Mode Support**: Fully responsive dark/light theme switching.
-- **Interactive UI**: Hover effects, smooth page transitions, and glassmorphism elements.
-- **Data Integrity**: Robust backend validation and error handling.
+- **Interactive UI**: Hover effects, smooth page transitions, and premium glassmorphism elements.
+- **Persistent AI Context**: Smart chatbot that remembers your data and conversation history.
+- **Data Integrity**: Robust backend validation and connection synchronization.

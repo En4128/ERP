@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../../components/Layout';
-import { Bell, AlertTriangle, Clock, CheckCircle, Info, Megaphone, Volume2, X, ChevronRight, Users } from 'lucide-react';
+import { Bell, AlertTriangle, Clock, CheckCircle, Info, Megaphone, Volume2, X, ChevronRight, Users, Sparkles, Mail, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
 
 const Notifications = () => {
@@ -217,71 +218,91 @@ const Notifications = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+                            className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
                             onClick={() => { stopSpeaking(); setSelectedNotice(null); }}
                         />
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-[#E5E7EB] dark:bg-[#242B3D] w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9] dark:border-[#3D4556]"
+                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="bg-white/80 dark:bg-[#1A1F2E]/90 backdrop-blur-2xl w-full max-w-2xl rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden relative z-10 border border-white/20 dark:border-slate-700/50"
                         >
-                            <div className={`h-2 w-full bg-gradient-to-r ${getBgColor(selectedNotice.type).includes('red') ? 'from-red-500 to-rose-600' : 'from-indigo-500 to-purple-600'}`}></div>
+                            {/* Decorative Glow */}
+                            <div className={cn(
+                                "absolute -top-24 -left-24 w-48 h-48 rounded-full blur-[100px] opacity-20",
+                                getBgColor(selectedNotice.type).includes('red') ? 'bg-rose-500' : 'bg-indigo-500'
+                            )}></div>
 
-                            <div className="p-8 md:p-12">
-                                <div className="flex justify-between items-start mb-8 md:mb-10">
-                                    <div className="p-3.5 md:p-4 bg-[#E5E7EB] dark:bg-[#1A1F2E] rounded-xl md:rounded-2xl shadow-inner text-indigo-500">
-                                        <Bell size={20} md:size={24} />
+                            <div className="p-10 md:p-14 relative z-10">
+                                <div className="flex justify-between items-start mb-10 md:mb-12">
+                                    <div className="p-5 bg-white dark:bg-slate-800/50 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700/50 text-indigo-500 transform -rotate-6">
+                                        <Bell size={24} md:size={28} />
                                     </div>
                                     <button
                                         onClick={() => { stopSpeaking(); setSelectedNotice(null); }}
-                                        className="p-3 bg-[#F1F3F7] dark:bg-[#2D3548] text-slate-400 rounded-xl hover:rotate-90 transition-all duration-300"
+                                        className="p-4 bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 rounded-2xl hover:rotate-90 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-all duration-300"
                                     >
-                                        <X size={20} md:size={24} />
+                                        <X size={24} md:size={28} />
                                     </button>
                                 </div>
 
-                                <div className="space-y-6 md:space-y-10">
-                                    <div className="space-y-4">
-                                        <h2 className="text-2xl md:text-5xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none">
+                                <div className="space-y-8 md:space-y-12">
+                                    <div className="space-y-5">
+                                        <h2 className="text-3xl md:text-6xl font-black text-[#0F1419] dark:text-white tracking-tighter leading-[0.9] drop-shadow-sm">
                                             {selectedNotice.title}
                                         </h2>
 
-                                        <div className="flex flex-wrap items-center gap-4 text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] py-5 border-y border-[#E2E5E9] dark:border-[#3D4556]">
-                                            <div className="flex items-center gap-2.5">
-                                                <Clock size={14} className="text-indigo-500" />
+                                        <div className="flex flex-wrap items-center gap-6 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest py-6 border-y border-slate-200/50 dark:border-slate-700/30">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+                                                    <Clock size={16} className="text-indigo-500" />
+                                                </div>
                                                 {new Date(selectedNotice.date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
                                             </div>
-                                            <div className="flex items-center gap-2.5">
-                                                <Users size={14} className="text-indigo-500" />
-                                                Authored by {selectedNotice.author}
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                                                    <Users size={16} className="text-amber-500" />
+                                                </div>
+                                                Authored by <span className="text-slate-600 dark:text-slate-300 ml-1">{selectedNotice.author}</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="relative group p-8 md:p-12 bg-[#F1F3F7] dark:bg-[#1A1F2E]/50 rounded-[2rem] border border-[#E2E5E9] dark:border-[#3D4556] shadow-inner">
-                                        <p className="text-sm md:text-xl font-bold text-[#475569] dark:text-[#B8BDC6] leading-relaxed whitespace-pre-wrap">
+                                    <div className="relative group p-10 md:p-14 bg-slate-50/50 dark:bg-slate-900/40 rounded-[2.5rem] border border-slate-200/50 dark:border-slate-700/50 shadow-inner overflow-hidden">
+                                        <p className="text-base md:text-2xl font-bold text-slate-600 dark:text-slate-200 leading-relaxed whitespace-pre-wrap relative z-10">
                                             {selectedNotice.content}
                                         </p>
 
-                                        <button
+                                        <motion.button
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
                                             onClick={(e) => { e.stopPropagation(); isSpeaking ? stopSpeaking() : handleSpeak(selectedNotice.title, selectedNotice.content); }}
                                             className={cn(
-                                                "absolute bottom-4 right-4 md:-right-6 md:top-1/2 md:-translate-y-1/2 p-5 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl transition-all transform hover:scale-110 active:scale-95 z-10",
-                                                isSpeaking ? "bg-rose-500 text-white animate-pulse" : "bg-indigo-600 text-white"
+                                                "absolute bottom-8 right-8 p-5 md:p-6 rounded-full shadow-2xl transition-all z-10",
+                                                isSpeaking
+                                                    ? "bg-rose-500 text-white shadow-rose-500/40 animate-pulse"
+                                                    : "bg-indigo-600 text-white shadow-indigo-600/40"
                                             )}
                                         >
                                             <Volume2 size={24} md:size={32} />
-                                        </button>
+                                        </motion.button>
+
+                                        {/* Background pattern */}
+                                        <div className="absolute top-0 right-0 p-8 opacity-5">
+                                            <Megaphone size={120} className="-rotate-12" />
+                                        </div>
                                     </div>
 
-                                    <div className="pt-6">
-                                        <button
+                                    <div className="pt-4">
+                                        <motion.button
+                                            whileHover={{ scale: 1.02, translateY: -2 }}
+                                            whileTap={{ scale: 0.98 }}
                                             onClick={() => handleMarkAsRead(selectedNotice.id)}
-                                            className="w-full py-5 md:py-6 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl md:rounded-[2.5rem] text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-500/20 transition transform active:scale-[0.98] flex items-center justify-center gap-3"
+                                            className="w-full py-6 md:py-8 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-600 hover:shadow-[0_20px_40px_-10px_rgba(245,158,11,0.5)] text-white rounded-[2rem] md:rounded-[2.5rem] text-xs md:text-sm font-black uppercase tracking-[0.3em] shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-4 border-t border-white/20"
                                         >
-                                            <CheckCircle2 size={20} /> Terminate & Close
-                                        </button>
+                                            <CheckCircle2 size={24} /> Mark as Read & Close
+                                        </motion.button>
                                     </div>
                                 </div>
                             </div>

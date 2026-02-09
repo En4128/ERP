@@ -14,7 +14,8 @@ The Smart Campus ERP is a comprehensive, full-stack web application designed to 
 - **Animations**: [Framer Motion](https://www.framer.com/motion/) for smooth page transitions and UI effects.
 - **Icons**: [Lucide React](https://lucide.dev/) for a consistent iconography system.
 - **Notifications**: [Sonner](https://sonner.stevenly.me/) for toast notifications.
-- **State Management**: React Context API (e.g., `ChatContext`).
+- **State Management**: React Context API with persistent `localStorage` synchronization (e.g., `ChatContext.jsx` for persistent bot conversations).
+- **UI System**: Modern "Bento Grid" layouts with custom Glassmorphism components and specialized notification modals.
 
 ### Backend (Server)
 - **Environment**: [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/).
@@ -22,7 +23,7 @@ The Smart Campus ERP is a comprehensive, full-stack web application designed to 
 - **Real-time**: [Socket.io](https://socket.io/) for instant messaging/chat functionality.
 - **Authentication**: [JWT (JSON Web Tokens)](https://jwt.io/) and [Bcryptjs](https://github.com/dcodeIO/bcrypt.js) for secure password hashing.
 - **File Handling**: [Multer](https://github.com/expressjs/multer) for managing file uploads (assignments, documents).
-- **AI Integration**: [Google Generative AI SDK](https://ai.google.dev/) for campus-specific AI assistant features.
+- **AI Integration**: [Google Generative AI SDK](https://ai.google.dev/) (Gemini Flash) with automated ERP context injection and personal database query mapping.
 - **Communication**: [Nodemailer](https://nodemailer.com/) for automated email notifications.
 
 ---
@@ -42,7 +43,7 @@ The Smart Campus ERP is a comprehensive, full-stack web application designed to 
 - `controllers/`: Business logic for API endpoints.
 - `models/`: Mongoose schemas defining the data structure for entities like `Student`, `Course`, `Attendance`, `Message`, etc.
 - `routes/`: API route definitions mapping URLs to controllers.
-- `utils/`: Common utility functions.
+- `utils/`: Common utility functions, including the `chatbotHelper.js` for intelligent ERP data retrieval and `rateLimiter.js` for API protection.
 - `uploads/`: Local storage for uploaded files.
 
 ---
@@ -59,10 +60,13 @@ The system manages several core entities:
 ## 5. Core Features
 1. **Role-Based Access Control**: Distinct dashboards and functionalities for Students, Faculty, and Admins.
 2. **Real-time Chat**: Faculty and students can communicate instantly via a Socket.io-powered chat interface.
-3. **AI Campus Assistant**: A chatbot integrated with Google’s Generative AI to assist users.
-4. **Attendance Tracking**: Digital attendance management for faculty and students.
-5. **Academic Management**: Handling of courses, assignments, marks, and exam schedules.
-6. **Administrative Workflow**: Management of fees, leave requests, and placements.
+3. **AI Campus Assistant (Smart Chatbot)**:
+    - **Persistent History**: Conversations survive page refreshes and navigation.
+    - **Personal Context**: Automatically fetches user-specific timetable, faculty, and marks.
+    - **Concise Responses**: Enforced data-only, direct output for efficient assistance.
+4. **Attendance Tracking**: Digital attendance management with heatmap visualization.
+5. **Redesigned Notifications**: Advanced notification center using heavy glassmorphism, background blurs, and Framer Motion micro-animations.
+6. **Backend Continuity**: High-availability server setup with synchronized database connection management.
 
 ---
 

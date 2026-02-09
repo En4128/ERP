@@ -5,10 +5,7 @@ import { useChat } from '../context/ChatContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ChatbotWidget = () => {
-    const { isChatOpen, toggleChat } = useChat();
-    const [messages, setMessages] = useState([
-        { text: 'Hi! I am the Campus Bot. 🤖\nHow can I help you today?', sender: 'bot', timestamp: new Date() }
-    ]);
+    const { isChatOpen, toggleChat, messages, setMessages, clearMessages } = useChat();
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
@@ -107,12 +104,21 @@ const ChatbotWidget = () => {
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                onClick={toggleChat}
-                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-colors text-slate-500 dark:text-slate-400"
-                            >
-                                <X size={20} />
-                            </button>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={clearMessages}
+                                    title="Clear Chat History"
+                                    className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors text-slate-400 hover:text-red-500"
+                                >
+                                    <Sparkles size={18} className="opacity-50" />
+                                </button>
+                                <button
+                                    onClick={toggleChat}
+                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-colors text-slate-500 dark:text-slate-400"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Messages Area */}
@@ -219,7 +225,7 @@ const ChatbotWidget = () => {
                     )}
                 </div>
             </motion.button>
-        </div>
+        </div >
     );
 };
 
