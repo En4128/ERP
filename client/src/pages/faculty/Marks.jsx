@@ -316,11 +316,10 @@ const FacultyMarks = () => {
                                         onChange={(e) => setExamType(e.target.value)}
                                         className="w-full pl-6 pr-10 py-3 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#0F1419] dark:text-[#E8EAED] appearance-none cursor-pointer focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="CIA-1">CIA-I Midterm</option>
-                                        <option value="CIA-2">CIA-II Progress</option>
-                                        <option value="Assignment">Task Execution</option>
-                                        <option value="Attendance-Marks">Engagement Metric</option>
-                                        <option value="Semester-Final">Terminal Assessment</option>
+                                        <option value="CT-1">CT-1</option>
+                                        <option value="CT-2">CT-2</option>
+                                        <option value="Internal">Internal Marks</option>
+                                        <option value="Semester-Final">Semester Final</option>
                                     </select>
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                                         <ChevronRight size={14} className="rotate-90" />

@@ -59,7 +59,7 @@ const Results = () => {
         doc.text(`SGPA: ${semesterData.sgpa}`, 150, 38);
 
         // Table Data
-        const tableColumn = ["Course Code", "Subject", "Type", "Credits", "Marks", "Grade"];
+        const tableColumn = ["Course Code", "Subject", "Assessment", "Credits", "Marks", "Grade"];
         const tableRows = [];
 
         semesterData.results.forEach(subject => {
@@ -203,6 +203,7 @@ const Results = () => {
                                                 <tr className="text-xs uppercase text-[#64748B] dark:text-[#868D9D] border-b border-[#E2E5E9] dark:border-[#3D4556]">
                                                     <th className="py-3 font-semibold">Course Code</th>
                                                     <th className="py-3 font-semibold">Subject</th>
+                                                    <th className="py-3 font-semibold text-center">Assessment</th>
                                                     <th className="py-3 font-semibold text-center">Credits</th>
                                                     <th className="py-3 font-semibold text-center">Marks</th>
                                                     <th className="py-3 font-semibold text-center">Grade</th>
@@ -212,7 +213,12 @@ const Results = () => {
                                                 {semData.results.map((subject, idx) => (
                                                     <tr key={idx} className="border-b border-[#E2E5E9] dark:border-[#3D4556] last:border-0 hover:bg-white hover:bg-[#F1F3F7] dark:bg-[#2D3548] transition-colors">
                                                         <td className="py-4 text-gray-600 dark:text-gray-300 font-medium">{subject.courseCode}</td>
-                                                        <td className="py-4 text-[#0F1419] dark:text-[#E8EAED] font-semibold">{subject.courseName} <span className="text-xs text-[#64748B] dark:text-[#868D9D] font-normal ml-1">({subject.examType})</span></td>
+                                                        <td className="py-4 text-[#0F1419] dark:text-[#E8EAED] font-semibold">{subject.courseName}</td>
+                                                        <td className="py-4 text-center">
+                                                            <span className="px-3 py-1 bg-blue-500/10 dark:bg-blue-400/10 text-[#2563EB] dark:text-[#60A5FA] rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-500/20 dark:border-blue-400/20">
+                                                                {subject.examType}
+                                                            </span>
+                                                        </td>
                                                         <td className="py-4 text-center text-slate-600">{subject.credits}</td>
                                                         <td className="py-4 text-center">
                                                             <span className="text-[#0F1419] dark:text-[#E8EAED] font-medium">{subject.marksObtained}</span>

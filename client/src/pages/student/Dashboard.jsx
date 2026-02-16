@@ -472,8 +472,13 @@ const DashboardPage = () => {
                                             {grade.grade}
                                         </div>
                                         <div>
-                                            <p className="text-[10px] md:text-xs font-black text-[#0F1419] dark:text-[#E8EAED] line-clamp-1">{grade.subject}</p>
-                                            <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Verified</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-[10px] md:text-xs font-black text-[#0F1419] dark:text-[#E8EAED] line-clamp-1">{grade.subject}</p>
+                                                <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 uppercase tracking-tighter border border-blue-500/10">
+                                                    {grade.examType}
+                                                </span>
+                                            </div>
+                                            <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Verified • {grade.courseCode}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">

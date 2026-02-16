@@ -198,6 +198,8 @@ exports.getDashboardStats = async (req, res) => {
 
             return {
                 subject: mark.course.name,
+                courseCode: mark.course.code,
+                examType: mark.examType,
                 marks: mark.marksObtained,
                 maxMarks: mark.maxMarks,
                 grade,
