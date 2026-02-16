@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import PageLoader from './components/PageLoader';
+import SmoothScroll from './components/SmoothScroll';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
@@ -42,14 +43,11 @@ import { ChatProvider } from './context/ChatContext';
 import { Toaster } from 'sonner';
 
 function App() {
-  const [appLoading, setAppLoading] = useState(true);
+  const [appLoading, setAppLoading] = useState(false);
 
+  // Removed artificial delay
   useEffect(() => {
-    // Simulate initialization
-    const timer = setTimeout(() => {
-      setAppLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
+    setAppLoading(false);
   }, []);
 
   return (
@@ -60,54 +58,53 @@ function App() {
           {appLoading && <PageLoader key="app-loader" />}
         </AnimatePresence>
 
-        {!appLoading && (
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <SmoothScroll />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-            <Route path="/student" element={<StudentDashboard />} />
-            <Route path="/student/attendance" element={<StudentAttendance />} />
-            <Route path="/student/courses" element={<StudentCourses />} />
-            <Route path="/student/timetable" element={<StudentTimetable />} />
-            <Route path="/student/results" element={<StudentResults />} />
-            <Route path="/student/documents" element={<StudentDocuments />} />
-            <Route path="/student/faculty" element={<StudentFacultyInfo />} />
-            <Route path="/student/placements" element={<StudentPlacements />} />
-            <Route path="/student/fees" element={<StudentFees />} />
-            <Route path="/student/library" element={<StudentLibrary />} />
-            <Route path="/student/leave" element={<StudentLeave />} />
-            <Route path="/student/exams" element={<ExamSchedule role="student" />} />
-            <Route path="/student/support" element={<StudentSupport role="student" />} />
-            <Route path="/student/notifications" element={<StudentNotifications />} />
-            <Route path="/student/assignments" element={<StudentAssignments />} />
-            <Route path="/student/profile" element={<StudentProfile />} />
-            <Route path="/student/chat" element={<Chat />} />
+          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/student/attendance" element={<StudentAttendance />} />
+          <Route path="/student/courses" element={<StudentCourses />} />
+          <Route path="/student/timetable" element={<StudentTimetable />} />
+          <Route path="/student/results" element={<StudentResults />} />
+          <Route path="/student/documents" element={<StudentDocuments />} />
+          <Route path="/student/faculty" element={<StudentFacultyInfo />} />
+          <Route path="/student/placements" element={<StudentPlacements />} />
+          <Route path="/student/fees" element={<StudentFees />} />
+          <Route path="/student/library" element={<StudentLibrary />} />
+          <Route path="/student/leave" element={<StudentLeave />} />
+          <Route path="/student/exams" element={<ExamSchedule role="student" />} />
+          <Route path="/student/support" element={<StudentSupport role="student" />} />
+          <Route path="/student/notifications" element={<StudentNotifications />} />
+          <Route path="/student/assignments" element={<StudentAssignments />} />
+          <Route path="/student/profile" element={<StudentProfile />} />
+          <Route path="/student/chat" element={<Chat />} />
 
 
-            <Route path="/faculty" element={<FacultyDashboard />} />
-            <Route path="/faculty/attendance" element={<FacultyAttendance />} />
-            <Route path="/faculty/courses" element={<FacultyCourses />} />
-            <Route path="/faculty/timetable" element={<FacultyTimetable />} />
-            <Route path="/faculty/marks" element={<FacultyMarks />} />
-            <Route path="/faculty/assignments" element={<FacultyAssignments />} />
-            <Route path="/faculty/documents" element={<FacultyDocuments />} />
-            <Route path="/faculty/students" element={<FacultyManageStudents />} />
-            <Route path="/faculty/notifications" element={<FacultyNotifications />} />
-            <Route path="/faculty/profile" element={<FacultyProfile />} />
-            <Route path="/faculty/leave-requests" element={<FacultyLeaveRequests />} />
-            <Route path="/faculty/chat" element={<Chat />} />
-            <Route path="/faculty/support" element={<StudentSupport role="faculty" />} />
+          <Route path="/faculty" element={<FacultyDashboard />} />
+          <Route path="/faculty/attendance" element={<FacultyAttendance />} />
+          <Route path="/faculty/courses" element={<FacultyCourses />} />
+          <Route path="/faculty/timetable" element={<FacultyTimetable />} />
+          <Route path="/faculty/marks" element={<FacultyMarks />} />
+          <Route path="/faculty/assignments" element={<FacultyAssignments />} />
+          <Route path="/faculty/documents" element={<FacultyDocuments />} />
+          <Route path="/faculty/students" element={<FacultyManageStudents />} />
+          <Route path="/faculty/notifications" element={<FacultyNotifications />} />
+          <Route path="/faculty/profile" element={<FacultyProfile />} />
+          <Route path="/faculty/leave-requests" element={<FacultyLeaveRequests />} />
+          <Route path="/faculty/chat" element={<Chat />} />
+          <Route path="/faculty/support" element={<StudentSupport role="faculty" />} />
 
-            <Route path="/faculty/exams" element={<ExamSchedule role="faculty" />} />
+          <Route path="/faculty/exams" element={<ExamSchedule role="faculty" />} />
 
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/exams" element={<AdminManageExams />} />
-            <Route path="/admin/support" element={<StudentSupport role="admin" />} />
-            <Route path="/admin/*" element={<AdminDashboard />} />
-          </Routes>
-        )}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/exams" element={<AdminManageExams />} />
+          <Route path="/admin/support" element={<StudentSupport role="admin" />} />
+          <Route path="/admin/*" element={<AdminDashboard />} />
+        </Routes>
       </ChatProvider>
     </div>
   );

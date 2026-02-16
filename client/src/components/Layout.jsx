@@ -71,9 +71,11 @@ const LayoutContent = ({ children, role }) => {
     const user = { name: userName, role: role || 'Student' };
 
     return (
-        <div className="flex flex-col md:flex-row bg-[#F5F7FA] dark:bg-slate-950 h-screen font-sans selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300 overflow-hidden">
-            <Sidebar role={role} />
-            <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex flex-col md:flex-row bg-[#F5F7FA] dark:bg-slate-950 min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors duration-300">
+            <div className="md:sticky md:top-0 md:h-screen z-50">
+                <Sidebar role={role} />
+            </div>
+            <div className="flex-1 flex flex-col">
                 {/* Header Container */}
                 <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 shadow-sm border-b border-gray-100 dark:border-slate-800 transition-all duration-300">
                     {/* Row 1: Brand (Mobile Only) */}
@@ -176,7 +178,7 @@ const LayoutContent = ({ children, role }) => {
                 </header>
 
                 {/* Main Content Area */}
-                <main className="flex-1 p-4 md:p-8 overflow-y-auto relative z-0 scroll-smooth">
+                <main className="flex-1 p-4 md:p-8 relative z-0">
                     {/* Content Background Decor */}
                     <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-teal-50/50 dark:from-teal-900/20 to-transparent pointer-events-none -z-10"></div>
 

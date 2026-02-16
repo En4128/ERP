@@ -85,7 +85,7 @@ const MobileSidebar = ({ className, children, ...props }) => {
                             ease: "easeInOut",
                         }}
                         className={cn(
-                            "fixed h-screen w-full inset-0 bg-white dark:bg-slate-950 p-10 z-[100] flex flex-col justify-between",
+                            "fixed h-[100dvh] w-full inset-0 bg-white dark:bg-slate-950 p-10 z-[100] flex flex-col justify-between",
                             className
                         )}
                     >
@@ -249,7 +249,7 @@ const SidebarComponent = ({ role }) => {
     return (
         <Sidebar open={open} setOpen={setOpen}>
             <SidebarBody className="justify-between gap-10">
-                <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar pt-2">
+                <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar pt-2" data-lenis-prevent>
                     {/* Brand */}
                     <div className="flex items-center gap-3 px-3 py-4 mb-2">
                         <div className="p-1.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex-shrink-0 overflow-hidden flex items-center justify-center">

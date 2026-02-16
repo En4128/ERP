@@ -51,7 +51,7 @@
 
 /* Smooth Scroll */
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; - Removed to allow Lenis to handle smooth scrolling */
 }
 
 /* Custom Utilities */
