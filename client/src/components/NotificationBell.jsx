@@ -4,6 +4,7 @@ import { Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const NotificationBell = ({ role }) => {
     const [notifications, setNotifications] = useState([]);
@@ -23,24 +24,40 @@ const NotificationBell = ({ role }) => {
     }, [role]);
 
     const requestPermission = async () => {
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            toast.error("Browser does not support notifications or not in a secure context (HTTPS/Localhost)");
+            return;
+        }
 
-        const permission = await Notification.requestPermission();
-        setPermissionStatus(permission);
+        try {
+            const permission = await Notification.requestPermission();
+            setPermissionStatus(permission);
 
-        if (permission === 'granted') {
-            try {
-                // Re-run subscription logic (similar to Layout.jsx but triggered by user)
-                // We rely on Layout.jsx or we can do it here explicitly to be safe
+            if (permission === 'denied') {
+                toast.error("Notification permission denied. Please reset permissions in your browser settings.");
+                return;
+            }
+
+            if (permission === 'granted') {
+                toast.loading("Setting up notifications...");
+
                 const register = await navigator.serviceWorker.ready;
                 const token = localStorage.getItem('token');
-                if (!token) return;
+
+                if (!token) {
+                    toast.error("Authentication token missing. Please log in again.");
+                    return;
+                }
 
                 const keyRes = await axios.get('http://localhost:5000/api/notifications/vapid-key', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const publicVapidKey = keyRes.data.publicKey;
-                if (!publicVapidKey) return;
+
+                if (!publicVapidKey) {
+                    toast.error("Failed to retrieve push configuration from server.");
+                    return;
+                }
 
                 const subscription = await register.pushManager.subscribe({
                     userVisibleOnly: true,
@@ -51,15 +68,19 @@ const NotificationBell = ({ role }) => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
+                toast.dismiss();
+                toast.success("Notifications fully enabled!");
+
                 // Show a test notification immediately
                 new Notification("Notifications Enabled!", {
                     body: "You will now receive alerts for upcoming classes.",
                     icon: "/logo-light.jpg"
                 });
-
-            } catch (error) {
-                console.error('Error enabling notifications:', error);
             }
+        } catch (error) {
+            console.error('Error enabling notifications:', error);
+            toast.dismiss();
+            toast.error(`Setup failed: ${error.message}`);
         }
     };
 

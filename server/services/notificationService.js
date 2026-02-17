@@ -93,7 +93,13 @@ const checkUpcomingClasses = async (io) => {
                     const payload = JSON.stringify({
                         title: notificationData.title,
                         body: notificationData.message,
-                        icon: '/icons/icon-192x192.png' // Adjust path as needed
+                        icon: '/logo-light.jpg',
+                        badge: '/logo-light.jpg',
+                        tag: `class-${session._id}`,
+                        data: {
+                            url: '/student/notifications',
+                            sessionId: session._id
+                        }
                     });
 
                     try {

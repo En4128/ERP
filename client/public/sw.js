@@ -4,13 +4,14 @@ self.addEventListener('push', function (event) {
         const options = {
             body: data.body,
             icon: data.icon || '/logo-light.jpg',
-            badge: '/logo-light.jpg',
-            vibrate: [100, 50, 100],
-            data: {
+            badge: data.badge || '/logo-light.jpg',
+            vibrate: [200, 100, 200],
+            tag: data.tag,
+            renotify: true,
+            data: data.data || {
                 dateOfArrival: Date.now(),
-                primaryKey: '2'
+                primaryKey: '1'
             },
-            // Actions can be added here for interactivity
             actions: [
                 { action: 'explore', title: 'View Details' }
             ]
@@ -24,8 +25,11 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
 
-    // Dynamic URL based on origin
-    const targetUrl = new URL('/student/notifications', self.location.origin).href;
+    // Dynamic URL based on origin or data payload
+    let targetUrl = new URL('/student/notifications', self.location.origin).href;
+    if (event.notification.data && event.notification.data.url) {
+        targetUrl = new URL(event.notification.data.url, self.location.origin).href;
+    }
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
