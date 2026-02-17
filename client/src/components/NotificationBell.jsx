@@ -11,9 +11,68 @@ const NotificationBell = ({ role }) => {
     const [showClearMessage, setShowClearMessage] = useState(false);
     const navigate = useNavigate();
 
+    // Trigger update on mount to check permission
+    const [permissionStatus, setPermissionStatus] = useState(Notification.permission);
+
     useEffect(() => {
         fetchNotifications();
+        // Check permission periodically or on focus
+        const checkPermission = () => setPermissionStatus(Notification.permission);
+        window.addEventListener('focus', checkPermission);
+        return () => window.removeEventListener('focus', checkPermission);
     }, [role]);
+
+    const requestPermission = async () => {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+        const permission = await Notification.requestPermission();
+        setPermissionStatus(permission);
+
+        if (permission === 'granted') {
+            try {
+                // Re-run subscription logic (similar to Layout.jsx but triggered by user)
+                // We rely on Layout.jsx or we can do it here explicitly to be safe
+                const register = await navigator.serviceWorker.ready;
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const keyRes = await axios.get('http://localhost:5000/api/notifications/vapid-key', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const publicVapidKey = keyRes.data.publicKey;
+                if (!publicVapidKey) return;
+
+                const subscription = await register.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                });
+
+                await axios.post('http://localhost:5000/api/notifications/subscribe', subscription, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                // Show a test notification immediately
+                new Notification("Notifications Enabled!", {
+                    body: "You will now receive alerts for upcoming classes.",
+                    icon: "/logo-light.jpg"
+                });
+
+            } catch (error) {
+                console.error('Error enabling notifications:', error);
+            }
+        }
+    };
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
 
     const fetchNotifications = async () => {
         try {
@@ -178,6 +237,17 @@ const NotificationBell = ({ role }) => {
                                     >
                                         Clear
                                     </button>
+                                    {permissionStatus !== 'granted' && (
+                                        <>
+                                            <span className="text-slate-300">|</span>
+                                            <button
+                                                onClick={requestPermission}
+                                                className="text-xs font-bold text-amber-500 hover:text-amber-600 uppercase tracking-wider"
+                                            >
+                                                Enable Alerts
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="max-h-[300px] overflow-y-auto">

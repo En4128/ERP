@@ -39,7 +39,14 @@ const userSchema = new mongoose.Schema({
         default: false
     },
     resetPasswordToken: String,
-    resetPasswordExpire: Date
+    resetPasswordExpire: Date,
+    pushSubscription: {
+        endpoint: String,
+        keys: {
+            p256dh: String,
+            auth: String
+        }
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

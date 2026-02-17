@@ -10,6 +10,8 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = initSocket(server);
+const initNotificationService = require('./services/notificationService');
+initNotificationService(io);
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -55,6 +57,7 @@ app.use('/api/timetable', require('./routes/timetableRoutes'));
 app.use('/api/assignments', require('./routes/assignmentRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/search', require('./routes/searchRoutes'));
 
 app.get('/', (req, res) => {

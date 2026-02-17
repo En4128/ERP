@@ -6,6 +6,8 @@ import NotificationBell from './NotificationBell';
 import { Menu, Moon, Sun, Settings, LogOut, User, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import { io } from 'socket.io-client';
+import { toast } from 'sonner';
 
 const LayoutContent = ({ children, role }) => {
     const navigate = useNavigate();
@@ -37,6 +39,8 @@ const LayoutContent = ({ children, role }) => {
         navigate('/login');
     };
 
+    const [userId, setUserId] = useState(null);
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -50,8 +54,10 @@ const LayoutContent = ({ children, role }) => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                const name = res.data.user?.name || res.data.name;
-                const image = res.data.user?.profileImage || res.data.profileImage;
+                const data = res.data.user || res.data;
+                const name = data.name;
+                const image = data.profileImage;
+                const id = data._id;
 
                 if (name) {
                     setUserName(name);
@@ -60,6 +66,9 @@ const LayoutContent = ({ children, role }) => {
                 if (image) {
                     setProfileImage(image);
                 }
+                if (id) {
+                    setUserId(id);
+                }
             } catch (err) {
                 console.error("Error fetching profile in layout:", err);
             }
@@ -67,6 +76,87 @@ const LayoutContent = ({ children, role }) => {
 
         fetchProfile();
     }, [role]);
+
+    // Notification Logic (Socket & Push)
+    useEffect(() => {
+        if (!userId) return;
+
+        // 1. Socket.io Connection
+        const socket = io('http://localhost:5000');
+
+        socket.on('connect', () => {
+            console.log('Connected to socket server');
+            socket.emit('join', userId);
+        });
+
+        socket.on('notification', (data) => {
+            toast(data.title, {
+                description: data.message,
+                action: {
+                    label: 'View',
+                    onClick: () => navigate(`/${role}/notifications`)
+                }
+            });
+
+            // Play notification sound if available
+            const audio = new Audio('/notification.mp3');
+            audio.play().catch(e => console.log('Audio play failed', e)); // Silent fail
+        });
+
+        // 2. Web Push Subscription
+        const subscribeToPush = async () => {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                try {
+                    const register = await navigator.serviceWorker.register('/sw.js');
+
+                    // Get VAPID Key
+                    const token = localStorage.getItem('token');
+                    const keyRes = await axios.get('http://localhost:5000/api/notifications/vapid-key', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    const publicVapidKey = keyRes.data.publicKey;
+
+                    if (!publicVapidKey) return;
+
+                    const subscription = await register.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+                    });
+
+                    await axios.post('http://localhost:5000/api/notifications/subscribe', subscription, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    console.log('Push Notification Subscribed');
+
+                } catch (error) {
+                    console.error('Push Subscription Error:', error);
+                }
+            }
+        };
+
+        subscribeToPush();
+
+        return () => {
+            socket.disconnect();
+        };
+
+    }, [userId, role, navigate]);
+
+    // Helper for VAPID key conversion
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
 
     const user = { name: userName, role: role || 'Student' };
 

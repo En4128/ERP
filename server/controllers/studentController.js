@@ -760,6 +760,7 @@ exports.enrollCourse = async (req, res) => {
         await student.save();
 
         course.enrolled = (course.enrolled || 0) + 1;
+        course.enrolledStudents.push(student._id);
         await course.save();
 
         res.json({ message: 'Enrolled successfully' });
