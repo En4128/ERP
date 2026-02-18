@@ -6,6 +6,7 @@ const { getVapidPublicKey, subscribe, getNotifications, markAsRead } = require('
 router.get('/vapid-key', protect, getVapidPublicKey); // Changed to match likely frontend call
 router.post('/subscribe', protect, subscribe);
 router.get('/', protect, getNotifications); // History
+router.post('/:id/read', protect, markAsRead);
 router.put('/read', protect, markAsRead);
 
 module.exports = router;

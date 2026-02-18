@@ -1,23 +1,26 @@
+/* eslint-disable no-undef */
+// Service Worker for LearNex Push Notifications
+
 self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json();
+
         const options = {
             body: data.body,
             icon: data.icon || '/logo-light.jpg',
             badge: data.badge || '/logo-light.jpg',
-            vibrate: [200, 100, 200],
-            tag: data.tag,
-            renotify: true,
-            data: data.data || {
-                dateOfArrival: Date.now(),
-                primaryKey: '1'
+            vibrate: [100, 50, 100],
+            data: {
+                url: data.data?.url || '/student/notifications'
             },
             actions: [
-                { action: 'explore', title: 'View Details' }
+                { action: 'open', title: 'View Schedule' },
+                { action: 'close', title: 'Dismiss' }
             ]
         };
+
         event.waitUntil(
-            self.registration.showNotification(data.title, options)
+            self.registration.showNotification(data.title || 'Campus Alert', options)
         );
     }
 });
@@ -25,22 +28,20 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
 
-    // Dynamic URL based on origin or data payload
-    let targetUrl = new URL('/student/notifications', self.location.origin).href;
-    if (event.notification.data && event.notification.data.url) {
-        targetUrl = new URL(event.notification.data.url, self.location.origin).href;
-    }
+    if (event.action === 'close') return;
+
+    const targetUrl = event.notification.data.url;
 
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
-            // Check if tab is already open and focus it
-            for (let i = 0; i < clientList.length; i++) {
-                const client = clientList[i];
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+            // Check if there is already a window/tab open with the target URL
+            for (let i = 0; i < windowClients.length; i++) {
+                const client = windowClients[i];
                 if (client.url === targetUrl && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // If not, open a new window
+            // If not, open a new window/tab
             if (clients.openWindow) {
                 return clients.openWindow(targetUrl);
             }

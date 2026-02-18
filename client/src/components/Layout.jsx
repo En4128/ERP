@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar, { SidebarProvider, useSidebar } from './Sidebar';
 import ChatbotWidget from './ChatbotWidget';
 import NotificationBell from './NotificationBell';
+import { subscribeUserToPush } from '../utils/pushManager';
 import { Menu, Moon, Sun, Settings, LogOut, User, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -98,43 +99,26 @@ const LayoutContent = ({ children, role }) => {
                 }
             });
 
-            // Play notification sound if available
             const audio = new Audio('/notification.mp3');
-            audio.play().catch(e => console.log('Audio play failed', e)); // Silent fail
+            audio.play().catch(e => console.log('Audio play failed', e));
         });
 
-        // 2. Web Push Subscription
-        const subscribeToPush = async () => {
-            if ('serviceWorker' in navigator && 'PushManager' in window) {
+        // 2. Register Service Worker and Request Push Permission
+        const setupPush = async () => {
+            if ('serviceWorker' in navigator) {
                 try {
-                    const register = await navigator.serviceWorker.register('/sw.js');
-
-                    // Get VAPID Key
+                    await navigator.serviceWorker.register('/sw.js');
                     const token = localStorage.getItem('token');
-                    const keyRes = await axios.get('http://localhost:5000/api/notifications/vapid-key', {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                    const publicVapidKey = keyRes.data.publicKey;
-
-                    if (!publicVapidKey) return;
-
-                    const subscription = await register.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
-                    });
-
-                    await axios.post('http://localhost:5000/api/notifications/subscribe', subscription, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                    console.log('Push Notification Subscribed');
-
-                } catch (error) {
-                    console.error('Push Subscription Error:', error);
+                    if (token) {
+                        await subscribeUserToPush(token);
+                    }
+                } catch (err) {
+                    console.error('SW/Push error:', err);
                 }
             }
         };
 
-        subscribeToPush();
+        setupPush();
 
         return () => {
             socket.disconnect();
@@ -142,21 +126,6 @@ const LayoutContent = ({ children, role }) => {
 
     }, [userId, role, navigate]);
 
-    // Helper for VAPID key conversion
-    function urlBase64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-            .replace(/\-/g, '+')
-            .replace(/_/g, '/');
-
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    }
 
     const user = { name: userName, role: role || 'Student' };
 

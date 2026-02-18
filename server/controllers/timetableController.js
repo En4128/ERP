@@ -222,3 +222,53 @@ exports.getConfig = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Get today's schedule for current user
+// @route   GET /api/timetable/today
+// @access  Private
+exports.getTodaySchedule = async (req, res) => {
+    try {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const today = days[new Date().getDay()];
+
+        const userId = req.user.id;
+        const userRole = req.user.role;
+
+        let query = { day: today };
+
+        if (userRole === 'student') {
+            const student = await Student.findOne({ user: userId });
+            if (!student) return res.status(404).json({ message: 'Student not found' });
+
+            const deptRegex = new RegExp('^' + student.department.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+            const deptCourses = await Course.find({ department: deptRegex });
+            const allCourseIds = [...new Set([...(student.enrolledCourses || []), ...deptCourses.map(c => c._id)])];
+
+            query.course = { $in: allCourseIds };
+        } else if (userRole === 'faculty') {
+            const faculty = await Faculty.findOne({ user: userId });
+            if (!faculty) return res.status(404).json({ message: 'Faculty not found' });
+            query.faculty = faculty._id;
+        }
+
+        const slots = await Timetable.find(query)
+            .populate('course', 'name code department semester')
+            .populate({
+                path: 'faculty',
+                populate: { path: 'user', select: 'name' }
+            })
+            .sort({ startTime: 1 });
+
+        res.json(slots.map(slot => ({
+            id: slot._id,
+            subject: slot.course?.name || 'Unknown',
+            code: slot.course?.code || 'N/A',
+            time: `${slot.startTime} - ${slot.endTime}`,
+            room: slot.room,
+            faculty: slot.faculty?.user?.name || 'TBA',
+            type: slot.type || 'lecture'
+        })));
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

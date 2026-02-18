@@ -54,6 +54,40 @@ exports.getDashboardStats = async (req, res) => {
             }
         }
 
+        // Recent Announcements & Direct Alerts
+        const directAlerts = await Notification.find({
+            recipient: req.user._id
+        }).sort({ createdAt: -1 }).limit(5);
+
+        const readNotices = await NoticeRead.find({ userId: req.user._id });
+        const readNoticeIds = readNotices.map(rn => rn.noticeId.toString());
+
+        const formattedNotices = announcements.map(notice => ({
+            id: notice._id,
+            title: notice.title,
+            content: notice.content,
+            type: notice.type || 'general',
+            author: notice.postedBy?.name || 'Admin',
+            date: notice.createdAt,
+            read: readNoticeIds.includes(notice._id.toString()),
+            isGlobal: true
+        }));
+
+        const formattedDirect = directAlerts.map(notif => ({
+            id: notif._id,
+            title: notif.title,
+            content: notif.message,
+            type: notif.type || 'alert',
+            author: notif.title.includes('Alert from') ? notif.title.replace('Alert from ', '') : 'Faculty',
+            date: notif.createdAt,
+            read: notif.read,
+            isGlobal: false
+        }));
+
+        const combinedAnnouncements = [...formattedNotices, ...formattedDirect]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 5);
+
         res.json({
             facultyName: faculty.user.name,
             stats: {
@@ -78,13 +112,7 @@ exports.getDashboardStats = async (req, res) => {
                 room: c.room,
                 type: 'Lecture'
             })),
-            announcements: announcements.map(a => ({
-                id: a._id,
-                title: a.title,
-                content: a.content,
-                author: a.postedBy.name,
-                date: a.createdAt
-            }))
+            announcements: combinedAnnouncements
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -638,6 +666,10 @@ exports.getNotifications = async (req, res) => {
             isPublished: true
         }).sort({ createdAt: -1 }).populate('postedBy', 'name');
 
+        const notifications = await Notification.find({
+            recipient: req.user._id
+        }).sort({ createdAt: -1 });
+
         const readNotices = await NoticeRead.find({ userId: req.user._id });
         const readNoticeIds = readNotices.map(rn => rn.noticeId.toString());
 
@@ -649,10 +681,24 @@ exports.getNotifications = async (req, res) => {
             author: notice.postedBy?.name || 'Admin',
             date: notice.createdAt,
             targetAudience: notice.targetAudience,
-            read: readNoticeIds.includes(notice._id.toString())
+            read: readNoticeIds.includes(notice._id.toString()),
+            isGlobal: true
         }));
 
-        res.json(formattedNotices);
+        const formattedDirect = notifications.map(notif => ({
+            id: notif._id,
+            title: notif.title,
+            content: notif.message,
+            type: notif.type || 'alert',
+            author: notif.title.includes('Alert from') ? notif.title.replace('Alert from ', '') : 'Faculty',
+            date: notif.createdAt,
+            read: notif.read,
+            isGlobal: false
+        }));
+
+        const merged = [...formattedNotices, ...formattedDirect].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        res.json(merged);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -660,9 +706,20 @@ exports.getNotifications = async (req, res) => {
 
 exports.markAsRead = async (req, res) => {
     try {
+        const id = req.params.id;
+
+        // Try direct notification first
+        const directNotif = await Notification.findById(id);
+        if (directNotif) {
+            directNotif.read = true;
+            await directNotif.save();
+            return res.json({ message: 'Notification marked as read' });
+        }
+
+        // Otherwise Notice
         await NoticeRead.findOneAndUpdate(
-            { noticeId: req.params.id, userId: req.user._id },
-            { noticeId: req.params.id, userId: req.user._id },
+            { noticeId: id, userId: req.user._id },
+            { noticeId: id, userId: req.user._id },
             { upsert: true, new: true }
         );
         res.json({ message: 'Marked as read' });

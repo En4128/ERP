@@ -21,7 +21,9 @@ const {
     deleteFee,
     getRecentActivity,
     getSystemConfig,
-    updateSystemConfig
+    updateSystemConfig,
+    getNotifications,
+    markAsRead
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -57,5 +59,9 @@ router.delete('/fees/:id', deleteFee);
 // System Settings
 router.get('/settings/:key', getSystemConfig);
 router.post('/settings', updateSystemConfig);
+
+// Notifications for Admin
+router.get('/notifications', getNotifications);
+router.post('/notifications/:id/read', markAsRead);
 
 module.exports = router;

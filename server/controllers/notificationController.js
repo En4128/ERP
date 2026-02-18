@@ -21,7 +21,17 @@ exports.subscribe = async (req, res) => {
 exports.getNotifications = async (req, res) => {
     try {
         const notifications = await Notification.find({ recipient: req.user._id }).sort({ createdAt: -1 });
-        res.status(200).json(notifications);
+
+        // Transform for frontend compatibility (some pages expect .id, others ._id)
+        const transformed = notifications.map(n => ({
+            ...n.toObject(),
+            id: n._id,
+            content: n.message, // Some components use .content, others .message
+            date: n.createdAt,
+            author: 'System'
+        }));
+
+        res.status(200).json(transformed);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
@@ -30,8 +40,13 @@ exports.getNotifications = async (req, res) => {
 
 exports.markAsRead = async (req, res) => {
     try {
-        await Notification.updateMany({ recipient: req.user._id, read: false }, { read: true });
-        res.status(200).json({ message: 'Notifications marked as read' });
+        const { id } = req.params;
+        if (id) {
+            await Notification.findByIdAndUpdate(id, { read: true });
+        } else {
+            await Notification.updateMany({ recipient: req.user._id, read: false }, { read: true });
+        }
+        res.status(200).json({ message: 'Notification(s) marked as read' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });

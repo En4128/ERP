@@ -454,3 +454,69 @@ exports.updateSystemConfig = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.getNotifications = async (req, res) => {
+    try {
+        const notices = await Notice.find({
+            targetAudience: { $in: ['all'] },
+            isPublished: true
+        }).sort({ createdAt: -1 }).populate('postedBy', 'name');
+
+        const notifications = await Notification.find({
+            recipient: req.user._id
+        }).sort({ createdAt: -1 });
+
+        const readNotices = await require('../models/NoticeRead').find({ userId: req.user._id });
+        const readNoticeIds = readNotices.map(rn => rn.noticeId.toString());
+
+        const formattedNotices = notices.map(notice => ({
+            id: notice._id,
+            title: notice.title,
+            content: notice.content,
+            type: notice.type || 'general',
+            author: notice.postedBy?.name || 'Admin',
+            date: notice.createdAt,
+            read: readNoticeIds.includes(notice._id.toString()),
+            isGlobal: true
+        }));
+
+        const formattedDirect = notifications.map(notif => ({
+            id: notif._id,
+            title: notif.title,
+            content: notif.message,
+            type: notif.type || 'alert',
+            author: 'System',
+            date: notif.createdAt,
+            read: notif.read,
+            isGlobal: false
+        }));
+
+        const merged = [...formattedNotices, ...formattedDirect].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        res.json(merged);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.markAsRead = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const directNotif = await Notification.findById(id);
+        if (directNotif) {
+            directNotif.read = true;
+            await directNotif.save();
+            return res.json({ message: 'Notification marked as read' });
+        }
+
+        await require('../models/NoticeRead').findOneAndUpdate(
+            { noticeId: id, userId: req.user._id },
+            { noticeId: id, userId: req.user._id },
+            { upsert: true, new: true }
+        );
+        res.json({ message: 'Marked as read' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

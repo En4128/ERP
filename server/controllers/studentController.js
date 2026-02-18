@@ -148,6 +148,9 @@ exports.getDashboardStats = async (req, res) => {
             recipient: req.user._id
         }).sort({ createdAt: -1 }).limit(5);
 
+        const readNotices = await NoticeRead.find({ userId: req.user._id });
+        const readNoticeIds = readNotices.map(rn => rn.noticeId.toString());
+
         const formattedNotices = notices.map(notice => ({
             id: notice._id,
             title: notice.title,
@@ -155,7 +158,8 @@ exports.getDashboardStats = async (req, res) => {
             type: notice.type || 'general',
             author: notice.postedBy?.name || 'Admin',
             date: notice.date || notice.createdAt,
-            isGlobal: true
+            isGlobal: true,
+            read: readNoticeIds.includes(notice._id.toString())
         }));
 
         const formattedDirect = directAlerts.map(notif => ({
@@ -165,7 +169,8 @@ exports.getDashboardStats = async (req, res) => {
             type: notif.type || 'alert',
             author: notif.title.includes('Alert from') ? notif.title.replace('Alert from ', '') : 'Faculty',
             date: notif.createdAt,
-            isGlobal: false
+            isGlobal: false,
+            read: notif.read
         }));
 
         const combinedAnnouncements = [...formattedNotices, ...formattedDirect]
