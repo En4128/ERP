@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = initSocket(server);
-const initNotificationService = require('./services/notificationService');
+const { initNotificationService } = require('./services/notificationService');
 initNotificationService(io);
 const PORT = process.env.PORT || 5000;
 

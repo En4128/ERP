@@ -387,7 +387,6 @@ const FacultyAttendance = () => {
                                     { id: 'mark', label: 'Manual Control', icon: Check },
                                     { id: 'qr', label: 'QR Relay', icon: QrCode },
                                     { id: 'history', label: 'Archives', icon: Clock },
-                                    { id: 'low', label: 'Alerts', icon: AlertTriangle },
                                 ].map((tab) => (
                                     <button
                                         key={tab.id}
@@ -548,7 +547,7 @@ const FacultyAttendance = () => {
                                                             </motion.tr>
                                                         ))}
                                                     </tbody>
-                                                </table>
+                                                </table>`   `
                                             </div>
 
                                             <div className="p-8 md:p-10 border-t border-[#E2E5E9] dark:border-[#3D4556] flex justify-center md:justify-end">
@@ -557,7 +556,7 @@ const FacultyAttendance = () => {
                                                     disabled={saving}
                                                     className="w-full md:w-auto px-10 py-5 rounded-2xl md:rounded-[2.5rem] bg-indigo-600 text-white text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-600/30 active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-3"
                                                 >
-                                                    {saving ? 'Processing...' : <><Save size={18} /> Sync Session</>}
+                                                    {saving ? 'Processing...' : <><Save size={18} /> Give Attendance</>}
                                                 </button>
                                             </div>
                                         </GlassCard>

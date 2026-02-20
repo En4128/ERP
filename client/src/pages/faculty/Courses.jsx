@@ -29,7 +29,10 @@ import {
     Edit,
     MessageSquare,
     User,
-    ArrowDownRight
+    ArrowDownRight,
+    Filter,
+    LayoutGrid,
+    List
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
@@ -69,23 +72,49 @@ const DetailTab = ({ icon: Icon, label, active, onClick }) => (
     <button
         onClick={onClick}
         className={cn(
-            "flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all relative overflow-hidden",
+            "flex items-center gap-3 px-8 py-4 rounded-2xl transition-all font-black uppercase tracking-widest text-[10px]",
             active
-                ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20"
-                : "bg-[#F1F3F7]/50 dark:bg-[#2D3548]/50 text-slate-400 hover:text-indigo-500 border border-[#E2E5E9] dark:border-[#3D4556]"
+                ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-lg shadow-indigo-500/10 scale-105"
+                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
         )}
     >
-        <Icon size={18} strokeWidth={2.5} />
+        <Icon size={16} strokeWidth={2.5} />
         {label}
-        {active && (
-            <motion.div
-                layoutId="activeTab"
-                className="absolute inset-0 bg-indigo-600 -z-10"
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-        )}
     </button>
 );
+
+const CountUp = ({ to, duration = 2, decimals = 0, suffix = "", prefix = "" }) => {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        let startTime;
+        let animationFrame;
+
+        const updateCount = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+            setCount(progress * (parseFloat(to) || 0));
+
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(updateCount);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(updateCount);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [to, duration]);
+
+    return (
+        <span>
+            {prefix}
+            {count.toLocaleString(undefined, {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals,
+            })}
+            {suffix}
+        </span>
+    );
+};
 
 const FacultyCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -94,7 +123,9 @@ const FacultyCourses = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('list'); // 'list' | 'detail'
+    const [layoutMode, setLayoutMode] = useState('grid'); // 'grid' | 'list'
     const [detailTab, setDetailTab] = useState('roster'); // 'roster' | 'materials'
+    const [filterQuery, setFilterQuery] = useState('');
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editForm, setEditForm] = useState(null);
     const [isDiscoverOpen, setIsDiscoverOpen] = useState(false);
@@ -106,6 +137,19 @@ const FacultyCourses = () => {
     const [materialTitle, setMaterialTitle] = useState('');
     const [viewingStudent, setViewingStudent] = useState(null);
     const [studentProfileLoading, setStudentProfileLoading] = useState(false);
+
+    const insights = React.useMemo(() => {
+        if (!courses || courses.length === 0) return [];
+        const totalEnrollment = courses.reduce((acc, c) => acc + (c.students?.length || 42), 0);
+        const markedToday = courses.filter(c => c.isMarkedToday).length;
+        const compliance = courses.length > 0 ? (markedToday / courses.length) * 100 : 0;
+
+        return [
+            { label: 'Active Units', value: courses.length, icon: BookOpen, color: 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-500/10', sub: 'Assigned Curriculum' },
+            { label: 'Enrollment', value: totalEnrollment, icon: Users, color: 'text-violet-600 bg-violet-50 dark:text-violet-400 dark:bg-violet-500/10', sub: 'Total Students' },
+            { label: 'Marking Compliance', value: compliance, suffix: "%", icon: Activity, color: 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10', sub: 'Daily Attendance' }
+        ];
+    }, [courses]);
 
     useEffect(() => {
         fetchCourses();
@@ -300,239 +344,341 @@ const FacultyCourses = () => {
 
                 {viewMode === 'list' ? (
                     <>
-                        {/* Premium Mesh Header */}
-                        <div className="relative rounded-[3rem] overflow-hidden p-8 md:p-12 mb-10 shadow-2xl shadow-indigo-500/10 min-h-[300px] flex items-center">
-                            {/* Animated Background Layers */}
-                            <div className="absolute inset-0 bg-slate-950">
+                        {/* Premium Modern Header */}
+                        <div className="relative rounded-[2.5rem] overflow-hidden p-8 md:p-14 mb-10 shadow-2xl bg-slate-950 min-h-[320px] flex items-center">
+                            {/* Dynamic Background Elements */}
+                            <div className="absolute inset-0">
                                 <motion.div
                                     animate={{
-                                        scale: [1, 1.2, 1],
-                                        rotate: [0, 90, 0],
-                                        opacity: [0.15, 0.25, 0.15]
+                                        scale: [1, 1.1, 1],
+                                        opacity: [0.3, 0.5, 0.3]
                                     }}
-                                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                    className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-indigo-600 rounded-full blur-[140px]"
+                                    transition={{ duration: 10, repeat: Infinity }}
+                                    className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/30 rounded-full blur-[120px]"
                                 />
                                 <motion.div
                                     animate={{
-                                        scale: [1.2, 1, 1.2],
-                                        rotate: [0, -90, 0],
-                                        opacity: [0.1, 0.2, 0.1]
+                                        scale: [1.1, 1, 1.1],
+                                        opacity: [0.2, 0.4, 0.2]
                                     }}
-                                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                                    className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-rose-600 rounded-full blur-[140px]"
+                                    transition={{ duration: 12, repeat: Infinity }}
+                                    className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-rose-600/20 rounded-full blur-[120px]"
                                 />
-                                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-
-                                {/* Floating Particles */}
-                                {[...Array(6)].map((_, i) => (
-                                    <motion.div
-                                        key={i}
-                                        animate={{
-                                            y: [0, -100, 0],
-                                            x: [0, Math.random() * 50 - 25, 0],
-                                            opacity: [0, 0.3, 0]
-                                        }}
-                                        transition={{
-                                            duration: 10 + Math.random() * 10,
-                                            repeat: Infinity,
-                                            delay: i * 2
-                                        }}
-                                        className="absolute w-2 h-2 bg-indigo-400 rounded-full blur-sm"
-                                        style={{
-                                            left: `${Math.random() * 100}%`,
-                                            top: `${Math.random() * 100}%`
-                                        }}
-                                    />
-                                ))}
+                                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15 mix-blend-soft-light" />
                             </div>
 
-                            <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10">
-                                <div className="space-y-4 md:space-y-6 text-center md:text-left">
-                                    <motion.div
-                                        initial={{ x: -30, opacity: 0 }}
-                                        animate={{ x: 0, opacity: 1 }}
-                                        className="flex items-center gap-3 bg-white/5 backdrop-blur-2xl px-4 py-1.5 md:px-5 md:py-2 rounded-full border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 w-fit mx-auto md:mx-0 shadow-xl"
-                                    >
-                                        <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-indigo-400 rounded-full animate-ping" />
-                                        <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-indigo-200">Academic Courses</span>
-                                    </motion.div>
+                            <div className="relative z-10 w-full flex flex-col md:flex-row justify-between items-center gap-8">
+                                <div className="space-y-6 text-center md:text-left">
+                                    <div className="flex items-center gap-3 bg-white/5 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/10 w-fit mx-auto md:mx-0">
+                                        <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(129,140,248,0.8)]" />
+                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-200">Faculty Dashboard</span>
+                                    </div>
                                     <div className="space-y-2">
-                                        <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter leading-[0.8] italic">
-                                            Academic <br />
-                                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-rose-400">Notes </span>
+                                        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-none">
+                                            Manage your <br />
+                                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-rose-400">Courses</span>
                                         </h1>
+
                                     </div>
                                 </div>
 
-                                <motion.button
-                                    whileHover={{ scale: 1.05, rotate: 2 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => setIsDiscoverOpen(true)}
-                                    className="group relative px-6 py-4 md:px-8 md:py-5 bg-white text-slate-900 rounded-2xl md:rounded-[2rem] text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] shadow-2xl shadow-white/10 overflow-hidden flex items-center gap-3 md:gap-4 w-full md:w-auto justify-center"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    <Plus size={18} md:size={20} strokeWidth={4} className="relative z-10 group-hover:text-white transition-colors" />
-                                    <span className="relative z-10 group-hover:text-white transition-colors">Integrate Units</span>
-                                </motion.button>
+                                <div className="flex flex-col sm:flex-row items-center gap-4">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02, y: -2 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => setIsDiscoverOpen(true)}
+                                        className="group relative px-8 py-5 bg-white text-slate-950 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl hover:shadow-white/10 transition-all flex items-center gap-3 overflow-hidden"
+                                    >
+                                        <div className="absolute inset-0 bg-indigo-50 leading-none" />
+                                        <Plus size={18} strokeWidth={3} className="relative z-10" />
+                                        <span className="relative z-10">Add Unit</span>
+                                    </motion.button>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Global Insights Bar */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-10">
-                            <motion.div
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                className="bg-[#0f172a] border border-white/5 rounded-2xl md:rounded-[2rem] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 shadow-2xl group"
-                            >
-                                <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform">
-                                    <BookOpen size={20} md:size={24} strokeWidth={2.5} />
+                        {/* Search & Actions Bar */}
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
+                            <div className="relative w-full md:max-w-md group">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors">
+                                    <Search size={20} strokeWidth={2.5} />
                                 </div>
-                                <div className="text-center md:text-left">
-                                    <p className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Total Units</p>
-                                    <p className="text-xl md:text-3xl font-black text-white tracking-tighter italic">{courses.length}</p>
-                                </div>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                className="bg-[#0f172a] border border-white/5 rounded-2xl md:rounded-[2rem] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 shadow-2xl group"
-                            >
-                                <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-teal-500/10 text-teal-500 group-hover:scale-110 transition-transform">
-                                    <Users size={20} md:size={24} strokeWidth={2.5} />
-                                </div>
-                                <div className="text-center md:text-left">
-                                    <p className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Engagement</p>
-                                    <p className="text-xl md:text-3xl font-black text-white tracking-tighter italic">84.2%</p>
-                                </div>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                className="bg-[#0f172a] border border-white/5 rounded-2xl md:rounded-[2rem] p-4 md:p-6 flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 shadow-2xl group col-span-2 md:col-span-1"
-                            >
-                                <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-rose-500/10 text-rose-500 group-hover:scale-110 transition-transform">
-                                    <Activity size={20} md:size={24} strokeWidth={2.5} />
-                                </div>
-                                <div className="text-center md:text-left">
-                                    <p className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Marking Status</p>
-                                    <p className="text-xl md:text-3xl font-black text-white tracking-tighter italic">92.1%</p>
-                                </div>
-                            </motion.div>
+                                <input
+                                    type="text"
+                                    placeholder="Filter courses by name or code..."
+                                    value={filterQuery}
+                                    onChange={(e) => setFilterQuery(e.target.value)}
+                                    className="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-[1.5rem] text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 outline-none transition-all shadow-sm dark:text-white"
+                                />
+                            </div>
+
+                            <div className="flex p-1.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                                <button
+                                    onClick={() => setLayoutMode('grid')}
+                                    className={cn(
+                                        "p-3 rounded-xl transition-all",
+                                        layoutMode === 'grid'
+                                            ? "text-indigo-600 bg-white dark:bg-slate-800 shadow-sm"
+                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                    )}
+                                >
+                                    <LayoutGrid size={20} />
+                                </button>
+                                <button
+                                    onClick={() => setLayoutMode('list')}
+                                    className={cn(
+                                        "p-3 rounded-xl transition-all",
+                                        layoutMode === 'list'
+                                            ? "text-indigo-600 bg-white dark:bg-slate-800 shadow-sm"
+                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                    )}
+                                >
+                                    <List size={20} />
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Courses Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {courses.map((course, idx) => (
+                        {/* Intelligence Layer (Insights) */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                            {insights.map((insight, idx) => (
                                 <motion.div
-                                    key={course._id}
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                    whileHover={{ y: -8, scale: 1.02 }}
-                                    transition={{
-                                        duration: 0.5,
-                                        delay: idx * 0.1,
-                                        type: "spring",
-                                        stiffness: 120,
-                                        damping: 12
-                                    }}
-                                    onClick={() => handleViewCourse(course)}
-                                    className="relative group cursor-pointer"
+                                    key={idx}
+                                    whileHover={{ y: -5, scale: 1.01 }}
+                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 flex items-center gap-6 shadow-xl relative overflow-hidden group"
                                 >
-                                    {/* Glow Effect */}
-                                    <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-[2rem] blur opacity-0 group-hover:opacity-100 transition duration-500" />
-
-                                    {/* Card Container */}
-                                    <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl h-[420px]">
-                                        {/* Background Decoration */}
-                                        <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full -mr-24 -mt-24 blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700" />
-                                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full -ml-16 -mb-16 blur-3xl group-hover:bg-purple-500/20 transition-all duration-700" />
-
-                                        {/* Content */}
-                                        <div className="relative p-8 flex flex-col h-full">
-                                            {/* Header Section */}
-                                            <div className="flex justify-between items-start mb-8">
-                                                {/* Icon with Badge */}
-                                                <div className="relative">
-                                                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40 group-hover:scale-110 group-hover:shadow-indigo-600/60 transition-all duration-500">
-                                                        <BookOpen size={24} md:size={28} strokeWidth={2} />
-                                                    </div>
-                                                    {!course.isMarkedToday && (
-                                                        <motion.div
-                                                            animate={{ scale: [1, 1.2, 1] }}
-                                                            transition={{ repeat: Infinity, duration: 2 }}
-                                                            className="absolute -top-1 -right-1 w-5 h-5 md:w-6 md:h-6 bg-rose-500 rounded-full border-[3px] md:border-4 border-slate-900"
-                                                        />
-                                                    )}
-                                                </div>
-
-                                                {/* Status Badge & Edit Button */}
-                                                <div className="flex flex-col items-end gap-2 md:gap-3">
-                                                    <span className={`px-3 py-1 md:px-4 md:py-1.5 text-[8px] md:text-[9px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] rounded-full border ${course.isMarkedToday
-                                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                        : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                                        }`}>
-                                                        {course.isMarkedToday ? "MARKED" : "PENDING"}
-                                                    </span>
-                                                    <button
-                                                        onClick={(e) => handleEditClick(e, course)}
-                                                        className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg md:rounded-xl text-white/40 hover:text-white transition-all backdrop-blur-md border border-white/5 hover:border-white/20"
-                                                    >
-                                                        <Edit size={12} md:size={14} />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Course Info */}
-                                            <div className="space-y-2 md:space-y-3 mb-6 flex-1">
-                                                <h3 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-500 tracking-tight leading-tight uppercase group-hover:scale-[1.02] origin-left transition-transform duration-500">
-                                                    {course.name}
-                                                </h3>
-                                                <div className="flex items-center gap-2 md:gap-3">
-                                                    <p className="text-white/40 font-black tracking-wider text-[8px] md:text-[10px] uppercase">
-                                                        {course.code}
-                                                    </p>
-                                                    <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-                                                </div>
-                                            </div>
-
-                                            {/* Engagement Metric */}
-                                            <div className="mt-auto bg-slate-800/40 backdrop-blur-sm p-4 rounded-2xl border border-white/5 group-hover:border-indigo-500/20 transition-all">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-11 h-11 rounded-full border-[3px] border-indigo-500/20 border-t-indigo-500 flex items-center justify-center bg-slate-900/50 group-hover:rotate-180 transition-transform duration-1000">
-                                                        <span className="text-[10px] font-black text-indigo-400">AS</span>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-[9px] font-black text-white/30 uppercase tracking-wider mb-0.5">Active Engagement</p>
-                                                        <p className="text-[10px] font-bold text-white/70">Premium Cohort Metric</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Footer */}
-                                            <div className="mt-5 pt-5 border-t border-white/5 flex justify-between items-center">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex -space-x-3">
-                                                        {[1, 2, 3].map(i => (
-                                                            <div key={i} className="w-9 h-9 rounded-full ring-2 ring-slate-900 bg-gradient-to-br from-slate-700 to-slate-800 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex items-center justify-center text-[9px] font-black text-white/30">
-                                                                {i}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                    <p className="text-[10px] font-black text-white/30 uppercase tracking-wider">
-                                                        {course.credits} Credits
-                                                    </p>
-                                                </div>
-                                                <motion.div
-                                                    whileHover={{ scale: 1.1, rotate: -5 }}
-                                                    className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 group-hover:shadow-indigo-600/50 transition-all"
-                                                >
-                                                    <ArrowDownRight size={20} strokeWidth={3} />
-                                                </motion.div>
-                                            </div>
-                                        </div>
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl opacity-50 group-hover:scale-150 transition-transform duration-700" />
+                                    <div className={cn("p-5 rounded-2xl relative z-10", insight.color)}>
+                                        <insight.icon size={26} strokeWidth={2.5} />
+                                    </div>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{insight.label}</p>
+                                        <h4 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                            <CountUp to={insight.value} suffix={insight.suffix || ""} />
+                                        </h4>
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">{insight.sub}</p>
                                     </div>
                                 </motion.div>
                             ))}
                         </div>
+
+                        <AnimatePresence mode="wait">
+                            {layoutMode === 'grid' ? (
+                                <motion.div
+                                    key="grid"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                                >
+                                    {/* Animated Background Orbs for Grid Layout */}
+                                    <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+                                        <motion.div
+                                            animate={{
+                                                x: [0, 100, 0],
+                                                y: [0, 50, 0],
+                                                scale: [1, 1.2, 1]
+                                            }}
+                                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                                            className="absolute top-1/4 -left-20 w-80 h-80 bg-indigo-500/5 rounded-full blur-[100px]"
+                                        />
+                                        <motion.div
+                                            animate={{
+                                                x: [0, -100, 0],
+                                                y: [0, -50, 0],
+                                                scale: [1.1, 1, 1.1]
+                                            }}
+                                            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                                            className="absolute bottom-1/4 -right-20 w-96 h-96 bg-rose-500/5 rounded-full blur-[120px]"
+                                        />
+                                    </div>
+                                    {courses
+                                        .filter(c => c.name.toLowerCase().includes(filterQuery.toLowerCase()) || c.code.toLowerCase().includes(filterQuery.toLowerCase()))
+                                        .map((course, idx) => (
+                                            <motion.div
+                                                key={course._id}
+                                                initial={{ opacity: 0, y: 30 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                viewport={{ once: true }}
+                                                animate={{
+                                                    y: [0, -8, 0],
+                                                }}
+                                                transition={{
+                                                    y: {
+                                                        duration: 4 + (idx % 2),
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut",
+                                                        delay: idx * 0.2
+                                                    },
+                                                    default: { duration: 0.5, delay: idx * 0.05 }
+                                                }}
+                                                whileHover={{
+                                                    y: -15,
+                                                    scale: 1.02,
+                                                    transition: { duration: 0.3 }
+                                                }}
+                                                onClick={() => handleViewCourse(course)}
+                                                className="relative group cursor-pointer"
+                                            >
+                                                {/* Glow Effect on Hover */}
+                                                <div className="absolute -inset-2 bg-gradient-to-br from-indigo-500/10 to-rose-500/10 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                                <div className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:border-indigo-500/30 transition-all duration-500 h-[440px] flex flex-col">
+                                                    <div className={cn(
+                                                        "h-1.5 w-full",
+                                                        course.isMarkedToday ? "bg-emerald-500" : "bg-rose-500"
+                                                    )} />
+
+                                                    <div className="p-8 flex flex-col flex-1">
+                                                        <div className="flex justify-between items-start mb-8">
+                                                            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-sm group-hover:shadow-indigo-500/20">
+                                                                <BookOpen size={28} strokeWidth={2.5} />
+                                                            </div>
+                                                            <div className="flex flex-col items-end gap-3">
+                                                                <div className={cn(
+                                                                    "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                                                    course.isMarkedToday
+                                                                        ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
+                                                                        : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
+                                                                )}>
+                                                                    {course.isMarkedToday ? "Marked Today" : "Attendance Pending"}
+                                                                </div>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleEditClick(e, course);
+                                                                    }}
+                                                                    className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all border border-slate-100 dark:border-slate-700"
+                                                                >
+                                                                    <Edit size={16} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="space-y-3 flex-1">
+                                                            <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em]">
+                                                                {course.code} • {course.department || 'Academic Unit'}
+                                                            </p>
+                                                            <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tight">
+                                                                {course.name}
+                                                            </h3>
+                                                            <div className="flex items-center gap-4 pt-4">
+                                                                <div className="flex items-center gap-2 text-slate-400">
+                                                                    <Users size={14} className="text-slate-300" />
+                                                                    <span className="text-[11px] font-bold">{course.students?.length || 42} Students</span>
+                                                                </div>
+                                                                <div className="w-1 h-1 bg-slate-300 rounded-full" />
+                                                                <div className="flex items-center gap-2 text-slate-400">
+                                                                    <Clock size={14} className="text-slate-300" />
+                                                                    <span className="text-[11px] font-bold">{course.credits} Units</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                                            <div className="flex -space-x-3">
+                                                                {(course.students?.slice(0, 3) || [1, 2, 3]).map((s, i) => (
+                                                                    <div key={i} className="w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
+                                                                        {s.user?.name ? s.user.name[0] : `S${i + 1}`}
+                                                                    </div>
+                                                                ))}
+                                                                <div className="w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
+                                                                    +{Math.max(0, (course.students?.length || 42) - 3)}
+                                                                </div>
+                                                            </div>
+                                                            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 group-hover:bg-indigo-600 flex items-center justify-center text-slate-400 group-hover:text-white transition-all duration-300 shadow-sm">
+                                                                <ArrowRight size={24} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="list"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl"
+                                >
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
+                                                    <th className="px-10 py-6">Unit Designation</th>
+                                                    <th className="px-10 py-6">Department</th>
+                                                    <th className="px-10 py-6 text-center">Protocol Status</th>
+                                                    <th className="px-10 py-6 text-center">Deployment</th>
+                                                    <th className="px-10 py-6 text-right">Operations</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                                {courses
+                                                    .filter(c => c.name.toLowerCase().includes(filterQuery.toLowerCase()) || c.code.toLowerCase().includes(filterQuery.toLowerCase()))
+                                                    .map((course, idx) => (
+                                                        <motion.tr
+                                                            key={course._id}
+                                                            initial={{ opacity: 0, y: 10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            transition={{ delay: idx * 0.03 }}
+                                                            onClick={() => handleViewCourse(course)}
+                                                            className="hover:bg-slate-50/80 dark:hover:bg-indigo-500/5 transition-all group cursor-pointer"
+                                                        >
+                                                            <td className="px-10 py-6">
+                                                                <div className="flex items-center gap-5">
+                                                                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                                                                        <BookOpen size={20} strokeWidth={2.5} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-black text-slate-900 dark:text-white text-base tracking-tight leading-none mb-1.5">{course.name}</p>
+                                                                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">{course.code}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-10 py-6">
+                                                                <div className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg w-fit">
+                                                                    <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{course.department || 'Academic'}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-10 py-6 text-center">
+                                                                <div className={cn(
+                                                                    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                                                    course.isMarkedToday
+                                                                        ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
+                                                                        : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
+                                                                )}>
+                                                                    <div className={cn("w-1.5 h-1.5 rounded-full", course.isMarkedToday ? "bg-emerald-500" : "bg-rose-500")} />
+                                                                    {course.isMarkedToday ? "Marked" : "Pending"}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-10 py-6 text-center">
+                                                                <div className="flex justify-center -space-x-3">
+                                                                    {[1, 2].map(i => (
+                                                                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[8px] font-bold text-slate-500">S{i}</div>
+                                                                    ))}
+                                                                    <div className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-indigo-600 flex items-center justify-center text-[8px] font-bold text-white">+40</div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-10 py-6 text-right">
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleEditClick(e, course);
+                                                                    }}
+                                                                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all border border-slate-100 dark:border-slate-700 hover:border-indigo-500/30"
+                                                                >
+                                                                    <Edit size={16} />
+                                                                </button>
+                                                            </td>
+                                                        </motion.tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </>
                 ) : (
                     <motion.div
@@ -540,85 +686,48 @@ const FacultyCourses = () => {
                         animate={{ opacity: 1 }}
                         className="space-y-8"
                     >
-                        {/* Course Detail Header */}
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-                            <div className="flex items-start gap-8">
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className="p-5 rounded-2xl bg-slate-900/50 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 text-white/50 hover:text-white hover:border-white/20 transition-all shadow-xl backdrop-blur-3xl group"
-                                >
-                                    <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-                                </button>
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <GraduationCap size={16} className="text-indigo-400" />
-                                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] font-mono">{selectedCourse.code} UNIT</span>
-                                    </div>
-                                    <h2 className="text-4xl md:text-5xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter leading-none italic">{selectedCourse.name}</h2>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] italic opacity-60">Academic Management & Performance Intelligence</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={(e) => handleEditClick(e, selectedCourse)}
-                                className="px-8 py-3 bg-white text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] active:scale-95 transition-all flex items-center gap-3 hover:bg-slate-50"
-                            >
-                                <Edit size={16} strokeWidth={2.5} /> Modify Parameters
-                            </button>
-                        </div>
-
                         {/* Intelligence Layer (Stats) */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                            <div className="relative group overflow-hidden bg-indigo-600 rounded-2xl md:rounded-[2rem] p-4 md:p-6 text-white shadow-2xl">
-                                <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-white/10 rounded-full -mr-12 -mt-12 md:-mr-16 md:-mt-16 blur-2xl md:blur-3xl opacity-50" />
-                                <div className="flex justify-between items-start mb-4 md:mb-8">
-                                    <div className="p-2 md:p-3 bg-white/10 rounded-xl md:rounded-2xl">
-                                        <Users size={18} md:size={24} />
-                                    </div>
-                                    <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-white/40 italic">Cohort</span>
-                                </div>
-                                <p className="text-2xl md:text-4xl font-black tracking-tighter mb-1">{stats.totalStudents}</p>
-                                <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Verified</p>
-                            </div>
-
-                            <div className="relative group overflow-hidden bg-[#E5E7EB] dark:bg-[#1A1F2E] border border-[#E2E5E9] dark:border-[#3D4556] rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-xl">
-                                <div className="flex justify-between items-start mb-4 md:mb-8">
-                                    <div className="p-2 md:p-3 bg-teal-500/10 text-teal-500 rounded-xl md:rounded-2xl">
-                                        <Activity size={18} md:size={24} />
-                                    </div>
-                                    <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Engagement</span>
-                                </div>
-                                <div className="flex items-end gap-1 mb-1">
-                                    <p className="text-2xl md:text-4xl font-black tracking-tighter text-[#0F1419] dark:text-[#E8EAED]">{stats.avgAttendance}</p>
-                                    <p className="text-sm md:text-2xl font-black text-teal-500 mb-1 md:mb-2">%</p>
-                                </div>
-                            </div>
-
-                            <div className="col-span-2 relative group overflow-hidden bg-slate-900 rounded-2xl md:rounded-[2rem] p-6 md:p-8 text-white shadow-2xl">
-                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-transparent" />
-                                <div className="relative z-10 h-full flex flex-col justify-between">
-                                    <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
-                                        <div className="p-2 md:p-3 bg-white/5 rounded-xl md:rounded-2xl border border-[#E2E5E9]/20 dark:border-[#3D4556]/20">
-                                            <FileText size={16} md:size={20} className="text-indigo-400" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {[
+                                { label: 'Enrollment', value: stats.totalStudents, icon: Users, color: 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-500/10', sub: 'Verified Cohort' },
+                                { label: 'Engagement', value: stats.avgAttendance, suffix: "%", icon: Activity, color: 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10', decimals: 1, sub: 'Active Participation' },
+                                { label: 'Academic Load', value: selectedCourse.credits, suffix: " Cr", icon: BookOpen, color: 'text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-500/10', sub: 'Unit Weight' },
+                                { label: 'Resources', value: selectedCourse.materials?.length || 0, icon: FileText, color: 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-500/10', sub: 'Stored Assets' }
+                            ].map((s, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all group"
+                                >
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className={cn("p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500", s.color)}>
+                                            <s.icon size={26} strokeWidth={2.5} />
                                         </div>
-                                        <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Conceptual Framework</p>
                                     </div>
-                                    <p className="text-sm md:text-xl font-medium leading-relaxed italic text-white/90 line-clamp-3">
-                                        {selectedCourse.description || "Synthesizing comprehensive course objectives through modular recursive intelligence vectors."}
-                                    </p>
-                                </div>
-                            </div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{s.label}</p>
+                                    <h4 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                        <CountUp to={s.value} decimals={s.decimals || 0} suffix={s.suffix || ""} />
+                                    </h4>
+                                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                                        <div className="w-1 h-1 bg-slate-300 rounded-full" />
+                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{s.sub}</span>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
 
-                        {/* Detail Tabs */}
-                        <div className="flex gap-2 md:gap-4 p-1.5 md:p-2 bg-slate-900/50 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[1.5rem] w-full md:w-fit mx-auto md:mx-0 backdrop-blur-xl mb-12 shadow-2xl overflow-x-auto no-scrollbar">
+                        {/* Detail Tabs Bar */}
+                        <div className="flex justify-center md:justify-start w-full md:w-fit py-1.5 px-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.8rem] gap-2 mb-10">
                             <DetailTab
-                                icon={(props) => <User {...props} size={18} md:size={20} strokeWidth={2.5} />}
-                                label="Directory"
+                                icon={User}
+                                label="Registry"
                                 active={detailTab === 'roster'}
                                 onClick={() => setDetailTab('roster')}
                             />
                             <DetailTab
-                                icon={(props) => <FileText {...props} size={18} md:size={20} strokeWidth={2.5} />}
+                                icon={FileText}
                                 label="Materials"
                                 active={detailTab === 'materials'}
                                 onClick={() => setDetailTab('materials')}
@@ -634,11 +743,11 @@ const FacultyCourses = () => {
                                     exit={{ opacity: 0, y: -20 }}
                                 >
                                     {/* Student Roster Table */}
-                                    <div className="bg-[#E5E7EB]/50 dark:bg-[#1A1F2E]/50 backdrop-blur-xl border border-[#E2E5E9]/50 dark:border-[#3D4556]/50 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                                        <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex flex-col md:flex-row justify-between items-center gap-6">
+                                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                                        <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
                                             <div>
-                                                <h3 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter italic">Cohort Registry</h3>
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5 italic">Authorized Performance Analytics</p>
+                                                <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none uppercase">Student Registry</h3>
+                                                <p className="text-sm font-medium text-slate-400 mt-2">Authorized performance analytics and communication center.</p>
                                             </div>
                                         </div>
                                         <div className="overflow-x-auto">
@@ -705,21 +814,17 @@ const FacultyCourses = () => {
                                     exit={{ opacity: 0, y: -20 }}
                                     className="grid grid-cols-1 lg:grid-cols-3 gap-10"
                                 >
-                                    <div className="lg:col-span-2 space-y-10">
+                                    <div className="lg:col-span-2 space-y-8">
                                         <div className="relative group">
-                                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-indigo-500/5 blur-3xl opacity-50" />
-                                            <div className="relative bg-slate-800/80 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl overflow-hidden min-h-[500px]">
-                                                <div className="flex justify-between items-center mb-12">
+                                            <div className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 shadow-xl overflow-hidden min-h-[500px]">
+                                                <div className="flex justify-between items-center mb-10">
                                                     <div className="text-left">
-                                                        <h3 className="text-3xl font-black text-white tracking-tighter italic">Knowledge Repository</h3>
-                                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mt-2 italic">Modular Learning Artifacts</p>
-                                                    </div>
-                                                    <div className="p-6 rounded-3xl bg-indigo-600 text-white shadow-[0_20px_40px_-10px_rgba(79,70,229,0.4)] hover:scale-110 transition-transform cursor-pointer">
-                                                        <Zap size={28} strokeWidth={2.5} />
+                                                        <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-none uppercase">Unit Materials</h3>
+                                                        <p className="text-sm font-medium text-slate-400 mt-2">Manage course syllabus, artifacts and knowledge payloads.</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-6">
+                                                <div className="space-y-4">
                                                     {selectedCourse.materials && selectedCourse.materials.length > 0 ? (
                                                         selectedCourse.materials.map((material, idx) => (
                                                             <motion.div
@@ -727,44 +832,44 @@ const FacultyCourses = () => {
                                                                 initial={{ opacity: 0, x: -20 }}
                                                                 animate={{ opacity: 1, x: 0 }}
                                                                 transition={{ delay: idx * 0.1 }}
-                                                                className="p-8 rounded-[2.5rem] bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 flex items-center justify-between group hover:border-indigo-500/50 transition-all duration-500 hover:bg-white/10"
+                                                                className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between group hover:border-indigo-500/30 transition-all duration-300"
                                                             >
                                                                 <div className="flex items-center gap-6">
-                                                                    <div className="p-5 rounded-[1.5rem] bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:scale-110">
-                                                                        <FileText size={28} strokeWidth={2.5} />
+                                                                    <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:scale-105">
+                                                                        <FileText size={24} strokeWidth={2.5} />
                                                                     </div>
                                                                     <div className="text-left">
-                                                                        <p className="font-black text-white text-xl tracking-tight mb-1">{material.title}</p>
-                                                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest flex items-center gap-2">
-                                                                            <Calendar size={12} /> {new Date(material.uploadedAt).toLocaleDateString()}
-                                                                        </p>
+                                                                        <p className="font-black text-slate-900 dark:text-white text-lg leading-tight mb-1">{material.title}</p>
+                                                                        <div className="flex items-center gap-3 text-slate-400">
+                                                                            <Calendar size={12} />
+                                                                            <span className="text-[10px] font-bold uppercase tracking-widest">
+                                                                                {new Date(material.uploadedAt).toLocaleDateString()}
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex gap-4">
+                                                                <div className="flex gap-3">
                                                                     <a
                                                                         href={`http://localhost:5000${material.fileUrl}`}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
-                                                                        className="p-5 rounded-2xl bg-white/5 text-white/40 hover:text-white transition-all border border-white/5 hover:border-white/20"
+                                                                        className="p-4 rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all border border-slate-100 dark:border-slate-700 shadow-sm"
                                                                     >
-                                                                        <Download size={20} strokeWidth={2.5} />
+                                                                        <Download size={18} strokeWidth={2.5} />
                                                                     </a>
                                                                     <button
                                                                         onClick={() => handleDeleteMaterial(material._id)}
-                                                                        className="p-5 rounded-2xl bg-white/5 text-white/40 hover:text-rose-500 transition-all border border-white/5 hover:border-rose-500/20"
+                                                                        className="p-4 rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-all border border-slate-100 dark:border-slate-700 shadow-sm"
                                                                     >
-                                                                        <Trash2 size={20} strokeWidth={2.5} />
+                                                                        <Trash2 size={18} strokeWidth={2.5} />
                                                                     </button>
                                                                 </div>
                                                             </motion.div>
                                                         ))
                                                     ) : (
-                                                        <div className="py-32 border-4 border-dashed border-white/5 rounded-[4rem] text-center bg-white/[0.02] flex flex-col items-center justify-center space-y-8 group/empty hover:border-indigo-500/20 transition-all duration-700">
-                                                            <div className="relative">
-                                                                <div className="absolute inset-0 bg-indigo-500 blur-3xl opacity-0 group-hover/empty:opacity-20 transition-opacity" />
-                                                                <Sparkles size={80} strokeWidth={1} className="text-white/10 group-hover/empty:text-indigo-400 group-hover/empty:scale-110 transition-all duration-1000 animate-pulse" />
-                                                            </div>
-                                                            <p className="text-xl font-black text-white/10 uppercase tracking-[0.5em] group-hover/empty:text-white/20 transition-colors">Neural Repository Empty</p>
+                                                        <div className="py-24 border-4 border-dashed border-slate-100 dark:border-slate-800 rounded-[3rem] text-center flex flex-col items-center justify-center space-y-6">
+                                                            <Sparkles size={60} strokeWidth={1} className="text-slate-200 dark:text-slate-700 animate-pulse" />
+                                                            <p className="text-sm font-black text-slate-300 dark:text-slate-600 uppercase tracking-[0.3em]">No materials found for this unit.</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -772,25 +877,24 @@ const FacultyCourses = () => {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-10">
+                                    <div className="space-y-8">
                                         <div className="relative group">
-                                            <div className="absolute inset-0 bg-indigo-500/5 rounded-[3rem] blur-3xl opacity-50" />
-                                            <div className="relative bg-slate-800/60 dark:bg-white/5 border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[3rem] p-12 backdrop-blur-3xl shadow-2xl">
-                                                <h3 className="text-2xl font-black text-white mb-10 tracking-tighter text-left italic">Ingest New Data</h3>
-                                                <form onSubmit={handleUploadMaterial} className="space-y-10">
-                                                    <div className="space-y-4">
-                                                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] px-4 block text-left italic">Asset Descriptor</label>
+                                            <div className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 shadow-xl">
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-8 leading-none uppercase">Load New Asset</h3>
+                                                <form onSubmit={handleUploadMaterial} className="space-y-8">
+                                                    <div className="space-y-3">
+                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Asset Label</label>
                                                         <input
                                                             type="text"
                                                             value={materialTitle}
                                                             onChange={(e) => setMaterialTitle(e.target.value)}
-                                                            placeholder="e.g. Theoretical Framework - Phase 1"
-                                                            className="w-full px-10 py-6 bg-white/[0.03] border border-[#E2E5E9]/20 dark:border-[#3D4556]/20 rounded-[2.5rem] text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none text-white shadow-inner placeholder:text-white/10"
+                                                            placeholder="e.g. Unit 1 Reference Node"
+                                                            className="w-full px-8 py-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all dark:text-white shadow-inner"
                                                             required
                                                         />
                                                     </div>
-                                                    <div className="space-y-4">
-                                                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] px-4 block text-left italic">Temporal Payload</label>
+                                                    <div className="space-y-3">
+                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Technical Payload</label>
                                                         <div className="relative">
                                                             <input
                                                                 type="file"
@@ -801,14 +905,11 @@ const FacultyCourses = () => {
                                                             />
                                                             <label
                                                                 htmlFor="material-upload"
-                                                                className="w-full px-10 py-16 bg-white/[0.01] border-4 border-dashed border-white/5 rounded-[3.5rem] flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500/40 transition-all group/upload overflow-hidden"
+                                                                className="w-full px-8 py-12 bg-slate-50 dark:bg-slate-800/20 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500/50 transition-all group/upload overflow-hidden"
                                                             >
-                                                                <div className="relative mb-6">
-                                                                    <div className="absolute inset-0 bg-indigo-500 blur-2xl opacity-0 group-hover/upload:opacity-20 transition-opacity" />
-                                                                    <FilePlus size={56} strokeWidth={1.5} className="text-white/5 group-hover/upload:text-indigo-400 group-hover/upload:scale-110 transition-all duration-700 relative" />
-                                                                </div>
-                                                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] text-center px-8 line-clamp-2 italic group-hover/upload:text-white/40 transition-colors">
-                                                                    {materialFile ? materialFile.name : "SYNCHRONIZE TECHNICAL ASSETS"}
+                                                                <FilePlus size={40} strokeWidth={1.5} className="text-slate-300 dark:text-slate-600 group-hover/upload:text-indigo-400 group-hover/upload:scale-110 transition-all duration-500 mb-3" />
+                                                                <span className="text-[10px] font-black text-slate-400 text-center px-4 line-clamp-1 italic">
+                                                                    {materialFile ? materialFile.name : "ATTACH SCHEMATIC DATA"}
                                                                 </span>
                                                             </label>
                                                         </div>
@@ -816,20 +917,17 @@ const FacultyCourses = () => {
                                                     <button
                                                         type="submit"
                                                         disabled={uploading}
-                                                        className="w-full py-8 bg-indigo-600 text-white rounded-[3rem] text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_25px_50px_-15px_rgba(79,70,229,0.5)] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group/btn overflow-hidden relative"
+                                                        className="w-full py-6 bg-indigo-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 group/btn"
                                                     >
-                                                        <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
                                                         {uploading ? (
                                                             "TRANSMITTING..."
                                                         ) : (
-                                                            <><Zap size={20} strokeWidth={2.5} className="animate-pulse" /> FINALIZE INGESTION</>
+                                                            <><Zap size={18} strokeWidth={2.5} /> Finalize Load</>
                                                         )}
                                                     </button>
                                                 </form>
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </motion.div>
                             )}
@@ -850,16 +948,16 @@ const FacultyCourses = () => {
                                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                                className="bg-[#E5E7EB] dark:bg-[#1A1F2E] w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9]/50 dark:border-[#3D4556]/50"
+                                className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-200 dark:border-slate-800"
                             >
-                                <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex justify-between items-center">
+                                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                                     <div>
-                                        <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter">Parameter Shift</h2>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5">Modify curriculum biometrics</p>
+                                        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none uppercase">Unit Protocol</h2>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Modify curriculum biometrics</p>
                                     </div>
                                     <button
                                         onClick={() => setIsEditOpen(false)}
-                                        className="w-12 h-12 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl transition-colors text-slate-400"
+                                        className="w-12 h-12 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all text-slate-400 hover:text-indigo-600"
                                     >
                                         <X size={24} />
                                     </button>
@@ -871,7 +969,7 @@ const FacultyCourses = () => {
                                         <input
                                             value={editForm?.schedule || ''}
                                             onChange={(e) => setEditForm({ ...editForm, schedule: e.target.value })}
-                                            className="w-full px-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                            className="w-full px-8 py-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all dark:text-white shadow-inner"
                                             placeholder="e.g. Mon, Wed 10:00 - 12:00"
                                         />
                                     </div>
@@ -880,7 +978,7 @@ const FacultyCourses = () => {
                                         <input
                                             value={editForm?.room || ''}
                                             onChange={(e) => setEditForm({ ...editForm, room: e.target.value })}
-                                            className="w-full px-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                            className="w-full px-8 py-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all dark:text-white shadow-inner"
                                             placeholder="e.g. Tech Annex 402"
                                         />
                                     </div>
@@ -890,16 +988,16 @@ const FacultyCourses = () => {
                                             rows="4"
                                             value={editForm?.description || ''}
                                             onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                                            className="w-full px-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner resize-none"
+                                            className="w-full px-8 py-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all dark:text-white shadow-inner resize-none"
                                             placeholder="Briefly synthesize the course objectives..."
                                         />
                                     </div>
 
                                     <button
                                         onClick={handleUpdateCourse}
-                                        className="w-full py-5 bg-indigo-600 text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                        className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 active:scale-95 transition-all flex items-center justify-center gap-3"
                                     >
-                                        <Save size={16} /> Synchronize Changes
+                                        <Save size={18} /> Synchronize Changes
                                     </button>
                                 </div>
                             </motion.div>
@@ -920,16 +1018,16 @@ const FacultyCourses = () => {
                                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                                className="bg-[#E5E7EB] dark:bg-[#1A1F2E] w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-[#E2E5E9]/50 dark:border-[#3D4556]/50"
+                                className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative z-10 border border-slate-200 dark:border-slate-800"
                             >
-                                <div className="p-10 border-b border-[#E2E5E9] dark:border-[#3D4556] flex justify-between items-center">
+                                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                                     <div>
-                                        <h2 className="text-3xl font-black text-[#0F1419] dark:text-[#E8EAED] tracking-tighter">Discover</h2>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5">Join new course units</p>
+                                        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none uppercase">Discover</h2>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Integrate new course units</p>
                                     </div>
                                     <button
                                         onClick={() => setIsDiscoverOpen(false)}
-                                        className="w-12 h-12 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl transition-colors text-slate-400"
+                                        className="w-12 h-12 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-all text-slate-400 hover:text-indigo-600"
                                     >
                                         <X size={24} />
                                     </button>
@@ -937,17 +1035,17 @@ const FacultyCourses = () => {
 
                                 <div className="p-10 space-y-6">
                                     <div className="relative group">
-                                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} strokeWidth={2.5} />
                                         <input
                                             placeholder="Search by name, code or department..."
                                             value={searchAllQuery}
                                             onChange={(e) => setSearchAllQuery(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleSearchAll()}
-                                            className="w-full pl-14 pr-6 py-4 bg-[#F1F3F7] dark:bg-[#2D3548] border-none rounded-2xl text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white shadow-inner"
+                                            className="w-full pl-16 pr-6 py-5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all dark:text-white shadow-inner"
                                         />
                                         <button
                                             onClick={handleSearchAll}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
                                         >
                                             Search
                                         </button>
@@ -955,28 +1053,39 @@ const FacultyCourses = () => {
 
                                     <div className="max-h-[400px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
                                         {searchAllResults.map((course) => (
-                                            <div key={course._id} className="p-6 rounded-[2rem] bg-[#F1F3F7] dark:bg-[#2D3548] border border-[#E2E5E9] dark:border-[#3D4556] flex items-center justify-between">
-                                                <div>
-                                                    <h4 className="font-black text-[#0F1419] dark:text-[#E8EAED] text-sm">{course.name}</h4>
-                                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{course.code} • {course.department}</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Faculty: {course.assignedFaculty?.user?.name || 'Unassigned'}</p>
+                                            <div key={course._id} className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between group hover:border-indigo-500/30 transition-all">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                                                        <BookOpen size={20} strokeWidth={2.5} />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-black text-slate-900 dark:text-white text-base tracking-tight leading-none mb-1.5">{course.name}</h4>
+                                                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">{course.code} • {course.department}</p>
+                                                        <div className="flex items-center gap-2 mt-2">
+                                                            <User size={10} className="text-slate-400" />
+                                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Lead: {course.assignedFaculty?.user?.name || 'Authorized Personnel'}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <button
                                                     onClick={() => handleJoinCourse(course._id)}
                                                     disabled={joining === course._id || courses.some(c => c._id === course._id)}
                                                     className={cn(
-                                                        "px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                                        "px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md",
                                                         courses.some(c => c._id === course._id)
-                                                            ? "bg-emerald-500/10 text-emerald-600 cursor-default"
-                                                            : "bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95"
+                                                            ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 cursor-default"
+                                                            : "bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 shadow-indigo-600/10"
                                                     )}
                                                 >
-                                                    {courses.some(c => c._id === course._id) ? 'Joined' : joining === course._id ? 'Joining...' : 'Join Course'}
+                                                    {courses.some(c => c._id === course._id) ? 'Joined' : joining === course._id ? 'Joining...' : 'Join Unit'}
                                                 </button>
                                             </div>
                                         ))}
                                         {searchAllResults.length === 0 && searchAllQuery && (
-                                            <p className="text-center py-10 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No results found</p>
+                                            <div className="text-center py-20">
+                                                <Sparkles size={48} className="text-slate-200 dark:text-slate-800 mx-auto mb-4 animate-pulse" />
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No valid entities found</p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>

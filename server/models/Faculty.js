@@ -32,4 +32,4 @@ const facultySchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model('Faculty', facultySchema);
+module.exports = mongoose.models.Faculty || mongoose.model('Faculty', facultySchema);
