@@ -68,6 +68,14 @@ const FacultyMarks = () => {
             });
             setCourses(res.data);
             setLoading(false);
+
+            // Check if we came from another page with a specific course
+            if (location.state?.courseId) {
+                const targetCourse = res.data.find(c => c._id === location.state.courseId);
+                if (targetCourse) {
+                    handleSelectCourse(targetCourse);
+                }
+            }
         } catch (error) {
             console.error("Error fetching courses:", error);
             setLoading(false);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import {
@@ -38,6 +39,7 @@ const GlassCard = ({ children, className, delay = 0 }) => (
 );
 
 const FacultyAssignments = () => {
+    const location = useLocation();
     const [assignments, setAssignments] = useState([]);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -186,55 +188,57 @@ const FacultyAssignments = () => {
 
                 {/* Assignments List */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {assignments.length > 0 ? assignments.map((assignment, idx) => (
-                        <GlassCard key={assignment._id} className="group p-6 md:p-8 flex flex-col justify-between h-full" delay={idx * 0.1}>
-                            <div>
-                                <div className="flex justify-between items-start mb-4 md:mb-6">
-                                    <div className="flex gap-2">
-                                        <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform duration-500">
-                                            <FileText size={20} md:size={24} />
+                    {assignments.length > 0 ? assignments
+                        .filter(a => !location.state?.courseId || a.course._id === location.state.courseId)
+                        .map((assignment, idx) => (
+                            <GlassCard key={assignment._id} className="group p-6 md:p-8 flex flex-col justify-between h-full" delay={idx * 0.1}>
+                                <div>
+                                    <div className="flex justify-between items-start mb-4 md:mb-6">
+                                        <div className="flex gap-2">
+                                            <div className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform duration-500">
+                                                <FileText size={20} md:size={24} />
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedAssignment(assignment);
+                                                    setViewAssignmentModal(true);
+                                                }}
+                                                className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D] hover:text-indigo-600 transition-all"
+                                                title="View Details"
+                                            >
+                                                <Eye size={18} md:size={20} />
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={() => {
-                                                setSelectedAssignment(assignment);
-                                                setViewAssignmentModal(true);
-                                            }}
-                                            className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-[#F1F3F7] dark:bg-[#2D3548] text-[#64748B] dark:text-[#868D9D] hover:text-indigo-600 transition-all"
-                                            title="View Details"
-                                        >
-                                            <Eye size={18} md:size={20} />
-                                        </button>
+                                        <div className="px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-[#E5E7EB] dark:bg-[#242B3D] text-[8px] md:text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-[#868D9D]">
+                                            {assignment.course.code}
+                                        </div>
                                     </div>
-                                    <div className="px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-[#E5E7EB] dark:bg-[#242B3D] text-[8px] md:text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-[#868D9D]">
-                                        {assignment.course.code}
+                                    <h3 className="text-lg md:text-xl font-black text-[#0F1419] dark:text-[#E8EAED] mb-2 line-clamp-1">{assignment.title}</h3>
+                                    <p className="text-[#64748B] dark:text-[#868D9D] text-xs md:text-sm font-medium mb-4 md:mb-6 line-clamp-2">{assignment.description}</p>
+
+                                    <div className="space-y-2 md:space-y-3 mb-6 md:mb-8">
+                                        <div className="flex items-center gap-2 md:gap-3 text-slate-400">
+                                            <Calendar size={12} md:size={14} />
+                                            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 md:gap-3 text-slate-400">
+                                            <CheckCircle2 size={12} md:size={14} />
+                                            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Points: {assignment.points}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <h3 className="text-lg md:text-xl font-black text-[#0F1419] dark:text-[#E8EAED] mb-2 line-clamp-1">{assignment.title}</h3>
-                                <p className="text-[#64748B] dark:text-[#868D9D] text-xs md:text-sm font-medium mb-4 md:mb-6 line-clamp-2">{assignment.description}</p>
 
-                                <div className="space-y-2 md:space-y-3 mb-6 md:mb-8">
-                                    <div className="flex items-center gap-2 md:gap-3 text-slate-400">
-                                        <Calendar size={12} md:size={14} />
-                                        <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 md:gap-3 text-slate-400">
-                                        <CheckCircle2 size={12} md:size={14} />
-                                        <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest">Points: {assignment.points}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={() => {
-                                    setSelectedAssignment(assignment);
-                                    fetchSubmissions(assignment._id);
-                                }}
-                                className="w-full py-3.5 md:py-4 bg-[#F1F3F7] dark:bg-[#2D3548] hover:bg-indigo-600 hover:text-white text-[#0F1419] dark:text-[#E8EAED] rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
-                            >
-                                <Users size={14} md:size={16} /> View Submissions
-                            </button>
-                        </GlassCard>
-                    )) : (
+                                <button
+                                    onClick={() => {
+                                        setSelectedAssignment(assignment);
+                                        fetchSubmissions(assignment._id);
+                                    }}
+                                    className="w-full py-3.5 md:py-4 bg-[#F1F3F7] dark:bg-[#2D3548] hover:bg-indigo-600 hover:text-white text-[#0F1419] dark:text-[#E8EAED] rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Users size={14} md:size={16} /> View Submissions
+                                </button>
+                            </GlassCard>
+                        )) : (
                         <div className="col-span-full py-20 text-center text-slate-400 font-black uppercase tracking-[0.2em]">
                             No assignments created yet
                         </div>

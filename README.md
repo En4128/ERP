@@ -124,19 +124,46 @@ npm run dev
 - Socket.IO events: `join_room`, `send_message`, `receive_message`
 
 ## 📂 Project Structure
+
+### 💻 Client (Frontend)
+```bash
+client/
+├── src/
+│   ├── components/      # Reusable UI (Chatbot, Layout, Sidebar, Notifications)
+│   ├── pages/
+│   │   ├── admin/       # Admin views (Manage Faculty, Students, Placements, Fees)
+│   │   ├── faculty/     # Faculty views (Attendance, Assignments, Marks, Profile)
+│   │   ├── student/     # Student views (Results, Fees, Placements, Dashboard)
+│   │   └── shared/      # Common pages (Login, Home, Forgot Password)
+│   ├── context/         # Auth and App State management
+│   ├── lib/             # Third-party configurations (Socket client, etc.)
+│   ├── utils/           # Frontend helper functions (Date formatting, validators)
+│   ├── App.jsx          # Route definitions and core application wrapper
+│   └── main.jsx         # Application entry point
+├── public/              # Static assets and PWA icons
+└── tailwind.config.js   # Custom theme and design system tokens
 ```
-root/
-├── client/           # React Frontend
-│   ├── src/
-│   │   ├── components/  # Reusable UI Components (Sidebar, Cards, etc.)
-│   │   ├── pages/       # Role-based Pages (Student, Faculty, Admin)
-│   │   └── lib/         # Utilities and Helpers
-├── server/           # Express Backend
-│   ├── controllers/  # Logic for API endpoints
-│   ├── models/       # Mongoose Database Schemas
-│   ├── routes/       # API Route Definitions
-│   └── seeder.js     # Data seeding script
-└── README.md
+
+### 🛰️ Server (Backend)
+```bash
+server/
+├── controllers/      # Route handlers (Auth, Faculty, Student, Admin, Chat)
+├── models/           # Mongoose schemas (User, Student, Course, Attendance, etc.)
+├── routes/           # API Endpoint definitions
+├── middleware/       # JWT Auth and File Upload processing
+├── scripts/          # One-off debug and maintenance scripts
+├── logs/             # Persistent server and notification logs
+├── services/         # External integrations (Notification services)
+├── utils/            # Shared backend utilities (Chatbot helpers, Rate limiters)
+├── uploads/          # Physical storage for submitted assignments/documents
+├── server.js         # Express app initialization and DB connection
+└── socket.js         # Real-time communication logic
+```
+
+### 🛠️ Utilities & Documentation
+- `tools/`: Utility scripts for PDF data extraction and theme styling.
+- `docs/`: System analysis documentation and debug logs.
+- `seeder.js`: Database initialization script.
 ```
 
 ## ✨ Highlights

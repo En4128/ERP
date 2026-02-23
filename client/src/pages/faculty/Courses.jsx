@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import {
@@ -117,6 +118,8 @@ const CountUp = ({ to, duration = 2, decimals = 0, suffix = "", prefix = "" }) =
 };
 
 const FacultyCourses = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [courses, setCourses] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [students, setStudents] = useState([]);
@@ -408,18 +411,18 @@ const FacultyCourses = () => {
                                     placeholder="Filter courses by name or code..."
                                     value={filterQuery}
                                     onChange={(e) => setFilterQuery(e.target.value)}
-                                    className="w-full pl-16 pr-6 py-5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-[1.5rem] text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 outline-none transition-all shadow-sm dark:text-white"
+                                    className="w-full pl-16 pr-6 py-5 bg-white dark:bg-[#0d1118] border border-slate-200 dark:border-slate-700/60 rounded-[1.5rem] text-sm font-bold focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/60 outline-none transition-all shadow-sm dark:text-slate-200 dark:placeholder-slate-600"
                                 />
                             </div>
 
-                            <div className="flex p-1.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                            <div className="flex p-1.5 bg-slate-100 dark:bg-[#0d1118] border border-slate-200 dark:border-slate-700/60 rounded-2xl">
                                 <button
                                     onClick={() => setLayoutMode('grid')}
                                     className={cn(
                                         "p-3 rounded-xl transition-all",
                                         layoutMode === 'grid'
-                                            ? "text-indigo-600 bg-white dark:bg-slate-800 shadow-sm"
-                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                            ? "text-indigo-400 bg-white dark:bg-slate-800 shadow-sm"
+                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                                     )}
                                 >
                                     <LayoutGrid size={20} />
@@ -429,8 +432,8 @@ const FacultyCourses = () => {
                                     className={cn(
                                         "p-3 rounded-xl transition-all",
                                         layoutMode === 'list'
-                                            ? "text-indigo-600 bg-white dark:bg-slate-800 shadow-sm"
-                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                            ? "text-indigo-400 bg-white dark:bg-slate-800 shadow-sm"
+                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                                     )}
                                 >
                                     <List size={20} />
@@ -444,9 +447,9 @@ const FacultyCourses = () => {
                                 <motion.div
                                     key={idx}
                                     whileHover={{ y: -5, scale: 1.01 }}
-                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 flex items-center gap-6 shadow-xl relative overflow-hidden group"
+                                    className="bg-white dark:bg-[#0d1118] border border-slate-200 dark:border-slate-700/50 rounded-[2.5rem] p-8 flex items-center gap-6 shadow-xl relative overflow-hidden group"
                                 >
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl opacity-50 group-hover:scale-150 transition-transform duration-700" />
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 dark:bg-indigo-500/5 rounded-full -mr-8 -mt-8 blur-2xl opacity-60 group-hover:scale-150 transition-transform duration-700" />
                                     <div className={cn("p-5 rounded-2xl relative z-10", insight.color)}>
                                         <insight.icon size={26} strokeWidth={2.5} />
                                     </div>
@@ -499,94 +502,96 @@ const FacultyCourses = () => {
                                                 initial={{ opacity: 0, y: 30 }}
                                                 whileInView={{ opacity: 1, y: 0 }}
                                                 viewport={{ once: true }}
-                                                animate={{
-                                                    y: [0, -8, 0],
-                                                }}
-                                                transition={{
-                                                    y: {
-                                                        duration: 4 + (idx % 2),
-                                                        repeat: Infinity,
-                                                        ease: "easeInOut",
-                                                        delay: idx * 0.2
-                                                    },
-                                                    default: { duration: 0.5, delay: idx * 0.05 }
-                                                }}
-                                                whileHover={{
-                                                    y: -15,
-                                                    scale: 1.02,
-                                                    transition: { duration: 0.3 }
-                                                }}
+                                                transition={{ duration: 0.4, delay: idx * 0.06 }}
+                                                whileHover={{ y: -6, transition: { duration: 0.25 } }}
                                                 onClick={() => handleViewCourse(course)}
                                                 className="relative group cursor-pointer"
                                             >
-                                                {/* Glow Effect on Hover */}
-                                                <div className="absolute -inset-2 bg-gradient-to-br from-indigo-500/10 to-rose-500/10 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                                {/* Card */}
+                                                <div className="relative bg-white dark:bg-[#0d1118] border border-slate-200/80 dark:border-slate-700/50 rounded-3xl overflow-hidden shadow-lg dark:shadow-black/40 group-hover:shadow-2xl group-hover:border-indigo-500/50 transition-all duration-400 flex flex-col">
 
-                                                <div className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:border-indigo-500/30 transition-all duration-500 h-[440px] flex flex-col">
+                                                    {/* Gradient Header Block */}
                                                     <div className={cn(
-                                                        "h-1.5 w-full",
-                                                        course.isMarkedToday ? "bg-emerald-500" : "bg-rose-500"
-                                                    )} />
+                                                        "relative h-36 flex items-center justify-between px-8 overflow-hidden",
+                                                        [
+                                                            "bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-600",
+                                                            "bg-gradient-to-br from-violet-600 via-purple-500 to-fuchsia-600",
+                                                            "bg-gradient-to-br from-sky-600 via-cyan-500 to-teal-600",
+                                                            "bg-gradient-to-br from-rose-600 via-pink-500 to-orange-500",
+                                                            "bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-600",
+                                                            "bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500",
+                                                        ][idx % 6]
+                                                    )}>
+                                                        {/* Large decorative letter */}
+                                                        <span className="absolute right-4 top-0 text-[8rem] font-black text-white/10 leading-none select-none tracking-tighter">
+                                                            {course.code?.charAt(0)}
+                                                        </span>
+                                                        <div>
+                                                            <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-1">{course.code}</p>
+                                                            <h3 className="text-xl font-black text-white leading-tight tracking-tight max-w-[180px]">{course.name}</h3>
+                                                        </div>
+                                                        <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center text-white border border-white/20 flex-shrink-0">
+                                                            <BookOpen size={20} strokeWidth={2.5} />
+                                                        </div>
+                                                    </div>
 
-                                                    <div className="p-8 flex flex-col flex-1">
-                                                        <div className="flex justify-between items-start mb-8">
-                                                            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-sm group-hover:shadow-indigo-500/20">
-                                                                <BookOpen size={28} strokeWidth={2.5} />
-                                                            </div>
-                                                            <div className="flex flex-col items-end gap-3">
-                                                                <div className={cn(
-                                                                    "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
-                                                                    course.isMarkedToday
-                                                                        ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20"
-                                                                        : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
-                                                                )}>
-                                                                    {course.isMarkedToday ? "Marked Today" : "Attendance Pending"}
-                                                                </div>
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleEditClick(e, course);
-                                                                    }}
-                                                                    className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all border border-slate-100 dark:border-slate-700"
-                                                                >
-                                                                    <Edit size={16} />
-                                                                </button>
-                                                            </div>
+                                                    {/* Status Bar */}
+                                                    <div className={cn("h-1 w-full", course.isMarkedToday ? "bg-emerald-400" : "bg-rose-400")} />
+
+                                                    {/* Body */}
+                                                    <div className="p-6 flex flex-col gap-5">
+
+                                                        {/* Status + Department */}
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-700/40">
+                                                                {course.department || 'Academic'}
+                                                            </span>
+                                                            
                                                         </div>
 
-                                                        <div className="space-y-3 flex-1">
-                                                            <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em]">
-                                                                {course.code} • {course.department || 'Academic Unit'}
-                                                            </p>
-                                                            <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tight">
-                                                                {course.name}
-                                                            </h3>
-                                                            <div className="flex items-center gap-4 pt-4">
-                                                                <div className="flex items-center gap-2 text-slate-400">
-                                                                    <Users size={14} className="text-slate-300" />
-                                                                    <span className="text-[11px] font-bold">{course.students?.length || 42} Students</span>
-                                                                </div>
-                                                                <div className="w-1 h-1 bg-slate-300 rounded-full" />
-                                                                <div className="flex items-center gap-2 text-slate-400">
-                                                                    <Clock size={14} className="text-slate-300" />
-                                                                    <span className="text-[11px] font-bold">{course.credits} Units</span>
-                                                                </div>
-                                                            </div>
+                                                        {/* Quick Action Buttons */}
+                                                        <div className="flex flex-col gap-2">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); navigate('/faculty/attendance', { state: { courseId: course._id } }); }}
+                                                                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/[0.08] hover:bg-indigo-500 text-indigo-600 dark:text-indigo-300 hover:text-white transition-all border border-indigo-100 dark:border-indigo-500/25 group/btn"
+                                                            >
+                                                                <Users size={14} />
+                                                                <span className="text-[10px] font-black uppercase tracking-widest">Attendance</span>
+                                                                <ArrowRight size={12} className="ml-auto opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); navigate('/faculty/assignments', { state: { courseId: course._id } }); }}
+                                                                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-violet-50 dark:bg-violet-500/[0.08] hover:bg-violet-500 text-violet-600 dark:text-violet-300 hover:text-white transition-all border border-violet-100 dark:border-violet-500/25 group/btn"
+                                                            >
+                                                                <FileText size={14} />
+                                                                <span className="text-[10px] font-black uppercase tracking-widest">Assignments</span>
+                                                                <ArrowRight size={12} className="ml-auto opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); navigate('/faculty/marks', { state: { courseId: course._id } }); }}
+                                                                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/[0.08] hover:bg-emerald-500 text-emerald-600 dark:text-emerald-300 hover:text-white transition-all border border-emerald-100 dark:border-emerald-500/25 group/btn"
+                                                            >
+                                                                <Trophy size={14} />
+                                                                <span className="text-[10px] font-black uppercase tracking-widest">Marks</span>
+                                                                <ArrowRight size={12} className="ml-auto opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                                                            </button>
                                                         </div>
 
-                                                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                                                            <div className="flex -space-x-3">
-                                                                {(course.students?.slice(0, 3) || [1, 2, 3]).map((s, i) => (
-                                                                    <div key={i} className="w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
-                                                                        {s.user?.name ? s.user.name[0] : `S${i + 1}`}
-                                                                    </div>
-                                                                ))}
-                                                                <div className="w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
-                                                                    +{Math.max(0, (course.students?.length || 42) - 3)}
+                                                        {/* Footer */}
+                                                        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/40">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex -space-x-2">
+                                                                    {(course.students?.slice(0, 3) || [1, 2, 3]).map((s, i) => (
+                                                                        <div key={i} className="w-7 h-7 rounded-full border-2 border-white dark:border-[#0d1118] bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center text-[9px] font-bold text-slate-600 dark:text-slate-200 uppercase">
+                                                                            {s.user?.name ? s.user.name[0] : `S${i + 1}`}
+                                                                        </div>
+                                                                    ))}
                                                                 </div>
+                                                                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">{course.students?.length || 0} enrolled</span>
                                                             </div>
-                                                            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 group-hover:bg-indigo-600 flex items-center justify-center text-slate-400 group-hover:text-white transition-all duration-300 shadow-sm">
-                                                                <ArrowRight size={24} />
+                                                            <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                                                                <Clock size={12} />
+                                                                <span className="text-[10px] font-bold">{course.credits} cr</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -600,12 +605,12 @@ const FacultyCourses = () => {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl"
+                                    className="bg-white dark:bg-[#0d1118] border border-slate-200 dark:border-slate-700/50 rounded-[2.5rem] overflow-hidden shadow-2xl dark:shadow-black/50"
                                 >
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
                                             <thead>
-                                                <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
+                                                <tr className="bg-slate-50 dark:bg-[#111827] text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-700/50">
                                                     <th className="px-10 py-6">Unit Designation</th>
                                                     <th className="px-10 py-6">Department</th>
                                                     <th className="px-10 py-6 text-center">Protocol Status</th>
@@ -613,7 +618,7 @@ const FacultyCourses = () => {
                                                     <th className="px-10 py-6 text-right">Operations</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700/30">
                                                 {courses
                                                     .filter(c => c.name.toLowerCase().includes(filterQuery.toLowerCase()) || c.code.toLowerCase().includes(filterQuery.toLowerCase()))
                                                     .map((course, idx) => (
@@ -623,7 +628,7 @@ const FacultyCourses = () => {
                                                             animate={{ opacity: 1, y: 0 }}
                                                             transition={{ delay: idx * 0.03 }}
                                                             onClick={() => handleViewCourse(course)}
-                                                            className="hover:bg-slate-50/80 dark:hover:bg-indigo-500/5 transition-all group cursor-pointer"
+                                                            className="hover:bg-slate-50/80 dark:hover:bg-indigo-500/[0.06] transition-all group cursor-pointer"
                                                         >
                                                             <td className="px-10 py-6">
                                                                 <div className="flex items-center gap-5">
@@ -661,15 +666,39 @@ const FacultyCourses = () => {
                                                                 </div>
                                                             </td>
                                                             <td className="px-10 py-6 text-right">
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleEditClick(e, course);
-                                                                    }}
-                                                                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all border border-slate-100 dark:border-slate-700 hover:border-indigo-500/30"
-                                                                >
-                                                                    <Edit size={16} />
-                                                                </button>
+                                                                <div className="flex items-center gap-2">
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); navigate('/faculty/attendance', { state: { courseId: course._id } }); }}
+                                                                        className="p-2.5 rounded-lg bg-indigo-50/50 dark:bg-indigo-500/10 text-indigo-600 border border-indigo-100 dark:border-indigo-500/20 hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                                                                        title="Attendance"
+                                                                    >
+                                                                        <Users size={14} />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); navigate('/faculty/assignments', { state: { courseId: course._id } }); }}
+                                                                        className="p-2.5 rounded-lg bg-violet-50/50 dark:bg-violet-500/10 text-violet-600 border border-violet-100 dark:border-violet-500/20 hover:bg-violet-600 hover:text-white transition-all shadow-sm"
+                                                                        title="Assignments"
+                                                                    >
+                                                                        <FileText size={14} />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); navigate('/faculty/marks', { state: { courseId: course._id } }); }}
+                                                                        className="p-2.5 rounded-lg bg-emerald-50/50 dark:bg-emerald-500/10 text-emerald-600 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                                        title="Marks"
+                                                                    >
+                                                                        <Trophy size={14} />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleEditClick(e, course);
+                                                                        }}
+                                                                        className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-slate-600 transition-all border border-slate-100 dark:border-slate-700 hover:border-slate-300"
+                                                                        title="Edit Unit"
+                                                                    >
+                                                                        <Edit size={14} />
+                                                                    </button>
+                                                                </div>
                                                             </td>
                                                         </motion.tr>
                                                     ))}
@@ -691,7 +720,7 @@ const FacultyCourses = () => {
                             {[
                                 { label: 'Enrollment', value: stats.totalStudents, icon: Users, color: 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-500/10', sub: 'Verified Cohort' },
                                 { label: 'Engagement', value: stats.avgAttendance, suffix: "%", icon: Activity, color: 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10', decimals: 1, sub: 'Active Participation' },
-                                { label: 'Academic Load', value: selectedCourse.credits, suffix: " Cr", icon: BookOpen, color: 'text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-500/10', sub: 'Unit Weight' },
+                                { label: 'Academic Load', value: selectedCourse.credits, suffix: " ", icon: BookOpen, color: 'text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-500/10', sub: 'Unit Weight' },
                                 { label: 'Resources', value: selectedCourse.materials?.length || 0, icon: FileText, color: 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-500/10', sub: 'Stored Assets' }
                             ].map((s, idx) => (
                                 <motion.div
@@ -932,8 +961,9 @@ const FacultyCourses = () => {
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </motion.div>
-                )}
+                    </motion.div >
+                )
+                }
 
                 {/* Edit Modal */}
                 <AnimatePresence>
@@ -1060,7 +1090,7 @@ const FacultyCourses = () => {
                                                     </div>
                                                     <div>
                                                         <h4 className="font-black text-slate-900 dark:text-white text-base tracking-tight leading-none mb-1.5">{course.name}</h4>
-                                                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">{course.code} • {course.department}</p>
+                                                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">{course.code} â€¢ {course.department}</p>
                                                         <div className="flex items-center gap-2 mt-2">
                                                             <User size={10} className="text-slate-400" />
                                                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Lead: {course.assignedFaculty?.user?.name || 'Authorized Personnel'}</p>
@@ -1094,7 +1124,7 @@ const FacultyCourses = () => {
                     )}
                 </AnimatePresence>
 
-            </div>
+            </div >
         </Layout >
     );
 };

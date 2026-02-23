@@ -85,3 +85,7 @@ coverage/
 *.backup
 *.old
 .eslintcache
+
+
+.tools*
+.docs*
