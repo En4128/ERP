@@ -52,6 +52,7 @@
 /* Smooth Scroll */
 html {
   /* scroll-behavior: smooth; - Removed to allow Lenis to handle smooth scrolling */
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Custom Utilities */
