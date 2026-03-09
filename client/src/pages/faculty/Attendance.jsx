@@ -202,10 +202,12 @@ const FacultyAttendance = () => {
             const payload = {
                 courseId: selectedCourseId,
                 date: date,
-                attendanceData: Object.entries(attendanceData).map(([studentId, status]) => ({
-                    studentId,
-                    status
-                }))
+                attendanceData: Object.entries(attendanceData)
+                    .filter(([key]) => !key.includes('_time'))
+                    .map(([studentId, status]) => ({
+                        studentId,
+                        status
+                    }))
             };
 
             await axios.post('http://localhost:5000/api/faculty/attendance', payload, {

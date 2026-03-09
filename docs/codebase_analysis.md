@@ -84,7 +84,15 @@ The system manages several core entities:
 ---
 
 ## 6. Development & Deployment
+
+### Current Setup
 - **Local Dev**: Use `npm run dev` in both client and server directories.
 - **Environment**: Configured via `.env` files for secrets like `MONGO_URI`, `JWT_SECRET`, `GOOGLE_AI_API_KEY`, and `VAPID_KEYS`.
 - **Logging**: The server maintains an `access.log` for tracking API requests and several AI/Push-specific logs for debugging.
 - **Performance**: Optimized scroll behavior with `SmoothScroll.jsx` and eliminated lazy loading for faster interactions.
+
+### DevOps Implementation Strategy (Planned)
+- **Containerization**: Use **Docker** with multi-stage builds for the Vite React client (served via Nginx) and a Node Alpine image for the Express server. Environment fully orchestrable via `docker-compose.yml`.
+- **Continuous Integration (CI)**: Automated pipelines (e.g., GitHub Actions) on Pull Requests/Merges to trigger `eslint`, run `vite build`, and execute backend testing.
+- **Continuous Deployment (CD)**: Automated rollout to cloud providers upon merging to `main` (Production) and `develop` (Staging).
+- **Monitoring**: Integration of tools like **Sentry** for real-time error tracking and enhanced backend logging.

@@ -1,0 +1,83 @@
+# Services define the different "parts" or "containers" of our application
+
+# Services define the different "parts" or "containers" of our application
+services:
+
+  # -----------------------------------------------------
+  # 1. The React Frontend Client
+  # -----------------------------------------------------
+  client:
+    # Build from the Dockerfile inside the /client folder
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: erp-client
+    
+    # Map port 5173 on your PC to port 5173 inside the container
+    ports:
+      - "5173:5173"
+      
+    # Volumes map your computer's folders into the container. 
+    # This enables "Hot Reloading" – when you save a file on your PC, 
+    # the container updates instantly without rebuilding!
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules # Prevents local node_modules from breaking the container inside
+      
+    # Make sure the server runs before the client starts
+    depends_on:
+      - server
+
+
+  # -----------------------------------------------------
+  # 2. The Express Backend Server
+  # -----------------------------------------------------
+  server:
+    # Build from the Dockerfile inside the /server folder
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: erp-server
+    
+    # Map port 5000 on your PC to 5000 in the container
+    ports:
+      - "5000:5000"
+      
+    # Map backend files for hot reloading (uses nodemon)
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
+      
+    # Override the default command to use 'npm run dev'
+    # This triggers 'nodemon' for backend file reloading
+    command: npm run dev
+    
+    # Pass all your local backend variables (.env secret keys) into the container
+    env_file:
+      - ./server/.env.prod
+      
+    # Wait for the database container before starting the server
+    depends_on:
+      - database
+
+
+  # -----------------------------------------------------
+  # 3. MongoDB Database (Optional for robust local dev)
+  # -----------------------------------------------------
+  database:
+    # Use the official pre-built MongoDB image directly
+    image: mongo:latest
+    container_name: erp_database
+    
+    # Map MongoDB's default port
+    ports:
+      - "27017:27017"
+      
+    # A persistent volume ensures databse records are saved 
+    # and not lost when you restart the Docker containers.
+    volumes:
+      - mongo_data:/data/db
+
+# Define the persistent volume used above
+volumes:
+  mongo_data:
